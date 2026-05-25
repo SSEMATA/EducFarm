@@ -1,0 +1,623 @@
+/* ── Page ──────────────────────────────────────────────── */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  max-width: 720px;
+  width: 100%;
+}
+
+/* ── Page header ───────────────────────────────────────── */
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.pageSubtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+.refreshBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  border-color: #2d7a4f;
+  color: #2d7a4f;
+  box-shadow: 0 0 0 3px rgba(45,122,79,0.1);
+}
+
+.refreshBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* ── Error / Loading ───────────────────────────────────── */
+.errorBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+}
+
+.loadingBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 1rem;
+  gap: 1rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.bigSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #2d7a4f;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+/* ── Section wrapper ───────────────────────────────────── */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.sectionLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #6b7280;
+}
+
+/* ════════════════════════════════════════════════════════
+   SECTION 1 — Weather Card
+════════════════════════════════════════════════════════ */
+.weatherCard {
+  background: linear-gradient(145deg, var(--g1), var(--g2));
+  border-radius: 20px;
+  padding: 1.75rem;
+  color: #fff;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.mainInfo {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.mainInfo > svg {
+  flex-shrink: 0;
+}
+
+.condition {
+  margin: 0 0 0.1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.temp {
+  margin: 0;
+  font-size: 4.5rem;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.tempUnit {
+  font-size: 1.75rem;
+  font-weight: 300;
+  opacity: 0.75;
+}
+
+.description {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  opacity: 0.8;
+  max-width: 200px;
+  line-height: 1.4;
+}
+
+.location {
+  margin: 0.3rem 0 0;
+  font-size: 0.8rem;
+  opacity: 0.65;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pills {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  align-items: flex-end;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(4px);
+  border-radius: 20px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pillLabel {
+  font-size: 0.7rem;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.updated {
+  margin: 0;
+  font-size: 0.7rem;
+  opacity: 0.45;
+  text-align: right;
+}
+
+/* ════════════════════════════════════════════════════════
+   SECTION 2 — Hourly Forecast
+════════════════════════════════════════════════════════ */
+.hourlyCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.hourlyStrip {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  gap: 0.25rem;
+}
+
+.hourlyStrip::-webkit-scrollbar { display: none; }
+
+.hourlyCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+  min-width: 72px;
+  padding: 0.75rem 0.4rem;
+  border-radius: 14px;
+  border: 1.5px solid transparent;
+  transition: background 0.15s;
+}
+
+.hourlyColPump {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.hourlyTime {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #6b7280;
+}
+
+.hourlyTemp {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.hourlyRain {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.68rem;
+  color: #6366f1;
+  font-weight: 600;
+}
+
+.pumpBadge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: #1d4ed8;
+  color: #fff;
+  border-radius: 20px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* ════════════════════════════════════════════════════════
+   SECTION 3 — Forecast
+════════════════════════════════════════════════════════ */
+.forecastCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.forecastStrip {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  gap: 0.25rem;
+}
+
+.forecastStrip::-webkit-scrollbar { display: none; }
+
+.forecastCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 76px;
+  padding: 0.75rem 0.4rem;
+  border-radius: 14px;
+  background: transparent;
+  border: 1.5px solid transparent;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.forecastCol:hover { background: #f9fafb; }
+
+.forecastColActive {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.forecastDay {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+}
+
+.forecastTemps {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+}
+
+.fTempHigh {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+.fTempLow {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #3b82f6;
+}
+
+.forecastRain {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.68rem;
+  color: #6366f1;
+  font-weight: 600;
+}
+
+/* ════════════════════════════════════════════════════════
+   SECTION 3 — Irrigation Plan
+════════════════════════════════════════════════════════ */
+.irrigationCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Skip */
+.skipBanner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+
+.skipTitle {
+  margin: 0 0 0.2rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #991b1b;
+}
+
+.skipReason {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #b91c1c;
+}
+
+/* Pump stats */
+.iStats {
+  display: flex;
+  align-items: center;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1.1rem 1rem;
+}
+
+.iStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.iStatValue {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1;
+}
+
+.iStatUnit {
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: #6b7280;
+  margin-left: 2px;
+}
+
+.iStatLabel {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #9ca3af;
+}
+
+.iStatDivider {
+  width: 1px;
+  height: 36px;
+  background: #e5e7eb;
+  flex-shrink: 0;
+}
+
+/* Water detail */
+.waterDetail {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.waterItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  font-size: 0.82rem;
+  color: #374151;
+  flex: 1;
+  min-width: 150px;
+}
+
+.waterItem strong {
+  margin-left: auto;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Pump times */
+.pumpTimesRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pumpTimesLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #9ca3af;
+}
+
+.pumpTimes {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pumpTime {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 20px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+.irrigationReason {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Weekly summary */
+.weeklySummary {
+  display: flex;
+  align-items: center;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.weeklyItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  flex: 1;
+  padding: 0.9rem 0.5rem;
+}
+
+.weeklyDivider {
+  width: 1px;
+  height: 36px;
+  background: #e5e7eb;
+  flex-shrink: 0;
+}
+
+.weeklyLabel {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #9ca3af;
+}
+
+.weeklyValue {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* ── Stale / refreshing bar ───────────────────────────── */
+.staleBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.smallSpinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #fde68a;
+  border-top-color: #d97706;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ── Spinner ───────────────────────────────────────────── */
+.spinning { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .pageTitle { font-size: 1.25rem; }
+  .weatherCard { padding: 1rem; }
+  .cardTop { flex-direction: row; align-items: center; gap: 0.75rem; flex-wrap: nowrap; }
+  .mainInfo { gap: 0.6rem; }
+  .mainInfo > svg { width: 40px !important; height: 40px !important; }
+  .temp { font-size: 2.4rem; letter-spacing: -1px; }
+  .tempUnit { font-size: 1.1rem; }
+  .condition { font-size: 0.72rem; }
+  .description { font-size: 0.72rem; max-width: 120px; }
+  .location { font-size: 0.68rem; }
+  .pills { flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 0.3rem; }
+  .pill { font-size: 0.68rem; padding: 0.2rem 0.5rem; }
+  .forecastCol { min-width: 62px; }
+  .iStats { padding: 0.9rem 0.75rem; }
+  .iStatValue { font-size: 1.4rem; }
+  .weeklySummary { flex-wrap: wrap; }
+  .weeklyItem { min-width: 80px; }
+}
+
+@media (max-width: 400px) {
+  .temp { font-size: 3rem; }
+  .forecastCol { min-width: 52px; }
+  .waterItem { min-width: 100%; }
+}

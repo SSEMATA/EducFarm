@@ -1,0 +1,224 @@
+/* ── Page ──────────────────────────────────────────────── */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+.pageHeader { display: flex; flex-direction: column; gap: 0.2rem; }
+.pageTitle  { margin: 0; font-size: 1.5rem; font-weight: 700; color: #111827; }
+.pageSubtitle { margin: 0; font-size: 0.82rem; color: #6b7280; }
+
+/* ── Loading ───────────────────────────────────────────── */
+.loadingBox {
+  display: flex; align-items: center; justify-content: center; padding: 5rem;
+}
+.bigSpinner {
+  width: 38px; height: 38px;
+  border: 3px solid #e5e7eb; border-top-color: #2d7a4f;
+  border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block;
+}
+
+/* ── Layout ────────────────────────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+.col { display: flex; flex-direction: column; gap: 1.25rem; }
+
+/* ── Section ───────────────────────────────────────────── */
+.section {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.4rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.sectionTitle { margin: 0; font-size: 0.95rem; font-weight: 700; color: #111827; }
+.sectionHeader { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+
+/* ── Soil grid ─────────────────────────────────────────── */
+.soilGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+.soilCard {
+  display: flex; flex-direction: column; gap: 0.15rem;
+  padding: 0.65rem 0.85rem;
+  background: #f9fafb; border: 1.5px solid #e5e7eb; border-radius: 10px;
+  cursor: pointer; text-align: left; transition: all 0.15s;
+}
+.soilCard:hover { border-color: #86efac; background: #f0fdf4; }
+.soilCardActive { border-color: #2d7a4f; background: #f0fdf4; }
+.soilName { font-size: 0.85rem; font-weight: 700; color: #111827; }
+.soilDesc { font-size: 0.7rem; color: #6b7280; line-height: 1.3; }
+
+.selectedNote {
+  background: #f0fdf4; border: 1px solid #bbf7d0;
+  border-radius: 8px; padding: 0.55rem 0.85rem;
+  font-size: 0.78rem; color: #15803d;
+}
+
+/* ── Plant grid ────────────────────────────────────────── */
+.plantGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.45rem;
+}
+.plantCard {
+  display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+  padding: 0.6rem 0.3rem;
+  background: #f9fafb; border: 1.5px solid #e5e7eb; border-radius: 10px;
+  cursor: pointer; transition: all 0.15s;
+}
+.plantCard:hover { border-color: #86efac; background: #f0fdf4; }
+.plantCardActive { border-color: #2d7a4f; background: #f0fdf4; }
+.plantIcon { font-size: 1.4rem; line-height: 1; }
+.plantName { font-size: 0.65rem; font-weight: 600; color: #374151; text-align: center; }
+
+.autoFilledBadge {
+  font-size: 0.72rem; font-weight: 600; color: #7c3aed;
+  background: #f5f3ff; border: 1px solid #ddd6fe;
+  border-radius: 999px; padding: 0.2rem 0.65rem;
+  white-space: nowrap;
+}
+
+/* ── Plant info ────────────────────────────────────────── */
+.plantInfo {
+  display: flex; align-items: center; gap: 0.75rem;
+  background: #f0fdf4; border: 1px solid #bbf7d0;
+  border-radius: 10px; padding: 0.75rem 1rem;
+}
+.plantInfoIcon { font-size: 1.75rem; flex-shrink: 0; }
+.plantInfoName { display: block; font-size: 0.9rem; font-weight: 700; color: #111827; }
+.plantInfoRange { display: block; font-size: 0.75rem; color: #15803d; margin-top: 0.1rem; }
+
+/* ── Moisture bar ──────────────────────────────────────── */
+.moistureBar { display: flex; flex-direction: column; gap: 0.35rem; }
+.moistureTrack {
+  position: relative; height: 14px;
+  background: #f3f4f6; border-radius: 999px; overflow: visible;
+}
+.moistureCritical {
+  position: absolute; left: 0; top: 0; height: 100%;
+  background: rgba(239,68,68,0.18); border-radius: 999px 0 0 999px;
+}
+.moistureRange {
+  position: absolute; top: 0; height: 100%;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  border-radius: 999px;
+}
+.moistureLabels { position: relative; height: 18px; }
+.moistureMark {
+  position: absolute; transform: translateX(-50%);
+  font-size: 0.65rem; font-weight: 700; color: #6b7280;
+  white-space: nowrap;
+}
+
+/* ── Threshold grid ────────────────────────────────────── */
+.thresholdGrid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;
+}
+.thresholdField { display: flex; flex-direction: column; gap: 0.3rem; }
+.label {
+  display: flex; align-items: center; gap: 0.35rem;
+  font-size: 0.75rem; font-weight: 600; color: #374151;
+}
+.labelDot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.numInput {
+  padding: 0.55rem 0.7rem;
+  border: 1.5px solid #d1d5db; border-radius: 8px;
+  font-size: 0.9rem; color: #111827; background: #f9fafb;
+  outline: none; width: 100%; box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.numInput:focus { border-color: #2d7a4f; box-shadow: 0 0 0 3px rgba(45,122,79,0.12); background: #fff; }
+
+/* ── Irrigation slider ─────────────────────────────────── */
+.durationRow { display: flex; align-items: center; gap: 1rem; }
+.slider {
+  flex: 1; accent-color: #2d7a4f; height: 4px; cursor: pointer;
+}
+.durationValue {
+  font-size: 1rem; font-weight: 700; color: #2d7a4f;
+  min-width: 60px; text-align: right;
+}
+.fieldHint { margin: 0; font-size: 0.73rem; color: #9ca3af; }
+
+/* ── Textarea ──────────────────────────────────────────── */
+.textarea {
+  padding: 0.65rem 0.9rem;
+  border: 1.5px solid #d1d5db; border-radius: 9px;
+  font-size: 0.875rem; color: #111827; background: #f9fafb;
+  outline: none; resize: vertical; width: 100%; box-sizing: border-box;
+  font-family: inherit; transition: border-color 0.15s, box-shadow 0.15s;
+}
+.textarea:focus { border-color: #2d7a4f; box-shadow: 0 0 0 3px rgba(45,122,79,0.12); background: #fff; }
+
+/* ── Footer ────────────────────────────────────────────── */
+.footer { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.25rem; }
+.footerActions { display: flex; justify-content: flex-end; gap: 0.65rem; }
+
+.resetBtn {
+  padding: 0.6rem 1.2rem; border: 1.5px solid #d1d5db; border-radius: 9px;
+  background: #fff; font-size: 0.875rem; font-weight: 600; color: #374151;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.resetBtn:hover:not(:disabled) { border-color: #9ca3af; }
+.resetBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.saveBtn {
+  padding: 0.6rem 1.4rem;
+  background: linear-gradient(135deg, #2d7a4f, #1a4a2e);
+  border: none; border-radius: 9px; font-size: 0.875rem; font-weight: 600;
+  color: #fff; cursor: pointer; min-width: 140px;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  transition: opacity 0.15s;
+}
+.saveBtn:hover:not(:disabled) { opacity: 0.88; }
+.saveBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* ── Banners ───────────────────────────────────────────── */
+.successBanner {
+  background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d;
+  border-radius: 9px; padding: 0.7rem 0.9rem; font-size: 0.875rem; font-weight: 500;
+}
+.errorBanner {
+  background: #fef2f2; border: 1px solid #fca5a5; color: #b91c1c;
+  border-radius: 9px; padding: 0.7rem 0.9rem; font-size: 0.875rem;
+}
+
+/* ── Spinner ───────────────────────────────────────────── */
+.spinner {
+  width: 15px; height: 15px;
+  border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff;
+  border-radius: 50%; animation: spin 0.75s linear infinite;
+  display: inline-block; flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+  .plantGrid { grid-template-columns: repeat(5, 1fr); }
+  .thresholdGrid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 480px) {
+  .page { overflow-x: hidden; }
+  .plantGrid { grid-template-columns: repeat(4, 1fr); }
+  .soilGrid { grid-template-columns: 1fr; }
+  .thresholdGrid { grid-template-columns: 1fr; }
+  .footerActions { flex-direction: column; }
+  .saveBtn, .resetBtn { width: 100%; justify-content: center; }
+  .durationRow { flex-wrap: wrap; }
+  .durationValue { min-width: auto; }
+  .moistureLabels { height: auto; position: static; display: flex; justify-content: space-between; }
+  .moistureMark { position: static; transform: none; }
+}

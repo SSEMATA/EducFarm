@@ -1,0 +1,989 @@
+/* ── Page ──────────────────────────────────────────────── */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ── Header ────────────────────────────────────────────── */
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+
+.pageTitleRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pageSubtitle {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.updatingDot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2d7a4f;
+  animation: pulse 1.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.75); }
+}
+
+.refreshBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  border-color: #2d7a4f;
+  color: #2d7a4f;
+  box-shadow: 0 0 0 3px rgba(45, 122, 79, 0.1);
+}
+
+.refreshBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.spinning {
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Location permission modal ────────────────────────────── */
+.locBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.locModal {
+  background: #fff;
+  border-radius: 18px;
+  padding: 2rem 1.75rem;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  text-align: center;
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.locIconWrap {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #f0fdf4;
+  border: 2px solid #bbf7d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.locTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.locDesc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+  line-height: 1.55;
+}
+
+.locActions {
+  display: flex;
+  gap: 0.65rem;
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.locDenyBtn {
+  flex: 1;
+  padding: 0.65rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 9px;
+  background: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.locDenyBtn:hover { border-color: #9ca3af; }
+
+.locAllowBtn {
+  flex: 2;
+  padding: 0.65rem;
+  background: linear-gradient(135deg, #2d7a4f, #1a4a2e);
+  border: none;
+  border-radius: 9px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: opacity 0.15s;
+}
+
+.locAllowBtn:hover { opacity: 0.88; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes popIn  { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ── Permanent greeting ─────────────────────────────────────── */
+.greeting {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: linear-gradient(135deg, #0f2e1a, #1a4a2e);
+  border: 1px solid rgba(74,222,128,0.3);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 12px rgba(45,122,79,0.15);
+}
+
+.greetIcon {
+  color: #4ade80;
+  flex-shrink: 0;
+}
+
+.greetText {
+  margin: 0;
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 500;
+}
+
+.greetText strong {
+  font-weight: 700;
+  color: #4ade80;
+}
+
+.greetSub {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.55);
+}
+
+/* ── Error banner ──────────────────────────────────────── */
+.errorBanner {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+}
+
+/* ── Stat cards grid ───────────────────────────────────── */
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+}
+
+.card {
+  background: var(--card-bg, #fff);
+  border-radius: 14px;
+  padding: 1.1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--card-accent, #2d7a4f);
+  border-radius: 14px 14px 0 0;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cardIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cardLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.cardValue {
+  margin: 0;
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+
+.cardSub {
+  font-size: 0.72rem;
+  color: #6b7280;
+  font-weight: 500;
+  margin-top: -0.2rem;
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.badgeDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Progress bar */
+.progressTrack {
+  height: 5px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+/* Tank visual */
+.tankWrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.tank {
+  width: 28px;
+  height: 44px;
+  border: 2px solid #bae6fd;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  background: #f0f9ff;
+}
+
+.tankFill {
+  width: 100%;
+  transition: height 0.6s ease;
+  border-radius: 2px;
+}
+
+.tankPct {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #0369a1;
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  pointer-events: none;
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 14px;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ── Charts grid ───────────────────────────────────────── */
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.chartCard {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.25rem 1.25rem 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.chartFull {
+  grid-column: 1 / -1;
+}
+
+.chartTitle {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ── Recharts tooltip ──────────────────────────────────── */
+.tooltip {
+  background: #1f2937;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.tooltipLabel {
+  margin: 0 0 0.3rem;
+  color: #9ca3af;
+  font-size: 0.75rem;
+}
+
+.tooltipRow {
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Weather Row ───────────────────────────────────────── */
+.weatherRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  align-items: stretch;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Weather Mini Card */
+.weatherMini {
+  background: linear-gradient(135deg, var(--g1), var(--g2));
+  border-radius: 14px;
+  padding: 1.2rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  min-width: 0;
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+.weatherMiniInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.weatherMiniLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.weatherMiniTemp {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1;
+  margin: 0.2rem 0;
+}
+
+.weatherMiniDesc {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.weatherMiniLoc {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.weatherMiniPills {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wPill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  background: rgba(255,255,255,0.2);
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+/* Hourly Strip */
+.hourlyWrap {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.hourlyTitle {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.hourlyStrip {
+  display: flex;
+  gap: 0.65rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.3rem;
+  scroll-behavior: smooth;
+  min-width: 0;
+}
+
+.hourlyStrip::-webkit-scrollbar {
+  height: 4px;
+}
+
+.hourlyStrip::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 2px;
+}
+
+.hourlyStrip::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 2px;
+}
+
+.hourlyStrip::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+.hourlyCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.75rem 0.6rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  min-width: 70px;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.hourlyCol:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.hourlyColPump {
+  background: linear-gradient(135deg, #dbeafe, #fef08a);
+  border-color: #fbbf24;
+}
+
+.hourlyTime {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+.hourlyTemp {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.hourlyRain {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.7rem;
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+.pumpBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: #fbbf24;
+  color: #92400e;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  margin-top: 0.1rem;
+}
+
+/* ── Irrigation Card ───────────────────────────────────── */
+.irrigCard {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.05);
+  border-left: 4px solid #10b981;
+}
+
+.irrigTitle {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.irrigSkip {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  color: #991b1b;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.irrigBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.irrigStats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.irrigStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.8rem 0.6rem;
+  text-align: center;
+}
+
+.irrigStat strong {
+  font-size: 1.1rem;
+  color: #111827;
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.irrigStat strong small {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.irrigStat span {
+  font-size: 0.7rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  font-weight: 600;
+}
+
+.irrigDivider {
+  width: 1px;
+  background: #e5e7eb;
+  height: 100%;
+  margin: 0 0;
+}
+
+.pumpTimes {
+  padding: 0.8rem;
+  background: #f0fdf4;
+  border-radius: 10px;
+  border: 1px solid #bbf7d0;
+}
+
+.pumpTimesLabel {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #166534;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  margin-bottom: 0.5rem;
+}
+
+.pumpTimesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pumpTime {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: #fff;
+  color: #166534;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #d1f0d9;
+}
+
+.irrigReason {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* ── Responsive ────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .weatherRow {
+    grid-template-columns: 1fr;
+  }
+  .weatherMini {
+    flex-direction: row;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 1100px) {
+  .cardsGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .irrigStats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .cardsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+  .chartFull { grid-column: 1; }
+  .weatherMini {
+    padding: 1rem;
+    gap: 0.8rem;
+  }
+  .irrigStats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 750px) {
+  .weatherMini {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.8rem;
+    padding: 1rem;
+    max-width: 100%;
+  }
+  .weatherMiniInfo {
+    align-items: center;
+  }
+  .weatherMiniPills {
+    flex-direction: row;
+    justify-content: center;
+  }
+  .irrigStats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+  }
+  .irrigDivider {
+    display: none;
+  }
+  .irrigStat {
+    padding: 0.7rem 0.4rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .cardsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.7rem;
+  }
+  .card {
+    padding: 0.85rem 0.9rem;
+  }
+  .pageTitle { font-size: 1.2rem; }
+  .refreshBtn {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.8rem;
+  }
+  .refreshBtn span:last-child { display: none; }
+  .hourlyWrap {
+    padding: 1rem;
+  }
+  .hourlyStrip {
+    gap: 0.5rem;
+  }
+  .hourlyCol {
+    min-width: 60px;
+    padding: 0.6rem 0.45rem;
+    font-size: 0.85rem;
+  }
+  .hourlyTime {
+    font-size: 0.65rem;
+  }
+  .hourlyTemp {
+    font-size: 0.9rem;
+  }
+  .hourlyRain {
+    font-size: 0.65rem;
+  }
+  .pumpBadge {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.3rem;
+  }
+  .irrigCard {
+    padding: 1rem;
+  }
+  .irrigTitle {
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+  .irrigStats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  .irrigStat {
+    padding: 0.6rem 0.3rem;
+  }
+  .irrigStat strong {
+    font-size: 1rem;
+  }
+  .irrigStat span {
+    font-size: 0.65rem;
+  }
+  .pumpTimesList {
+    gap: 0.3rem;
+  }
+  .pumpTime {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.45rem;
+  }
+  .irrigReason {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cardsGrid {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+  .card {
+    padding: 0.8rem 0.85rem;
+  }
+  .pageHeader {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .pageTitle {
+    font-size: 1.1rem;
+  }
+  .pageSubtitle {
+    font-size: 0.75rem;
+  }
+  .refreshBtn {
+    width: 100%;
+    justify-content: center;
+  }
+  .weatherMini {
+    padding: 0.9rem;
+  }
+  .weatherMiniTemp {
+    font-size: 1.6rem;
+  }
+  .hourlyCol {
+    min-width: 55px;
+    padding: 0.5rem 0.4rem;
+  }
+  .irrigStats {
+    grid-template-columns: 1fr;
+  }
+  .irrigStat {
+    padding: 0.55rem 0.25rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .cardsGrid {
+    grid-template-columns: 1fr;
+  }
+  .card {
+    padding: 0.75rem 0.8rem;
+  }
+  .pageTitle {
+    font-size: 1rem;
+  }
+  .weatherMini {
+    padding: 0.8rem;
+    gap: 0.6rem;
+  }
+  .weatherMiniLabel {
+    font-size: 0.8rem;
+  }
+  .weatherMiniTemp {
+    font-size: 1.4rem;
+  }
+  .weatherMiniPills {
+    gap: 0.3rem;
+  }
+  .wPill {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+  }
+  .hourlyCol {
+    min-width: 50px;
+    padding: 0.45rem 0.35rem;
+  }
+  .hourlyTime {
+    font-size: 0.6rem;
+  }
+  .hourlyTemp {
+    font-size: 0.85rem;
+  }
+  .irrigCard {
+    padding: 0.9rem;
+    border-left-width: 3px;
+  }
+  .irrigTitle {
+    font-size: 0.8rem;
+    margin-bottom: 0.6rem;
+  }
+  .irrigStats {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+  .irrigStat {
+    padding: 0.5rem 0.2rem;
+  }
+  .irrigStat strong {
+    font-size: 0.95rem;
+  }
+  .pumpTime {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+  }
+  .irrigReason {
+    font-size: 0.7rem;
+  }
+}

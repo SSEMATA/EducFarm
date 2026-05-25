@@ -1,0 +1,621 @@
+/* ── Page ──────────────────────────────────────────────── */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ── Header ────────────────────────────────────────────── */
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.pageSubtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+/* ── Status chip ───────────────────────────────────────── */
+.statusChip {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1.5px solid;
+  white-space: nowrap;
+}
+
+.chipOn  { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+.chipOff { background: #f9fafb; border-color: #e5e7eb; color: #6b7280; }
+
+.chipDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ── Loading ───────────────────────────────────────────── */
+.loadingBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 1rem;
+  gap: 1rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.bigSpinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #2d7a4f;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+/* ── Layout ────────────────────────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Section card ──────────────────────────────────────── */
+.section {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* ── Contacts ──────────────────────────────────────────── */
+.contactsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.contactCount {
+  margin-left: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #9ca3af;
+  background: #f3f4f6;
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
+}
+
+.addBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #2d7a4f;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 7px;
+  padding: 0.3rem 0.65rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.addBtn:hover { background: #dcfce7; }
+
+.contactList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.contactRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.removeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid #fca5a5;
+  border-radius: 7px;
+  background: #fef2f2;
+  color: #dc2626;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.removeBtn:hover { background: #fee2e2; }
+
+.showMoreBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6b7280;
+  background: #f9fafb;
+  border: 1.5px dashed #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.showMoreBtn:hover { color: #2d7a4f; border-color: #86efac; }
+
+/* ── Field ─────────────────────────────────────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.phoneWrap {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #d1d5db;
+  border-radius: 9px;
+  background: #f9fafb;
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.phoneWrap:focus-within {
+  border-color: #2d7a4f;
+  box-shadow: 0 0 0 3px rgba(45,122,79,0.12);
+  background: #fff;
+}
+
+.countrySelect {
+  padding: 0 0.6rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+  border: none;
+  border-right: 1.5px solid #e5e7eb;
+  background: #f3f4f6;
+  outline: none;
+  cursor: pointer;
+  align-self: stretch;
+  min-width: 180px;
+  max-width: 200px;
+}
+
+.countrySelect:focus { background: #e9f5ee; }
+
+.phoneInput {
+  flex: 1;
+  padding: 0.65rem 0.9rem;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  color: #111827;
+  background: transparent;
+  width: 100%;
+}
+
+.fieldHint {
+  font-size: 0.73rem;
+  color: #9ca3af;
+}
+
+/* ── Master toggle row ─────────────────────────────────── */
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.toggleInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.toggleLabel {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.toggleDesc {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Toggle switch */
+.toggle {
+  width: 46px;
+  height: 26px;
+  border-radius: 999px;
+  background: #d1d5db;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s;
+  padding: 0;
+}
+
+.toggleOn { background: #2d7a4f; }
+
+.toggleThumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+
+.toggleOn .toggleThumb { transform: translateX(20px); }
+
+/* ── Summary card ──────────────────────────────────────── */
+.summaryCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.summaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.summaryLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.summaryValue {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.summaryProgress {
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.summaryFill {
+  height: 100%;
+  background: linear-gradient(90deg, #2d7a4f, #5ec98a);
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+
+.summaryBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1.5px solid;
+}
+
+.summaryDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Alert list ────────────────────────────────────────── */
+.alertActions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.textBtn {
+  background: none;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #2d7a4f;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.textBtn:hover { color: #1a4a2e; }
+
+.divider { color: #d1d5db; font-size: 0.9rem; }
+
+.alertList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.alertRow {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  background: #f9fafb;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+
+.alertRowOn {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.alertRowMuted {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.alertIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #6b7280;
+}
+
+.alertRowOn .alertIcon { color: #2d7a4f; }
+
+.alertText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.alertLabel {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.alertDesc {
+  font-size: 0.73rem;
+  color: #6b7280;
+}
+
+/* Hide native checkbox */
+.checkbox { display: none; }
+
+/* Custom checkmark */
+.checkmark {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid #d1d5db;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.checkmarkOn {
+  background: #2d7a4f;
+  border-color: #2d7a4f;
+}
+
+.checkmarkTick {
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ── Disabled note ─────────────────────────────────────── */
+.disabledNote {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  border-radius: 9px;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ── Form footer ───────────────────────────────────────── */
+.formFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.footerActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.resetBtn {
+  padding: 0.6rem 1.2rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 9px;
+  background: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.resetBtn:hover:not(:disabled) { border-color: #9ca3af; }
+.resetBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.saveBtn {
+  padding: 0.6rem 1.4rem;
+  background: linear-gradient(135deg, #2d7a4f, #1a4a2e);
+  border: none;
+  border-radius: 9px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: opacity 0.15s;
+}
+
+.saveBtn:hover:not(:disabled) { opacity: 0.88; }
+.saveBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* ── Banners ───────────────────────────────────────────── */
+.successBanner {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  border-radius: 9px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.errorBanner {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+  border-radius: 9px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ── Spinner ───────────────────────────────────────────── */
+.spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .page { overflow-x: hidden; }
+  .countrySelect { min-width: 0; max-width: 130px; font-size: 0.75rem; }
+  .phoneInput { font-size: 0.82rem; min-width: 0; }
+  .footerActions { flex-direction: column; }
+  .saveBtn, .resetBtn { width: 100%; justify-content: center; }
+  .toggleRow { gap: 0.5rem; }
+  .alertRow { padding: 0.65rem 0.75rem; gap: 0.6rem; }
+  .alertLabel { font-size: 0.8rem; }
+  .alertDesc { font-size: 0.68rem; }
+  .summaryRow { flex-wrap: wrap; gap: 0.4rem; }
+}

@@ -1,0 +1,279 @@
+/* ── Page ──────────────────────────────────────────────── */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  max-width: 860px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Header ────────────────────────────────────────────── */
+.pageHeader { display: flex; flex-direction: column; gap: 0.2rem; margin-bottom: 0.25rem; }
+
+.pageTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.pageSubtitle {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+/* ── Section label ─────────────────────────────────────── */
+.sectionLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-top: 0.5rem;
+}
+
+/* ── Cards grid — 3 in one row ─────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+/* ── Card tile ─────────────────────────────────────────── */
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.5rem 1rem 1.25rem;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: center;
+  position: relative;
+  transition: box-shadow 0.15s, transform 0.12s, border-color 0.15s, background 0.15s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--accent, #6b7280);
+  border-radius: 16px 16px 0 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.card:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.09);
+  transform: translateY(-3px);
+  border-color: var(--border, #e5e7eb);
+  background: var(--bg, #f9fafb);
+}
+
+.card:hover::before { opacity: 1; }
+
+.iconWrap {
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.2rem;
+  transition: transform 0.15s;
+}
+
+.card:hover .iconWrap { transform: scale(1.08); }
+
+.cardTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.cardDesc {
+  font-size: 0.76rem;
+  color: #6b7280;
+  line-height: 1.45;
+}
+
+.cardArrow {
+  color: #d1d5db;
+  margin-top: 0.25rem;
+  transition: color 0.15s, transform 0.15s;
+  display: flex;
+}
+
+.card:hover .cardArrow {
+  color: var(--accent, #6b7280);
+  transform: translateX(2px);
+}
+
+/* ── Profile / Account card ────────────────────────────── */
+.profileCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2d7a4f, #1a4a2e);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profileInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.profileName {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.profileMeta {
+  font-size: 0.78rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.profileBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #2d7a4f;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+
+/* ── Nav card (Device Management) ───────────────────────── */
+.navCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: box-shadow 0.15s, transform 0.12s, border-color 0.15s, background 0.15s;
+}
+
+.navCard:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.09);
+  transform: translateY(-2px);
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.navIconWrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+
+.navCard:hover .navIconWrap { transform: scale(1.08); }
+
+.navInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.navTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.navDesc {
+  font-size: 0.78rem;
+  color: #6b7280;
+  line-height: 1.45;
+}
+
+.navArrow {
+  color: #d1d5db;
+  flex-shrink: 0;
+  transition: color 0.15s, transform 0.15s;
+}
+
+.navCard:hover .navArrow {
+  color: #2d7a4f;
+  transform: translateX(3px);
+}
+
+/* ── Responsive ────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .page { max-width: 100%; overflow-x: hidden; }
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.65rem;
+  }
+  .card { padding: 1.1rem 0.6rem 1rem; }
+  .iconWrap { width: 46px; height: 46px; border-radius: 11px; }
+  .cardDesc { display: none; }
+  .profileCard { padding: 1rem; gap: 0.65rem; flex-wrap: wrap; }
+  .profileInfo { min-width: 0; }
+  .profileName { font-size: 0.9rem; }
+  .profileMeta { font-size: 0.72rem; word-break: break-all; }
+  .profileBadge { font-size: 0.7rem; padding: 0.25rem 0.55rem; }
+  .navCard { padding: 1rem; gap: 0.65rem; }
+  .navIconWrap { width: 44px; height: 44px; }
+  .navTitle { font-size: 0.9rem; }
+  .navDesc { font-size: 0.72rem; }
+}
+
+@media (max-width: 400px) {
+  .grid { grid-template-columns: 1fr; }
+  .cardDesc { display: block; }
+  .card { flex-direction: row; text-align: left; padding: 1rem; }
+  .iconWrap { margin-bottom: 0; flex-shrink: 0; }
+  .profileCard { flex-direction: column; align-items: flex-start; }
+  .profileBadge { align-self: flex-start; }
+  .pageTitle { font-size: 1.25rem; }
+}

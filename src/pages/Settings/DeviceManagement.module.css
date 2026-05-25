@@ -1,0 +1,30 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  max-width: 720px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.pageHeader { display: flex; flex-direction: column; gap: 0.2rem; }
+
+.pageTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.pageSubtitle {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+@media (max-width: 480px) {
+  .pageTitle { font-size: 1.1rem; }
+  .pageSubtitle { font-size: 0.78rem; }
+}

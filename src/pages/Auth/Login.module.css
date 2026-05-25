@@ -1,0 +1,288 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f2e1a 0%, #1a4a2e 40%, #0d3b2e 100%);
+  padding: 1rem;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cardHidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.logoWrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.75rem;
+}
+
+.logoBorder {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(180deg, #0f2e1a 0%, #1a4a2e 100%);
+  border: 2px solid #fff;
+  border-radius: 14px;
+  padding: 0.55rem 0.9rem;
+}
+
+.title {
+  margin: 0 0 1.25rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #111827;
+  text-align: center;
+}
+
+.error {
+  width: 100%;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+  letter-spacing: 0.2px;
+}
+
+.input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #111827;
+  background: #f9fafb;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #2d7a4f;
+  box-shadow: 0 0 0 3px rgba(45, 122, 79, 0.15);
+  background: #fff;
+}
+
+.input::placeholder { color: #9ca3af; }
+
+.passwordWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordWrapper .input { padding-right: 2.8rem; }
+
+.toggleBtn {
+  position: absolute;
+  right: 0.65rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+
+.toggleBtn:hover { color: #374151; }
+
+.submitBtn {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #2d7a4f, #1a4a2e);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+}
+
+.submitBtn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.footer {
+  margin: 1.25rem 0 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.link { color: #2d7a4f; font-weight: 600; text-decoration: none; }
+.link:hover { text-decoration: underline; }
+
+/* SUCCESS MODAL */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(10, 28, 18, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+.modalBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.wheel {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wheelSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.trackOuter { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 4; }
+.arcOuter {
+  fill: none; stroke: #4ade80; stroke-width: 4; stroke-linecap: round;
+  stroke-dasharray: 327; stroke-dashoffset: 327;
+  animation: arcFill 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.trackInner { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 3; }
+.arcInner {
+  fill: none; stroke: rgba(74,222,128,0.4); stroke-width: 3; stroke-linecap: round;
+  stroke-dasharray: 226; stroke-dashoffset: 226;
+  animation: arcFillInner 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.orbitDot {
+  fill: #4ade80;
+  filter: drop-shadow(0 0 4px #4ade80);
+  transform-origin: 60px 60px;
+  animation: orbitSpin 1.2s linear infinite;
+}
+
+.wheelCenter {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(180deg, #0f2e1a 0%, #1a4a2e 100%);
+  border: 2px solid rgba(255,255,255,0.9);
+  border-radius: 12px;
+  padding: 0.45rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 24px rgba(74,222,128,0.25);
+}
+
+.successRing {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.successSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.successTrack { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 4; }
+.successArc {
+  fill: none; stroke: #4ade80; stroke-width: 4; stroke-linecap: round;
+  stroke-dasharray: 327; stroke-dashoffset: 0;
+  filter: drop-shadow(0 0 6px #4ade80);
+}
+
+.successTick {
+  position: relative;
+  z-index: 1;
+  font-size: 3.5rem;
+  color: #4ade80;
+  font-weight: 300;
+  line-height: 1;
+  text-shadow: 0 0 24px rgba(74,222,128,0.7);
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  animation: fadeUp 0.4s ease;
+}
+
+.modalSub {
+  margin: 0;
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  animation: fadeUp 0.5s ease;
+}
+
+@keyframes fadeIn       { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeUp       { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn        { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes arcFill      { from { stroke-dashoffset: 327; } to { stroke-dashoffset: 0; } }
+@keyframes arcFillInner { from { stroke-dashoffset: 226; } to { stroke-dashoffset: 0; } }
+@keyframes orbitSpin    { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+@media (max-width: 480px) {
+  .card { padding: 2rem 1.25rem; }
+}

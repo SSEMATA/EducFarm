@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 permissions:
   contents: read
@@ -31,20 +28,18 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        working-directory: frontend
         run: npm ci
 
       - name: Build frontend
-        working-directory: frontend
         run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'frontend/dist'
+          path: 'dist'
 
   deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main'
     needs: build
     environment:
       name: github-pages

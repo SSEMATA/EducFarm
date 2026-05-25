@@ -18,7 +18,7 @@ const P = ({ children }) => <ProtectedRoute>{children}</ProtectedRoute>;
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/EducFarm/">
       <InstallPrompt />
       <Routes>
         <Route path="/"                element={<Navigate to="/login" replace />} />

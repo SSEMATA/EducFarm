@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, ChevronDown, Search, X } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import api from '../../services/api';
 import EducFarmLogo from '../../components/EducFarmLogo';
 import styles from './Signup.module.css';
@@ -15,172 +15,64 @@ function Field({ name, label, error, children }) {
   );
 }
 
-const TOP_COUNTRIES = [
-  { name: 'Uganda',        flag: '🇺🇬' },
-  { name: 'Kenya',         flag: '🇰🇪' },
-  { name: 'Nigeria',       flag: '🇳🇬' },
-  { name: 'Tanzania',      flag: '🇹🇿' },
-  { name: 'Ghana',         flag: '🇬🇭' },
-  { name: 'United States', flag: '🇺🇸' },
-];
-
-const ALL_COUNTRIES = [
-  { name: 'Afghanistan',    flag: '🇦🇫' }, { name: 'Albania',       flag: '🇦🇱' },
-  { name: 'Algeria',        flag: '🇩🇿' }, { name: 'Angola',        flag: '🇦🇴' },
-  { name: 'Argentina',      flag: '🇦🇷' }, { name: 'Australia',     flag: '🇦🇺' },
-  { name: 'Austria',        flag: '🇦🇹' }, { name: 'Bangladesh',    flag: '🇧🇩' },
-  { name: 'Belgium',        flag: '🇧🇪' }, { name: 'Bolivia',       flag: '🇧🇴' },
-  { name: 'Brazil',         flag: '🇧🇷' }, { name: 'Burkina Faso',  flag: '🇧🇫' },
-  { name: 'Cameroon',       flag: '🇨🇲' }, { name: 'Canada',        flag: '🇨🇦' },
-  { name: 'Chad',           flag: '🇹🇩' }, { name: 'Chile',         flag: '🇨🇱' },
-  { name: 'China',          flag: '🇨🇳' }, { name: 'Colombia',      flag: '🇨🇴' },
-  { name: 'Congo',          flag: '🇨🇬' }, { name: "Côte d'Ivoire", flag: '🇨🇮' },
-  { name: 'DR Congo',       flag: '🇨🇩' }, { name: 'Denmark',       flag: '🇩🇰' },
-  { name: 'Ecuador',        flag: '🇪🇨' }, { name: 'Egypt',         flag: '🇪🇬' },
-  { name: 'Ethiopia',       flag: '🇪🇹' }, { name: 'Finland',       flag: '🇫🇮' },
-  { name: 'France',         flag: '🇫🇷' }, { name: 'Germany',       flag: '🇩🇪' },
-  { name: 'Ghana',          flag: '🇬🇭' }, { name: 'Greece',        flag: '🇬🇷' },
-  { name: 'Guatemala',      flag: '🇬🇹' }, { name: 'Guinea',        flag: '🇬🇳' },
-  { name: 'Haiti',          flag: '🇭🇹' }, { name: 'Honduras',      flag: '🇭🇳' },
-  { name: 'India',          flag: '🇮🇳' }, { name: 'Indonesia',     flag: '🇮🇩' },
-  { name: 'Iran',           flag: '🇮🇷' }, { name: 'Iraq',          flag: '🇮🇶' },
-  { name: 'Ireland',        flag: '🇮🇪' }, { name: 'Italy',         flag: '🇮🇹' },
-  { name: 'Japan',          flag: '🇯🇵' }, { name: 'Jordan',        flag: '🇯🇴' },
-  { name: 'Kenya',          flag: '🇰🇪' }, { name: 'Madagascar',    flag: '🇲🇬' },
-  { name: 'Malawi',         flag: '🇲🇼' }, { name: 'Malaysia',      flag: '🇲🇾' },
-  { name: 'Mali',           flag: '🇲🇱' }, { name: 'Mexico',        flag: '🇲🇽' },
-  { name: 'Morocco',        flag: '🇲🇦' }, { name: 'Mozambique',    flag: '🇲🇿' },
-  { name: 'Myanmar',        flag: '🇲🇲' }, { name: 'Nepal',         flag: '🇳🇵' },
-  { name: 'Netherlands',    flag: '🇳🇱' }, { name: 'New Zealand',   flag: '🇳🇿' },
-  { name: 'Niger',          flag: '🇳🇪' }, { name: 'Nigeria',       flag: '🇳🇬' },
-  { name: 'Norway',         flag: '🇳🇴' }, { name: 'Pakistan',      flag: '🇵🇰' },
-  { name: 'Peru',           flag: '🇵🇪' }, { name: 'Philippines',   flag: '🇵🇭' },
-  { name: 'Poland',         flag: '🇵🇱' }, { name: 'Portugal',      flag: '🇵🇹' },
-  { name: 'Romania',        flag: '🇷🇴' }, { name: 'Russia',        flag: '🇷🇺' },
-  { name: 'Rwanda',         flag: '🇷🇼' }, { name: 'Saudi Arabia',  flag: '🇸🇦' },
-  { name: 'Senegal',        flag: '🇸🇳' }, { name: 'Sierra Leone',  flag: '🇸🇱' },
-  { name: 'Somalia',        flag: '🇸🇴' }, { name: 'South Africa',  flag: '🇿🇦' },
-  { name: 'South Sudan',    flag: '🇸🇸' }, { name: 'Spain',         flag: '🇪🇸' },
-  { name: 'Sri Lanka',      flag: '🇱🇰' }, { name: 'Sudan',         flag: '🇸🇩' },
-  { name: 'Sweden',         flag: '🇸🇪' }, { name: 'Switzerland',   flag: '🇨🇭' },
-  { name: 'Tanzania',       flag: '🇹🇿' }, { name: 'Thailand',      flag: '🇹🇭' },
-  { name: 'Tunisia',        flag: '🇹🇳' }, { name: 'Turkey',        flag: '🇹🇷' },
-  { name: 'Uganda',         flag: '🇺🇬' }, { name: 'Ukraine',       flag: '🇺🇦' },
-  { name: 'United Kingdom', flag: '🇬🇧' }, { name: 'United States', flag: '🇺🇸' },
-  { name: 'Uzbekistan',     flag: '🇺🇿' }, { name: 'Venezuela',     flag: '🇻🇪' },
-  { name: 'Vietnam',        flag: '🇻🇳' }, { name: 'Yemen',         flag: '🇾🇪' },
-  { name: 'Zambia',         flag: '🇿🇲' }, { name: 'Zimbabwe',      flag: '🇿🇼' },
-];
-
-function CountryPicker({ value, onChange, error }) {
-  const [open, setOpen]     = useState(false);
-  const [search, setSearch] = useState('');
-  const dropdownRef         = useRef(null);
-  const searchRef           = useRef(null);
-  const selected = ALL_COUNTRIES.find((c) => c.name === value);
-  const filtered = ALL_COUNTRIES.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  useEffect(() => {
-    if (open) setTimeout(() => searchRef.current?.focus(), 50);
-  }, [open]);
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  const pick = (name) => { onChange(name); setOpen(false); setSearch(''); };
-
-  return (
-    <div className={styles.countryPicker} ref={dropdownRef}>
-      <div className={styles.countryCards}>
-        {TOP_COUNTRIES.map((c) => (
-          <button key={c.name} type="button"
-            className={`${styles.countryCard} ${value === c.name ? styles.countryCardActive : ''}`}
-            onClick={() => pick(c.name)}>
-            <span className={styles.countryFlag}>{c.flag}</span>
-            <span className={styles.countryCardName}>{c.name}</span>
-          </button>
-        ))}
-      </div>
-      <button type="button"
-        className={`${styles.countryTrigger} ${error ? styles.inputError : ''} ${value && !TOP_COUNTRIES.find(c => c.name === value) ? styles.countryTriggerSelected : ''}`}
-        onClick={() => setOpen((v) => !v)}>
-        {selected
-          ? <span className={styles.countryTriggerVal}><span className={styles.countryFlag}>{selected.flag}</span>{selected.name}</span>
-          : <span className={styles.countryTriggerPlaceholder}>Other country…</span>}
-        <ChevronDown size={15} className={`${styles.chevron} ${open ? styles.chevronOpen : ''}`} />
-      </button>
-      {open && (
-        <div className={styles.countryDropdown}>
-          <div className={styles.countrySearch}>
-            <Search size={14} className={styles.searchIcon} />
-            <input ref={searchRef} type="text" placeholder="Search country…"
-              value={search} onChange={(e) => setSearch(e.target.value)}
-              className={styles.searchInput} />
-            {search && <button type="button" className={styles.clearSearch} onClick={() => setSearch('')}><X size={13} /></button>}
-          </div>
-          <div className={styles.countryList}>
-            {filtered.length === 0
-              ? <p className={styles.noResults}>No countries found</p>
-              : filtered.map((c) => (
-                <button key={c.name} type="button"
-                  className={`${styles.countryOption} ${value === c.name ? styles.countryOptionActive : ''}`}
-                  onClick={() => pick(c.name)}>
-                  <span className={styles.countryFlag}>{c.flag}</span>{c.name}
-                </button>
-              ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-const INITIAL = {
-  full_name: '', email: '', phone_number: '',
-  password: '', confirm_password: '', farm_name: '', country: '',
-};
+  const INITIAL = {
+    name: '',
+    identifier: sessionStorage.getItem('auth_identifier') || '',
+    password: '',
+    confirm_password: '',
+  };
 
 export default function Signup() {
   const navigate = useNavigate();
   const [form, setForm]                 = useState(INITIAL);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm]   = useState(false);
-  const [loading, setLoading]           = useState(false); // wheel visible
-  const [done, setDone]                 = useState(false); // tick phase
-  const [errors, setErrors]             = useState({});
-  const [serverError, setServerError]   = useState('');
+  const [loading, setLoading]           = useState(false);
+  const [done, setDone]                 = useState(false);
+  const [identifierStatus, setIdentifierStatus] = useState(null); // null | 'checking' | 'available' | 'taken'
+  const debounceRef = useRef(null);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    if (name === 'identifier') sessionStorage.setItem('auth_identifier', value);
     setErrors((prev) => ({ ...prev, [name]: '' }));
     setServerError('');
   };
 
-  const setCountry = (name) => {
-    setForm((prev) => ({ ...prev, country: name }));
-    setErrors((prev) => ({ ...prev, country: '' }));
-  };
+  const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  const isPhone = (v) => /^\+?[\d\s\-()]{7,15}$/.test(v);
+
+  // Debounced availability check
+  useEffect(() => {
+    const val = form.identifier.trim();
+    if (!val || (!isEmail(val) && !isPhone(val))) {
+      setIdentifierStatus(null);
+      return;
+    }
+    setIdentifierStatus('checking');
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const { data } = await api.get(`/check-identifier/?value=${encodeURIComponent(val)}`);
+        setIdentifierStatus(data.available ? 'available' : 'taken');
+      } catch {
+        setIdentifierStatus(null);
+      }
+    }, 600);
+    return () => clearTimeout(debounceRef.current);
+  }, [form.identifier]);
 
   const validate = () => {
     const e = {};
-    if (!form.full_name.trim())   e.full_name = 'Full name is required.';
-    if (!form.email.trim()) {
-      e.email = 'Email is required.';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      e.email = 'Enter a valid email address.';
-    }
-    if (!form.phone_number.trim()) {
-      e.phone_number = 'Phone number is required.';
-    } else if (!/^\+?[\d\s\-()]{7,15}$/.test(form.phone_number)) {
-      e.phone_number = 'Enter a valid phone number.';
+    if (!form.name.trim()) e.name = 'Name is required.';
+    if (!form.identifier.trim()) {
+      e.identifier = 'Email or phone number is required.';
+    } else if (!isEmail(form.identifier) && !isPhone(form.identifier)) {
+      e.identifier = 'Enter a valid email or phone number.';
+    } else if (identifierStatus === 'taken') {
+      e.identifier = 'This email or phone number is already registered.';
     }
     if (!form.password) {
       e.password = 'Password is required.';
@@ -192,8 +84,6 @@ export default function Signup() {
     } else if (form.password !== form.confirm_password) {
       e.confirm_password = 'Passwords do not match.';
     }
-    if (!form.farm_name.trim()) e.farm_name = 'Farm name is required.';
-    if (!form.country)          e.country   = 'Please select your country.';
     return e;
   };
 
@@ -202,16 +92,17 @@ export default function Signup() {
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) { setErrors(validationErrors); return; }
     setServerError('');
-    // Show wheel immediately on click
     setLoading(true);
     try {
-      const { data } = await api.post('/signup/', {
-        full_name: form.full_name, email: form.email,
-        phone_number: form.phone_number, password: form.password,
+      const payload = {
+        full_name: form.name,
+        password: form.password,
         confirm_password: form.confirm_password,
-        farm_name: form.farm_name, country: form.country,
-      });
-      // Auto-login: store token if returned, otherwise navigate to login
+        ...(isEmail(form.identifier)
+          ? { email: form.identifier }
+          : { phone_number: form.identifier }),
+      };
+      const { data } = await api.post('/signup/', payload);
       if (data?.access) {
         localStorage.setItem('token', data.access);
         localStorage.setItem('user', JSON.stringify(data.user));
@@ -227,8 +118,9 @@ export default function Signup() {
       setDone(false);
       if (data && typeof data === 'object') {
         const fieldErrors = {};
-        ['full_name','email','phone_number','password','farm_name','country'].forEach((f) => {
-          if (data[f]) fieldErrors[f] = Array.isArray(data[f]) ? data[f][0] : data[f];
+        ['full_name', 'email', 'phone_number', 'password'].forEach((f) => {
+          if (data[f]) fieldErrors[f === 'full_name' ? 'name' : f === 'email' || f === 'phone_number' ? 'identifier' : f]
+            = Array.isArray(data[f]) ? data[f][0] : data[f];
         });
         if (Object.keys(fieldErrors).length > 0) {
           setErrors(fieldErrors);
@@ -246,7 +138,6 @@ export default function Signup() {
   return (
     <div className={styles.page}>
 
-      {/* Wheel modal — full screen, card invisible behind it */}
       {loading && (
         <div className={styles.modalBackdrop}>
           <div className={styles.modalBox}>
@@ -284,8 +175,7 @@ export default function Signup() {
         </div>
       )}
 
-      {/* Card — fully invisible while wheel runs */}
-      <div className={loading ? styles.cardHidden : ''}>
+      <div className={loading ? styles.cardHidden : ''} style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
         <div className={styles.card}>
           <div className={styles.logoWrap}>
             <div className={styles.logoBorder}>
@@ -298,64 +188,57 @@ export default function Signup() {
           {serverError && <div className={styles.error}>{serverError}</div>}
 
           <form onSubmit={handleSubmit} className={styles.form} noValidate>
-            <div className={styles.row}>
-              <Field name="full_name" label="Full Name" error={errors.full_name}>
-                <input id="full_name" name="full_name" type="text" placeholder="John Doe"
-                  autoComplete="name" value={form.full_name} onChange={handleChange}
-                  className={inputClass('full_name')} />
-              </Field>
-              <Field name="farm_name" label="Farm Name" error={errors.farm_name}>
-                <input id="farm_name" name="farm_name" type="text" placeholder="Green Valley Farm"
-                  autoComplete="organization" value={form.farm_name} onChange={handleChange}
-                  className={inputClass('farm_name')} />
-              </Field>
-            </div>
-
-            <div className={styles.row}>
-              <Field name="email" label="Email" error={errors.email}>
-                <input id="email" name="email" type="email" placeholder="you@example.com"
-                  autoComplete="email" value={form.email} onChange={handleChange}
-                  className={inputClass('email')} />
-              </Field>
-              <Field name="phone_number" label="Phone Number" error={errors.phone_number}>
-                <input id="phone_number" name="phone_number" type="tel" placeholder="+1 234 567 8900"
-                  autoComplete="tel" value={form.phone_number} onChange={handleChange}
-                  className={inputClass('phone_number')} />
-              </Field>
-            </div>
-
-            <Field name="country" label="Country" error={errors.country}>
-              <CountryPicker value={form.country} onChange={setCountry} error={errors.country} />
+            <Field name="name" label="Name" error={errors.name}>
+              <input id="name" name="name" type="text" placeholder="SSEMATA SABIRA"
+                autoComplete="name" value={form.name} onChange={handleChange}
+                className={inputClass('name')} />
             </Field>
 
-            <div className={styles.row}>
-              <Field name="password" label="Password" error={errors.password}>
-                <div className={styles.passwordWrapper}>
-                  <input id="password" name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Min. 8 characters" autoComplete="new-password"
-                    value={form.password} onChange={handleChange}
-                    className={inputClass('password')} />
-                  <button type="button" className={styles.toggleBtn}
-                    onClick={() => setShowPassword((v) => !v)}>
-                    {showPassword ? <EyeOff size={18} strokeWidth={1.8} /> : <Eye size={18} strokeWidth={1.8} />}
-                  </button>
-                </div>
-              </Field>
-              <Field name="confirm_password" label="Confirm Password" error={errors.confirm_password}>
-                <div className={styles.passwordWrapper}>
-                  <input id="confirm_password" name="confirm_password"
-                    type={showConfirm ? 'text' : 'password'}
-                    placeholder="Repeat password" autoComplete="new-password"
-                    value={form.confirm_password} onChange={handleChange}
-                    className={inputClass('confirm_password')} />
-                  <button type="button" className={styles.toggleBtn}
-                    onClick={() => setShowConfirm((v) => !v)}>
-                    {showConfirm ? <EyeOff size={18} strokeWidth={1.8} /> : <Eye size={18} strokeWidth={1.8} />}
-                  </button>
-                </div>
-              </Field>
-            </div>
+            <Field name="identifier" label="Email or Phone Number" error={errors.identifier}>
+              <div className={styles.identifierWrap}>
+                <input id="identifier" name="identifier" type="text"
+                  placeholder="ssematasabira24@mail.com or 0786023858"
+                  autoComplete="email" value={form.identifier} onChange={handleChange}
+                  className={`${inputClass('identifier')} ${identifierStatus === 'available' ? styles.inputValid : ''}`} />
+                {identifierStatus === 'checking'  && <span className={styles.idChecking}>⏳</span>}
+                {identifierStatus === 'available' && <span className={styles.idAvailable}>✓</span>}
+                {identifierStatus === 'taken'     && <span className={styles.idTaken}>✗</span>}
+              </div>
+              {identifierStatus === 'available' && !errors.identifier && (
+                <span className={styles.idAvailableMsg}>Looks good — this is available!</span>
+              )}
+              {identifierStatus === 'taken' && !errors.identifier && (
+                <span className={styles.idTakenMsg}>Already registered. <Link to="/login" className={styles.link}>Sign in instead?</Link></span>
+              )}
+            </Field>
+
+            <Field name="password" label="Password" error={errors.password}>
+              <div className={styles.passwordWrapper}>
+                <input id="password" name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Min. 8 characters" autoComplete="new-password"
+                  value={form.password} onChange={handleChange}
+                  className={inputClass('password')} />
+                <button type="button" className={styles.toggleBtn}
+                  onClick={() => setShowPassword((v) => !v)}>
+                  {showPassword ? <EyeOff size={18} strokeWidth={1.8} /> : <Eye size={18} strokeWidth={1.8} />}
+                </button>
+              </div>
+            </Field>
+
+            <Field name="confirm_password" label="Confirm Password" error={errors.confirm_password}>
+              <div className={styles.passwordWrapper}>
+                <input id="confirm_password" name="confirm_password"
+                  type={showConfirm ? 'text' : 'password'}
+                  placeholder="Repeat password" autoComplete="new-password"
+                  value={form.confirm_password} onChange={handleChange}
+                  className={inputClass('confirm_password')} />
+                <button type="button" className={styles.toggleBtn}
+                  onClick={() => setShowConfirm((v) => !v)}>
+                  {showConfirm ? <EyeOff size={18} strokeWidth={1.8} /> : <Eye size={18} strokeWidth={1.8} />}
+                </button>
+              </div>
+            </Field>
 
             <button type="submit" className={styles.submitBtn}>
               Create Account

@@ -6,6 +6,7 @@
   background: linear-gradient(135deg, #0f2e1a 0%, #1a4a2e 40%, #0d3b2e 100%);
   padding: 1rem;
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
 }
 
 .card {
@@ -284,5 +285,14 @@
 @keyframes orbitSpin    { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 @media (max-width: 480px) {
-  .card { padding: 2rem 1.25rem; }
+  .page {
+    padding: 1rem;
+  }
+  .card {
+    padding: 2rem 1.5rem;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
 }

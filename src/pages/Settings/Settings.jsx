@@ -112,15 +112,7 @@ export default function Settings() {
         <div className={styles.sectionLabel}>App</div>
         <button
           className={styles.navCard}
-          onClick={() => {
-            if (window.__pwaPromptShow) {
-              window.__pwaPromptShow();
-            } else if (window.matchMedia('(display-mode: standalone)').matches) {
-              alert('EducFarm is already installed on your device.');
-            } else {
-              alert('To install: use your browser menu → "Add to Home Screen" or "Install App".');
-            }
-          }}
+          onClick={() => window.__pwaPromptShow?.()}
         >
           <div className={styles.navIconWrap} style={{ background: '#f0fdf4', border: '1.5px solid #bbf7d0' }}>
             <Download size={24} strokeWidth={1.8} color="#2d7a4f" />

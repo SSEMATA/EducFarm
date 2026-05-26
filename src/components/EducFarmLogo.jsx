@@ -5,7 +5,10 @@
  *   variant  — 'dark' (white text, for dark bg) | 'light' (dark text, for light bg)
  *   showText — show wordmark beside icon (default true)
  */
+import { useId } from 'react';
+
 export default function EducFarmLogo({ size = 36, variant = 'dark', showText = true }) {
+  const uid       = useId().replace(/:/g, '');
   const textColor = variant === 'dark' ? '#ffffff' : '#0f2e1a';
   const subColor  = variant === 'dark' ? 'rgba(255,255,255,0.55)' : '#6b7280';
 
@@ -21,11 +24,11 @@ export default function EducFarmLogo({ size = 36, variant = 'dark', showText = t
         style={{ flexShrink: 0 }}
       >
         <defs>
-          <linearGradient id="ef-leaf" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id={`${uid}-leaf`} x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#4ade80"/>
             <stop offset="100%" stopColor="#15803d"/>
           </linearGradient>
-          <linearGradient id="ef-stem" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={`${uid}-stem`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#22c55e"/>
             <stop offset="100%" stopColor="#166534"/>
           </linearGradient>
@@ -37,7 +40,7 @@ export default function EducFarmLogo({ size = 36, variant = 'dark', showText = t
         {/* ── Leaf (top-right) ── */}
         <path
           d="M26 6 C26 6 41 10 41 24 C41 33 34 38 26 39 C26 39 26 22 11 18 C11 18 15 6 26 6 Z"
-          fill="url(#ef-leaf)" opacity="0.95"
+          fill={`url(#${uid}-leaf)`} opacity="0.95"
         />
         <path
           d="M26 6 C26 6 11 10 11 24 C11 33 18 38 26 39 C26 39 26 22 11 18 C11 18 15 6 26 6 Z"

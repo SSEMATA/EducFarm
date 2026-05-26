@@ -7,14 +7,19 @@ import styles from './Login.module.css';
 
 export default function Login() {
   const navigate = useNavigate();
-  const [form, setForm]                 = useState({ email: '', password: '' });
+  const [form, setForm]                 = useState(() => ({
+    email: sessionStorage.getItem('auth_identifier') || '',
+    password: '',
+  }));
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading]           = useState(false); // wheel visible
   const [done, setDone]                 = useState(false); // tick phase
   const [error, setError]               = useState('');
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+    if (name === 'email') sessionStorage.setItem('auth_identifier', value);
     setError('');
   };
 
@@ -24,8 +29,10 @@ export default function Login() {
     // Show wheel immediately
     setLoading(true);
     try {
+      const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      const identifier = form.email.trim();
       const { data } = await api.post('/login/', {
-        email: form.email,
+        ...(isEmail(identifier) ? { email: identifier } : { phone_number: identifier }),
         password: form.password,
       });
       localStorage.setItem('token', data.access);
@@ -91,7 +98,7 @@ export default function Login() {
       )}
 
       {/* ── Card — fully hidden while wheel runs ────── */}
-      <div className={loading ? styles.cardHidden : ''}>
+      <div className={loading ? styles.cardHidden : ''} style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
         <div className={styles.card}>
           <div className={styles.logoWrap}>
             <div className={styles.logoBorder}>
@@ -105,9 +112,9 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className={styles.form} noValidate>
             <div className={styles.field}>
-              <label htmlFor="email" className={styles.label}>Email</label>
-              <input id="email" name="email" type="email" autoComplete="email" required
-                placeholder="you@example.com" value={form.email} onChange={handleChange}
+              <label htmlFor="email" className={styles.label}>Email or Phone Number</label>
+              <input id="email" name="email" type="text" autoComplete="email" required
+                placeholder="ssematasabira24@mail.com or 0786023858" value={form.email} onChange={handleChange}
                 className={styles.input} />
             </div>
 

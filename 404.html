@@ -1,0 +1,11 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      const path = window.location.pathname.replace('/EducFarm', '') + window.location.search;
+      window.location.replace('/EducFarm/?p=' + encodeURIComponent(path));
+    </script>
+  </head>
+  <body></body>
+</html>

@@ -47,30 +47,30 @@ export default function IrrigationPlanner() {
   const [error, setError]         = useState('');
   const [activeDay, setActiveDay] = useState(0);
 
-  const fetchWeather = useCallback(() => {
+  const fetchWeather = useCallback(async (params = '') => {
     setLoading(true);
     setError('');
-    const doFetch = async (params = '') => {
-      try {
-        const { data: res } = await api.get(`/weather/${params}`);
-        setData(res);
-      } catch {
-        setError('Failed to load data. Make sure the backend is running.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        ({ coords }) => doFetch(`?lat=${coords.latitude}&lon=${coords.longitude}`),
-        () => doFetch()
-      );
-    } else {
-      doFetch();
+    try {
+      const { data: res } = await api.get(`/weather/${params}`);
+      setData(res);
+    } catch {
+      setError('Unable to load weather data. Check your connection.');
+    } finally {
+      setLoading(false);
     }
   }, []);
 
-  useEffect(() => { fetchWeather(); }, [fetchWeather]);
+  const fetchWithLocation = useCallback(() => {
+    const saved = localStorage.getItem('ef_coords');
+    if (saved && saved !== 'denied') {
+      const c = JSON.parse(saved);
+      fetchWeather(`?lat=${c.lat}&lon=${c.lon}`);
+    } else {
+      fetchWeather();
+    }
+  }, [fetchWeather]);
+
+  useEffect(() => { fetchWithLocation(); }, [fetchWithLocation]);
 
   const current    = data?.current  ?? {};
   const forecast   = data?.forecast ?? [];
@@ -93,7 +93,7 @@ export default function IrrigationPlanner() {
             <h1 className={styles.pageTitle}>Irrigation Planner</h1>
             <p className={styles.pageSubtitle}>Weather-based irrigation schedule &amp; water estimates</p>
           </div>
-          <button className={styles.refreshBtn} onClick={fetchWeather} disabled={loading}>
+          <button className={styles.refreshBtn} onClick={fetchWithLocation} disabled={loading}>
             <RefreshCw size={15} className={loading ? styles.spinning : ''} />
             Refresh
           </button>

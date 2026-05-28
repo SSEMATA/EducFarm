@@ -20,25 +20,19 @@ export default defineConfig({
         orientation: 'portrait',
         icons: [
           {
-            src: '/EducFarm/icons/pwa-192.png',
+            src: 'icons/pwa-192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: '/EducFarm/icons/pwa-192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'maskable',
-          },
-          {
-            src: '/EducFarm/icons/pwa-512.png',
+            src: 'icons/pwa-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: '/EducFarm/icons/pwa-512.png',
+            src: 'icons/pwa-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
@@ -47,7 +41,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        navigateFallback: 'index.html',
+        navigateFallback: '/EducFarm/index.html',
         navigateFallbackDenylist: [/^\/api\//],
       },
       devOptions: {

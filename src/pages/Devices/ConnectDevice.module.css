@@ -139,6 +139,119 @@
 .submitBtn:hover:not(:disabled) { opacity: 0.88; }
 .submitBtn:disabled { opacity: 0.55; cursor: not-allowed; }
 
+/* ── Hints ─────────────────────────────────────────────── */
+.hint {
+  font-size: 0.74rem;
+  color: #9ca3af;
+  margin-top: 0.1rem;
+}
+
+/* ── Code input ─────────────────────────────────────────── */
+.codeInput {
+  font-family: 'Courier New', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+/* ── Success state ──────────────────────────────────────── */
+.successState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2.5rem 1.5rem 2rem;
+  text-align: center;
+}
+
+.successIcon {
+  animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.successTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.successSub {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.pairedInfo {
+  width: 100%;
+  max-width: 380px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+  text-align: left;
+}
+
+.pairedRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.pairedLabel {
+  font-size: 0.78rem;
+  color: #9ca3af;
+  font-weight: 500;
+  min-width: 90px;
+}
+
+.pairedCode {
+  font-family: 'Courier New', monospace;
+  font-size: 0.82rem;
+  background: #f3f4f6;
+  padding: 0.2rem 0.45rem;
+  border-radius: 5px;
+  color: #374151;
+}
+
+.badgeOnline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badgeOffline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+
+.successActions {
+  display: flex;
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+}
+
 /* ── Spinner ────────────────────────────────────────────── */
 .spinner {
   animation: spin 0.75s linear infinite;

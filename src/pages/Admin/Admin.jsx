@@ -3,7 +3,7 @@ import DashboardLayout from '../../layouts/DashboardLayout';
 import api from '../../services/api';
 import {
   Users, Trash2, ShieldCheck, ShieldOff,
-  RefreshCw, Search, CheckCircle2,
+  RefreshCw, Search, CheckCircle2, Leaf, Layers,
 } from 'lucide-react';
 import styles from './Admin.module.css';
 

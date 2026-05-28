@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback } from 'react';
-import { NotebookPen } from 'lucide-react';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { NotebookPen, Save, CheckCircle2 } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import api from '../../services/api';
 import styles from './FarmSettings.module.css';
@@ -75,12 +75,15 @@ function MoistureBar({ min, max, critical }) {
 }
 
 export default function FarmSettings() {
-  const [form, setForm]           = useState(INIT);
-  const [loading, setLoading]     = useState(true);
-  const [saving, setSaving]       = useState(false);
-  const [success, setSuccess]     = useState('');
-  const [error, setError]         = useState('');
+  const [form, setForm]             = useState(INIT);
+  const [loading, setLoading]       = useState(true);
+  const [saving, setSaving]         = useState(false);
+  const [autoSaving, setAutoSaving] = useState(false);
+  const [autoSaved, setAutoSaved]   = useState('');
+  const [success, setSuccess]       = useState('');
+  const [error, setError]           = useState('');
   const [autoFilled, setAutoFilled] = useState(false);
+  const autoSaveTimer               = useRef(null);
 
   const fetchSettings = useCallback(async () => {
     try {
@@ -92,21 +95,48 @@ export default function FarmSettings() {
 
   useEffect(() => { fetchSettings(); }, [fetchSettings]);
 
+  // Auto-save helper — called immediately on soil/plant select
+  const autoSave = useCallback(async (updatedForm) => {
+    setAutoSaving(true);
+    setAutoSaved('');
+    try {
+      await api.post('/farm-settings/', updatedForm);
+      setAutoSaved('Saved');
+      setTimeout(() => setAutoSaved(''), 2500);
+    } catch { /* silent — user can still manually save */ }
+    finally { setAutoSaving(false); }
+  }, []);
+
   const handleChange = (e) => {
-    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
+    const updated = { ...form, [e.target.name]: e.target.value };
+    setForm(updated);
     setSuccess(''); setError(''); setAutoFilled(false);
+    // Debounce auto-save for sliders/inputs (800ms)
+    clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => autoSave(updated), 800);
   };
 
   const handlePlantSelect = (plant) => {
-    setForm((p) => ({
-      ...p,
+    const updated = {
+      ...form,
       plant_type:            plant.name,
       moisture_min:          plant.min,
       moisture_max:          plant.max,
       moisture_critical_low: plant.critical,
-    }));
+    };
+    setForm(updated);
     setAutoFilled(true);
     setSuccess(''); setError('');
+    // Immediate auto-save on plant select
+    autoSave(updated);
+  };
+
+  const handleSoilSelect = (soilValue) => {
+    const updated = { ...form, soil_type: soilValue };
+    setForm(updated);
+    setSuccess(''); setError('');
+    // Immediate auto-save on soil select
+    autoSave(updated);
   };
 
   const handleSubmit = async (e) => {
@@ -135,6 +165,10 @@ export default function FarmSettings() {
             <h1 className={styles.pageTitle}>Farm Settings</h1>
             <p className={styles.pageSubtitle}>Configure soil type, plant selection, and moisture thresholds</p>
           </div>
+          <div className={styles.autoSaveStatus}>
+            {autoSaving && <span className={styles.autoSaving}><Save size={13} className={styles.spinnerIcon} /> Saving…</span>}
+            {autoSaved && !autoSaving && <span className={styles.autoSaved}><CheckCircle2 size={13} /> {autoSaved}</span>}
+          </div>
         </div>
 
         {loading ? (
@@ -155,7 +189,7 @@ export default function FarmSettings() {
                         key={s.value}
                         type="button"
                         className={`${styles.soilCard} ${form.soil_type === s.value ? styles.soilCardActive : ''}`}
-                        onClick={() => { setForm((p) => ({ ...p, soil_type: s.value })); setSuccess(''); setError(''); }}
+                        onClick={() => handleSoilSelect(s.value)}
                       >
                         <span className={styles.soilName}>{s.value}</span>
                         <span className={styles.soilDesc}>{s.desc}</span>

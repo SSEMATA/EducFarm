@@ -937,3 +937,29 @@
   font-weight: 700;
   color: #374151;
 }
+
+/* Farm settings cell */
+.farmCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.farmTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.73rem;
+  font-weight: 600;
+  background: #f0fdf4;
+  color: #166534;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid #bbf7d0;
+  white-space: nowrap;
+}
+
+.farmEmpty {
+  font-size: 0.8rem;
+  color: #d1d5db;
+}

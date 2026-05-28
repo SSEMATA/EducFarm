@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { RefreshCw, Radio, CircleDot, CircleOff, Search, X, Eye, Pencil, Trash2, Cpu, PackageOpen } from 'lucide-react';
+import { RefreshCw, Radio, CircleDot, CircleOff, Search, X, Eye, Pencil, Trash2, CircuitBoard, PackageOpen } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import api from '../../services/api';
 import styles from './DeviceList.module.css';
@@ -200,7 +200,7 @@ export default function DeviceList() {
             {modal.mode === 'view' && (
               <>
                 <div className={styles.modalHeader}>
-                  <span className={styles.modalTitle}><Cpu size={16} /> Device Details</span>
+                  <span className={styles.modalTitle}><CircuitBoard size={16} /> Device Details</span>
                   <button className={styles.closeBtn} onClick={closeModal}><X size={16} /></button>
                 </div>
                 <div className={styles.detailGrid}>

@@ -1,26 +1,53 @@
-import { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 import {
-  LayoutDashboard, Cpu, CloudSun, Bell, Settings,
-  LogOut, ChevronLeft, ChevronRight, Menu, Download, X,
+  LayoutDashboard, CircuitBoard, CloudSun, Bell, Settings,
+  LogOut, ChevronLeft, ChevronRight, Menu, Download, X, User, FlaskConical, Activity,
 } from 'lucide-react';
 import EducFarmLogo from '../components/EducFarmLogo';
 import styles from './DashboardLayout.module.css';
 
 const NAV_ITEMS = [
-  { to: '/dashboard',     Icon: LayoutDashboard, label: 'Dashboard'     },
-  { to: '/devices',       Icon: Cpu,             label: 'Devices'       },
-  { to: '/irrigation-planner', Icon: CloudSun, label: 'Irrigation Planner' },
-  { to: '/notifications', Icon: Bell,            label: 'Notifications' },
-  { to: '/settings',      Icon: Settings,        label: 'Settings'      },
+  { to: '/dashboard',          Icon: LayoutDashboard, label: 'Dashboard'          },
+  { to: '/devices',            Icon: CircuitBoard,    label: 'Devices'            },
+  { to: '/irrigation-planner', Icon: CloudSun,        label: 'Irrigation Planner' },
+  { to: '/live-data',          Icon: Activity,        label: 'Live Data'          },
+  ...(import.meta.env.DEV ? [{ to: '/simulate', Icon: FlaskConical, label: 'Simulate' }] : []),
+  { to: '/notifications',      Icon: Bell,            label: 'Notifications'      },
+  { to: '/settings',           Icon: Settings,        label: 'Settings'           },
 ];
 
 export default function DashboardLayout({ children }) {
   const navigate = useNavigate();
-  const [collapsed, setCollapsed]   = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [installBar, setInstallBar] = useState(false);
+  const [collapsed, setCollapsed]     = useState(false);
+  const [mobileOpen, setMobileOpen]   = useState(false);
+  const [installBar, setInstallBar]   = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const profileRef = useRef(null);
+
+  useEffect(() => {
+    const fetchUnread = async () => {
+      try {
+        const { data } = await api.get('/notifications/');
+        const list = Array.isArray(data) ? data : data.results ?? [];
+        setUnreadCount(list.filter((n) => !n.is_read).length);
+      } catch { /* silent */ }
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target))
+        setProfileOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   useEffect(() => {
     // Don't show if already installed or permanently dismissed
@@ -74,13 +101,8 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className={styles.shell}>
-      {/* Mobile overlay */}
-      {mobileOpen && (
-        <div className={styles.overlay} onClick={() => setMobileOpen(false)} />
-      )}
-
-      {/* Sidebar */}
-      <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''} ${mobileOpen ? styles.mobileOpen : ''}`}>
+      {/* Sidebar — desktop only */}
+      <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
         <div className={styles.sidebarHeader}>
           <div className={styles.logoWrapper}>
             {!collapsed
@@ -114,10 +136,7 @@ export default function DashboardLayout({ children }) {
           ))}
         </nav>
 
-        <button className={styles.logoutBtn} onClick={handleLogout} title={collapsed ? 'Logout' : undefined}>
-          <LogOut size={18} className={styles.navIcon} />
-          {!collapsed && <span>Logout</span>}
-        </button>
+
       </aside>
 
       {/* Main area */}
@@ -128,28 +147,87 @@ export default function DashboardLayout({ children }) {
             className={styles.menuBtn}
             onClick={() => setMobileOpen((v) => !v)}
             aria-label="Open menu"
+            style={{ display: 'none' }}
           >
             <Menu size={20} />
           </button>
           <div className={styles.navbarTitle}>
-            Smart Irrigation Dashboard
+            <div className={styles.titleLogoMark}>
+              <div className={styles.titleLogoBox}>
+                <EducFarmLogo size={32} variant="dark" showText={true} />
+              </div>
+            </div>
+            <div className={styles.titleText}>
+              <span className={styles.titleBrand}>COMMAND CENTER</span>
+            </div>
+            <span className={styles.titleDesktop}>Control center for EducFarm Irrigation System</span>
           </div>
           <div className={styles.navbarRight}>
-            <NavLink to="/notifications" className={styles.iconBtn} title="Notifications">
-              <Bell size={18} />
-            </NavLink>
-            <div className={styles.avatar} title={user.full_name || 'User'}>
-              {initials}
-            </div>
-            <div className={styles.userInfo}>
-              <span className={styles.userName}>{user.full_name || 'Farmer'}</span>
-              <span className={styles.userRole}>{user.farm_name || 'EducFarm'}</span>
+            {/* Profile dropdown */}
+            <div className={styles.profileWrap} ref={profileRef}>
+              <button
+                className={styles.avatarBtn}
+                onClick={() => setProfileOpen((v) => !v)}
+                aria-label="Profile menu"
+              >
+                {!profileOpen && <div className={styles.avatar}>{initials}</div>}
+                <div className={styles.userInfo}>
+                  <span className={styles.userName}>{user.full_name || 'Farmer'}</span>
+                  <span className={styles.userRole}>{user.farm_name || 'EducFarm'}</span>
+                </div>
+              </button>
+
+              {profileOpen && (
+                <div className={styles.profileDropdown}>
+                  <div className={styles.profileHeader}>
+                    <div className={styles.profileAvatar}>{initials}</div>
+                    <div>
+                      <p className={styles.profileName}>{user.full_name || 'Farmer'}</p>
+                      <p className={styles.profileEmail}>{user.email || user.phone_number || ''}</p>
+                    </div>
+                  </div>
+                  <div className={styles.profileDivider} />
+                  <Link to="/settings" className={styles.profileItem} onClick={() => setProfileOpen(false)}>
+                    <User size={15} /> Account Settings
+                  </Link>
+                  <Link to="/notifications" className={styles.profileItem} onClick={() => setProfileOpen(false)}>
+                    <Bell size={15} /> Notifications
+                    {unreadCount > 0 && <span className={styles.profileBadge}>{unreadCount > 99 ? '99+' : unreadCount}</span>}
+                  </Link>
+                  <div className={styles.profileDivider} />
+                  <button className={styles.profileLogout} onClick={handleLogout}>
+                    <LogOut size={15} /> Logout
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </header>
 
         {/* Page content */}
         <main className={styles.content}>{children}</main>
+
+        {/* Mobile bottom tab bar */}
+        <nav className={styles.bottomNav}>
+          {NAV_ITEMS.map(({ to, Icon, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === '/dashboard'}
+              className={({ isActive }) =>
+                `${styles.bottomNavItem} ${isActive ? styles.bottomNavActive : ''}`
+              }
+            >
+              <div className={styles.bottomNavIcon}>
+                <Icon size={20} />
+                {label === 'Notifications' && unreadCount > 0 && (
+                  <span className={styles.navBadge}>{unreadCount > 99 ? '99+' : unreadCount}</span>
+                )}
+              </div>
+              <span className={styles.bottomNavLabel}>{label}</span>
+            </NavLink>
+          ))}
+        </nav>
 
         {/* Install bar */}
         {installBar && (

@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import InstallPrompt  from './components/InstallPrompt';
@@ -13,6 +14,10 @@ import WifiSettings   from './pages/Settings/WifiSettings';
 import SMSSettings    from './pages/Settings/SMSSettings';
 import DeviceManagement from './pages/Settings/DeviceManagement';
 import FarmSettings   from './pages/Settings/FarmSettings';
+import LiveData       from './pages/LiveData/LiveData';
+
+const isDev = import.meta.env.DEV;
+const Simulate = isDev ? lazy(() => import('./pages/Simulate/Simulate')) : null;
 
 const P = ({ children }) => <ProtectedRoute>{children}</ProtectedRoute>;
 
@@ -35,6 +40,10 @@ function App() {
         <Route path="/settings/wifi"   element={<P><WifiSettings /></P>} />
         <Route path="/settings/sms"    element={<P><SMSSettings /></P>} />
         <Route path="/settings/farm"   element={<P><FarmSettings /></P>} />
+        <Route path="/live-data"       element={<P><LiveData /></P>} />
+        {isDev && Simulate && (
+          <Route path="/simulate" element={<P><Suspense fallback={null}><Simulate /></Suspense></P>} />
+        )}
       </Routes>
     </BrowserRouter>
   );

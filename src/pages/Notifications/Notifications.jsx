@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Settings2, CloudRain, Droplets, Radio, Bell, BellOff, RefreshCw, Check, Cpu } from 'lucide-react';
+import { Settings2, CloudRain, Droplets, Radio, Bell, BellOff, RefreshCw, Check, CircuitBoard } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import api from '../../services/api';
 import styles from './Notifications.module.css';
@@ -144,7 +144,7 @@ export default function Notifications() {
                     <p className={styles.itemMessage}>{n.message}</p>
                     {n.device_name && (
                       <span className={styles.itemDevice}>
-                        <Cpu size={11} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                        <CircuitBoard size={11} style={{ verticalAlign: 'middle', marginRight: 3 }} />
                         {n.device_name}
                       </span>
                     )}

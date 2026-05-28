@@ -29,6 +29,8 @@ export default function Signup() {
   const [showConfirm, setShowConfirm]   = useState(false);
   const [loading, setLoading]           = useState(false);
   const [done, setDone]                 = useState(false);
+  const [errors, setErrors]             = useState({});
+  const [serverError, setServerError]   = useState('');
   const [identifierStatus, setIdentifierStatus] = useState(null); // null | 'checking' | 'available' | 'taken'
   const debounceRef = useRef(null);
 

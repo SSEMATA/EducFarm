@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Wifi, MessageSquare, Sprout, ChevronRight, User, Mail, MapPin, Cpu, Download, Smartphone } from 'lucide-react';
+import { Wifi, MessageSquare, Sprout, ChevronRight, User, Mail, MapPin, CircuitBoard, Download, Smartphone } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import styles from './Settings.module.css';
 
@@ -99,7 +99,7 @@ export default function Settings() {
         <div className={styles.sectionLabel}>Device Management</div>
         <button className={styles.navCard} onClick={() => navigate('/settings/devices')}>
           <div className={styles.navIconWrap}>
-            <Cpu size={24} strokeWidth={1.8} color="#2d7a4f" />
+            <CircuitBoard size={24} strokeWidth={1.8} color="#2d7a4f" />
           </div>
           <div className={styles.navInfo}>
             <span className={styles.navTitle}>Device Management</span>

@@ -2,12 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate, Link } from 'react-router-dom';
 import {
   LayoutDashboard, CircuitBoard, CloudSun, Bell, Settings,
-  LogOut, ChevronLeft, ChevronRight, Menu, Download, X, User, FlaskConical, Activity,
+  LogOut, ChevronLeft, ChevronRight, Menu, Download, X, User, FlaskConical, Activity, ShieldCheck, Server,
 } from 'lucide-react';
 import EducFarmLogo from '../components/EducFarmLogo';
+import api from '../services/api';
 import styles from './DashboardLayout.module.css';
 
-const NAV_ITEMS = [
+const USER_NAV = [
   { to: '/dashboard',          Icon: LayoutDashboard, label: 'Dashboard'          },
   { to: '/devices',            Icon: CircuitBoard,    label: 'Devices'            },
   { to: '/irrigation-planner', Icon: CloudSun,        label: 'Irrigation Planner' },
@@ -15,6 +16,11 @@ const NAV_ITEMS = [
   ...(import.meta.env.DEV ? [{ to: '/simulate', Icon: FlaskConical, label: 'Simulate' }] : []),
   { to: '/notifications',      Icon: Bell,            label: 'Notifications'      },
   { to: '/settings',           Icon: Settings,        label: 'Settings'           },
+];
+
+const ADMIN_NAV = [
+  { to: '/admin',         Icon: ShieldCheck, label: 'Admin Panel' },
+  { to: '/admin/devices', Icon: Server,      label: 'Devices'     },
 ];
 
 export default function DashboardLayout({ children }) {
@@ -26,6 +32,9 @@ export default function DashboardLayout({ children }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const profileRef = useRef(null);
+
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const NAV_ITEMS = user.is_staff ? ADMIN_NAV : USER_NAV;
 
   useEffect(() => {
     const fetchUnread = async () => {
@@ -56,6 +65,7 @@ export default function DashboardLayout({ children }) {
     if (dismissed && Date.now() - parseInt(dismissed, 10) < 7 * 24 * 60 * 60 * 1000) return;
 
     const handler = (e) => {
+      // Must preventDefault to keep the event for later use with prompt()
       e.preventDefault();
       setDeferredPrompt(e);
       setInstallBar(true);
@@ -63,22 +73,23 @@ export default function DashboardLayout({ children }) {
     };
     window.addEventListener('beforeinstallprompt', handler);
 
-    // iOS — show bar without deferred prompt
+    // iOS — only show manual instructions bar (no prompt() available on iOS)
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    if (isIOS && !dismissed) setInstallBar(true);
+    if (isIOS) setInstallBar(true);
 
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
   const handleInstall = async () => {
     if (deferredPrompt) {
-      deferredPrompt.prompt();
+      // prompt() must be called directly from a user gesture (this click handler qualifies)
+      await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       setDeferredPrompt(null);
       if (outcome === 'accepted') setInstallBar(false);
     } else {
-      // iOS or fallback — open the full InstallPrompt sheet
+      // iOS — no prompt() API, show manual instructions sheet
       window.__pwaPromptShow?.();
     }
   };
@@ -88,7 +99,6 @@ export default function DashboardLayout({ children }) {
     localStorage.setItem('pwa_bar_dismissed', Date.now().toString());
   };
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
   const initials = user.full_name
     ? user.full_name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
     : 'U';

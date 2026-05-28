@@ -44,7 +44,7 @@ export default function Login() {
       await new Promise((r) => setTimeout(r, 900));
 
       sessionStorage.setItem('justLoggedIn', '1');
-      navigate('/dashboard');
+      navigate(data.user.is_staff ? '/admin' : '/dashboard');
     } catch (err) {
       const d = err.response?.data;
       setError(
@@ -90,7 +90,7 @@ export default function Login() {
                   <div className={styles.successTick}>✓</div>
                 </div>
                 <p className={styles.modalTitle}>Welcome back!</p>
-                <p className={styles.modalSub}>Taking you to your dashboard</p>
+                <p className={styles.modalSub}>Taking you to your {done && JSON.parse(localStorage.getItem('user') || '{}').is_staff ? 'admin panel' : 'dashboard'}</p>
               </>
             )}
           </div>

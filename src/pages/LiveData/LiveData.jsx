@@ -69,7 +69,8 @@ export default function LiveData() {
   const [error, setError]           = useState(null);
   const [pumpLoading, setPumpLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
-  const intervalRef = useRef(null);
+  const intervalRef  = useRef(null);
+  const latestRef    = useRef(null); // always holds current latest for stale-closure-free comparison
 
   const addLog = useCallback((msg, level = 'info') => {
     const time = new Date().toLocaleTimeString();
@@ -84,14 +85,18 @@ export default function LiveData() {
 
       // Pick reading for selected device or first available
       const reading = data.latest?.find((r) => r.device === deviceId) ?? data.latest?.[0] ?? null;
-      setLatest((prev) => {
-        if (reading && prev) {
-          if (reading.pump_status !== prev.pump_status) {
-            addLog(`Pump ${reading.pump_status === 'Running' ? 'started' : 'stopped'} by device`, reading.pump_status === 'Running' ? 'success' : 'info');
-          }
+
+      // Compare against ref — never against stale closure state
+      if (reading && latestRef.current) {
+        if (reading.pump_status !== latestRef.current.pump_status) {
+          addLog(
+            `Pump ${reading.pump_status === 'Running' ? 'started' : 'stopped'} by device`,
+            reading.pump_status === 'Running' ? 'success' : 'info'
+          );
         }
-        return reading;
-      });
+      }
+      latestRef.current = reading;
+      setLatest(reading);
 
       // Build history chart data
       const hist = (data.history || []).map((r, i) => ({

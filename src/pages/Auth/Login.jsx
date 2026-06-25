@@ -2,18 +2,21 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import EducFarmLogo from '../../components/EducFarmLogo';
 import styles from './Login.module.css';
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [form, setForm]                 = useState(() => ({
     email: sessionStorage.getItem('auth_identifier') || '',
     password: '',
   }));
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading]           = useState(false); // wheel visible
-  const [done, setDone]                 = useState(false); // tick phase
+  const [loading, setLoading]           = useState(false);
+  const [done, setDone]                 = useState(false);
+  const [isStaff, setIsStaff]           = useState(false);
   const [error, setError]               = useState('');
 
   const handleChange = (e) => {
@@ -31,20 +34,20 @@ export default function Login() {
     try {
       const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
       const identifier = form.email.trim();
-      const { data } = await api.post('/login/', {
+      const { data } = await api.post('/users/login/', {
         ...(isEmail(identifier) ? { email: identifier } : { phone_number: identifier }),
         password: form.password,
       });
-      localStorage.setItem('token', data.access);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      login(data.access, data.refresh, data.user);
+      setIsStaff(data.user.is_staff);
+      sessionStorage.removeItem('auth_identifier');
 
-      // Wheel has been spinning since click — wait remaining time up to 3s total
-      await new Promise((r) => setTimeout(r, 2500));
+      // Show tick immediately — server already responded
       setDone(true);
-      await new Promise((r) => setTimeout(r, 900));
+      await new Promise((r) => setTimeout(r, 500));
 
       sessionStorage.setItem('justLoggedIn', '1');
-      navigate(data.user.is_staff ? '/admin' : '/dashboard');
+      navigate(data.user.must_change_password ? '/set-password' : data.user.is_staff ? '/admin/dashboard' : '/dashboard');
     } catch (err) {
       const d = err.response?.data;
       setError(
@@ -90,7 +93,7 @@ export default function Login() {
                   <div className={styles.successTick}>✓</div>
                 </div>
                 <p className={styles.modalTitle}>Welcome back!</p>
-                <p className={styles.modalSub}>Taking you to your {done && JSON.parse(localStorage.getItem('user') || '{}').is_staff ? 'admin panel' : 'dashboard'}</p>
+                <p className={styles.modalSub}>Taking you to your {isStaff ? 'admin panel' : 'dashboard'}</p>
               </>
             )}
           </div>

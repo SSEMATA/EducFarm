@@ -57,7 +57,7 @@ export default function Signup() {
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
       try {
-        const { data } = await api.get(`/check-identifier/?value=${encodeURIComponent(val)}`);
+        const { data } = await api.get(`/users/check-identifier/?value=${encodeURIComponent(val)}`);
         setIdentifierStatus(data.available ? 'available' : 'taken');
       } catch {
         setIdentifierStatus(null);
@@ -104,7 +104,7 @@ export default function Signup() {
           ? { email: form.identifier }
           : { phone_number: form.identifier }),
       };
-      const { data } = await api.post('/signup/', payload);
+      const { data } = await api.post('/users/signup/', payload);
       if (data?.access) {
         localStorage.setItem('token', data.access);
         localStorage.setItem('user', JSON.stringify(data.user));

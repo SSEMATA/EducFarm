@@ -240,6 +240,24 @@
   flex-shrink: 0;
 }
 
+.avatarImg {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1.5px solid #e5e7eb;
+}
+
+.modalAvatarImg {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1.5px solid #e5e7eb;
+}
+
 .contactCell {
   display: flex;
   flex-direction: column;
@@ -279,6 +297,35 @@
   color: #6b7280;
   white-space: nowrap;
 }
+
+.seenLive {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #166534;
+  background: #dcfce7;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+}
+
+.liveDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  display: inline-block;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.75); }
+}
+
+.seenAgo  { font-size: 0.8rem; color: #6b7280; }
+.seenNever { font-size: 0.8rem; color: #d1d5db; }
 
 /* Badges */
 .badgeAdmin {
@@ -856,6 +903,29 @@
   .table th, .table td { padding: 0.7rem 0.75rem; }
   .sensorGrid { grid-template-columns: repeat(2, 1fr); }
   .infoGrid { grid-template-columns: 1fr; }
+
+  .header {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  .header > div:first-child {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .title {
+    font-size: 1.15rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .subtitle {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 /* Diagnostics */
@@ -963,3 +1033,411 @@
   font-size: 0.8rem;
   color: #d1d5db;
 }
+
+/* ── Admin Fix Panel ─────────────────────────────────────────────────── */
+.fixPanel {
+  border: 2px solid #fde68a;
+  border-radius: 12px;
+  background: #fffbeb;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.fixPanelTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #92400e;
+}
+
+.fixTabs {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.fixTab {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.75rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 7px;
+  background: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.fixTab:hover { border-color: #f59e0b; color: #92400e; }
+
+.fixTabActive {
+  background: #f59e0b;
+  border-color: #f59e0b;
+  color: #fff;
+}
+
+.fixLog {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: #166534;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 7px;
+  padding: 0.5rem 0.75rem;
+}
+
+.fixError {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 7px;
+  padding: 0.5rem 0.75rem;
+}
+
+.fixForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.fixHint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #92400e;
+  line-height: 1.5;
+}
+
+.fixField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.fixField label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.fixInput {
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #111827;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.fixInput:focus { border-color: #f59e0b; }
+
+.fixGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.fixBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  border: none;
+  border-radius: 8px;
+  background: #f59e0b;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  align-self: flex-start;
+}
+
+.fixBtn:hover:not(:disabled) { opacity: 0.88; }
+.fixBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.fixBtnWarning { background: #f59e0b; }
+.fixBtnDanger  { background: #ef4444; }
+.fixBtnSuccess { background: #10b981; }
+.fixBtnGray    { background: #6b7280; }
+
+.fixActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.fixActionCard {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fixActionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.fixActionDesc {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #6b7280;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.fixToggleBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border: 1.5px solid #f59e0b;
+  border-radius: 7px;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.fixToggleBtn:hover { background: #fef3c7; }
+
+@media (max-width: 560px) {
+  .fixActions  { grid-template-columns: 1fr; }
+  .fixGrid2    { grid-template-columns: 1fr; }
+}
+
+/* ── Map Picker ── */
+.mapWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid #d1d5db;
+}
+
+.mapContainer {
+  width: 100%;
+  height: 280px;
+  cursor: crosshair;
+}
+
+.mapHint {
+  margin: 0;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.72rem;
+  color: #6b7280;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* ── Place Search ── */
+.placeSearchWrap {
+  position: relative;
+}
+
+.placeInputRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color 0.15s;
+}
+
+.placeInputRow:focus-within {
+  border-color: #2d7a4f;
+  box-shadow: 0 0 0 3px rgba(45,122,79,0.1);
+}
+
+.placeIcon {
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.placeInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.85rem;
+  color: #111827;
+  background: transparent;
+}
+
+.placeDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  list-style: none;
+  margin: 0;
+  padding: 0.3rem;
+  z-index: 1000;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.placeItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 7px;
+  font-size: 0.8rem;
+  color: #374151;
+  cursor: pointer;
+  line-height: 1.4;
+  transition: background 0.12s;
+}
+
+.placeItem:hover {
+  background: #f0fdf4;
+  color: #166534;
+}
+
+/* ── Weather Preview Card (after location save) ── */
+.weatherPreview {
+  border: 1.5px solid #bbf7d0;
+  border-radius: 10px;
+  background: #f0fdf4;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  animation: fadeIn 0.25s ease;
+}
+
+.wpHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.wpLocation {
+  flex: 1;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #166534;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wpBadge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: #10b981;
+  color: #fff;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.wpRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.wpStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  background: #fff;
+  border-radius: 8px;
+  padding: 0.5rem 0.25rem;
+  border: 1px solid #d1fae5;
+}
+
+.wpStat span {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #111827;
+  text-align: center;
+}
+
+.wpStat small {
+  font-size: 0.65rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.wpPump {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.45rem 0.7rem;
+  border-radius: 7px;
+}
+
+.wpPumpOn {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.wpPumpSkip {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+/* View more button */
+.viewMoreBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.7rem;
+  border: none;
+  border-top: 1px solid #f3f4f6;
+  background: #fafafa;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #2d7a4f;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 0 0 14px 14px;
+}
+
+.viewMoreBtn:hover { background: #f0fdf4; }

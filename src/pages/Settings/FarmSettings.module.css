@@ -22,12 +22,11 @@
 
 /* ── Layout ────────────────────────────────────────────── */
 .layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 1.25rem;
-  align-items: start;
 }
-.col { display: flex; flex-direction: column; gap: 1.25rem; }
+.col { display: contents; }
 
 /* ── Section ───────────────────────────────────────────── */
 .section {
@@ -46,7 +45,7 @@
 /* ── Soil grid ─────────────────────────────────────────── */
 .soilGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.5rem;
 }
 .soilCard {
@@ -68,10 +67,57 @@
 
 /* ── Plant grid ────────────────────────────────────────── */
 .plantGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.45rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
+.plantGroupWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.plantGroup {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.45rem;
+  align-items: start;
+}
+.plantGroupLabel {
+  grid-column: 1 / -1;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 0.1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+/* view-more row: sits below the grid */
+.viewMoreRow {
+  display: flex;
+  justify-content: center;
+}
+/* only show on mobile for groups that fit on desktop but overflow on mobile */
+.viewMoreRowMobileOnly {
+  display: none;
+}
+.viewMoreBtn {
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem 1.5rem;
+  background: #2d7a4f;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.viewMoreBtn:hover { opacity: 0.88; }
 .plantCard {
   display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
   padding: 0.6rem 0.3rem;
@@ -80,6 +126,10 @@
 }
 .plantCard:hover { border-color: #86efac; background: #f0fdf4; }
 .plantCardActive { border-color: #2d7a4f; background: #f0fdf4; }
+/* hidden on mobile only — 1 row of 4 */
+.plantCardMobileHidden { display: flex; }
+/* hidden until expanded — wins over plantCardMobileHidden */
+.plantCardHidden { display: none !important; }
 .plantIcon { font-size: 1.4rem; line-height: 1; }
 .plantName { font-size: 0.65rem; font-weight: 600; color: #374151; text-align: center; }
 
@@ -206,14 +256,20 @@
 
 /* ── Responsive ────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .layout { grid-template-columns: 1fr; }
-  .plantGrid { grid-template-columns: repeat(5, 1fr); }
+  .soilGrid { grid-template-columns: repeat(2, 1fr); }
+  .plantGroup { grid-template-columns: repeat(4, 1fr); }
+  .plantCardHidden { display: none !important; }
+  .plantCardMobileHidden { display: none; }
+  .viewMoreRowMobileOnly { display: flex; }
   .thresholdGrid { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 480px) {
   .page { overflow-x: hidden; }
-  .plantGrid { grid-template-columns: repeat(4, 1fr); }
-  .soilGrid { grid-template-columns: 1fr; }
+  .soilGrid { grid-template-columns: repeat(2, 1fr); }
+  .plantGroup { grid-template-columns: repeat(4, 1fr); }
+  .plantCardHidden { display: none !important; }
+  .plantCardMobileHidden { display: none; }
+  .viewMoreRowMobileOnly { display: flex; }
   .thresholdGrid { grid-template-columns: 1fr; }
   .footerActions { flex-direction: column; }
   .saveBtn, .resetBtn { width: 100%; justify-content: center; }
@@ -255,3 +311,93 @@
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes spin   { to { transform: rotate(360deg); } }
+
+/* ── My Location section ───────────────────────────────── */
+.locBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 9px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.82rem;
+  color: #15803d;
+  font-weight: 500;
+}
+
+.locBanner span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.locClearBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid #86efac;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #15803d;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.12s;
+}
+.locClearBtn:hover:not(:disabled) { background: #dcfce7; }
+.locClearBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.locActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.locGpsBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: #2d7a4f;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.locGpsBtn:hover:not(:disabled) { opacity: 0.88; }
+.locGpsBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.locOr {
+  font-size: 0.78rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.locHint {
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+.locSuccess {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 0.8rem;
+  color: #15803d;
+  font-weight: 500;
+}
+
+.locError {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #b91c1c;
+}

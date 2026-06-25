@@ -2,10 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate, Link } from 'react-router-dom';
 import {
   LayoutDashboard, CircuitBoard, CloudSun, Bell, Settings,
-  LogOut, ChevronLeft, ChevronRight, Menu, Download, X, User, FlaskConical, Activity, ShieldCheck, Server,
+  LogOut, ChevronLeft, ChevronRight, Menu, Download, X, User, FlaskConical, Activity, Server, Users,
 } from 'lucide-react';
 import EducFarmLogo from '../components/EducFarmLogo';
+import OfflineBanner from '../components/OfflineBanner';
+import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import { ensureFreshAvatar } from '../utils/avatarCache';
 import styles from './DashboardLayout.module.css';
 
 const USER_NAV = [
@@ -14,17 +17,28 @@ const USER_NAV = [
   { to: '/irrigation-planner', Icon: CloudSun,        label: 'Irrigation Planner' },
   { to: '/live-data',          Icon: Activity,        label: 'Live Data'          },
   ...(import.meta.env.DEV ? [{ to: '/simulate', Icon: FlaskConical, label: 'Simulate' }] : []),
-  { to: '/notifications',      Icon: Bell,            label: 'Notifications'      },
   { to: '/settings',           Icon: Settings,        label: 'Settings'           },
 ];
 
+const BOTTOM_NAV = [
+  { to: '/dashboard',          Icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/irrigation-planner', Icon: CloudSun,        label: 'Planner'   },
+  { to: '/live-data',          Icon: Activity,        label: 'Live Data' },
+  { to: '/settings',           Icon: Settings,        label: 'Settings'  },
+];
+
+
 const ADMIN_NAV = [
-  { to: '/admin',         Icon: ShieldCheck, label: 'Admin Panel' },
-  { to: '/admin/devices', Icon: Server,      label: 'Devices'     },
+  { to: '/admin/dashboard', Icon: LayoutDashboard, label: 'Dashboard',    perm: null                },
+  { to: '/admin/users',     Icon: Users,           label: 'Users',        perm: 'can_manage_users'  },
+  { to: '/admin/devices',   Icon: Server,          label: 'Devices',      perm: 'can_manage_devices'},
+  { to: '/admin/weather',   Icon: CloudSun,        label: 'Weather API',  perm: 'can_manage_weather'},
+  { to: '/admin/settings',  Icon: Settings,        label: 'Settings',     perm: 'can_manage_system' },
 ];
 
 export default function DashboardLayout({ children }) {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [collapsed, setCollapsed]     = useState(false);
   const [mobileOpen, setMobileOpen]   = useState(false);
   const [installBar, setInstallBar]   = useState(false);
@@ -33,19 +47,27 @@ export default function DashboardLayout({ children }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const profileRef = useRef(null);
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const NAV_ITEMS = user.is_staff ? ADMIN_NAV : USER_NAV;
+  const isSuperAdmin = user?.admin_level === 'superadmin';
+  const NAV_ITEMS = user?.is_staff
+    ? ADMIN_NAV.filter(({ perm }) => perm === null || isSuperAdmin || user[perm])
+    : USER_NAV;
 
   useEffect(() => {
     const fetchUnread = async () => {
       try {
-        const { data } = await api.get('/notifications/');
-        const list = Array.isArray(data) ? data : data.results ?? [];
-        setUnreadCount(list.filter((n) => !n.is_read).length);
+        const { data } = await api.get('/notifications/unread-count/');
+        setUnreadCount(data.count ?? 0);
       } catch { /* silent */ }
     };
     fetchUnread();
     const interval = setInterval(fetchUnread, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const beat = () => api.post('/users/heartbeat/').catch(() => {});
+    beat();
+    const interval = setInterval(beat, 120000);
     return () => clearInterval(interval);
   }, []);
 
@@ -99,13 +121,12 @@ export default function DashboardLayout({ children }) {
     localStorage.setItem('pwa_bar_dismissed', Date.now().toString());
   };
 
-  const initials = user.full_name
+  const initials = user?.full_name
     ? user.full_name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
     : 'U';
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    logout();
     navigate('/login');
   };
 
@@ -115,10 +136,7 @@ export default function DashboardLayout({ children }) {
       <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
         <div className={styles.sidebarHeader}>
           <div className={styles.logoWrapper}>
-            {!collapsed
-              ? <EducFarmLogo size={32} variant="dark" showText={true} />
-              : <EducFarmLogo size={32} variant="dark" showText={false} />
-            }
+            {!collapsed && <EducFarmLogo size={32} variant="dark" showText={true} />}
           </div>
           <button
             className={styles.collapseBtn}
@@ -134,7 +152,7 @@ export default function DashboardLayout({ children }) {
             <NavLink
               key={to}
               to={to}
-              end={to === '/dashboard'}
+              end
               className={({ isActive }) =>
                 `${styles.navItem} ${isActive ? styles.active : ''}`
               }
@@ -173,6 +191,18 @@ export default function DashboardLayout({ children }) {
             <span className={styles.titleDesktop}>Control center for EducFarm Irrigation System</span>
           </div>
           <div className={styles.navbarRight}>
+            {/* Bell button */}
+            <button
+              className={styles.bellBtn}
+              onClick={() => navigate('/notifications')}
+              aria-label="Notifications"
+            >
+              <Bell size={20} />
+              {unreadCount > 0 && (
+                <span className={styles.bellBadge}>{unreadCount > 99 ? '99+' : unreadCount}</span>
+              )}
+            </button>
+
             {/* Profile dropdown */}
             <div className={styles.profileWrap} ref={profileRef}>
               <button
@@ -180,24 +210,30 @@ export default function DashboardLayout({ children }) {
                 onClick={() => setProfileOpen((v) => !v)}
                 aria-label="Profile menu"
               >
-                {!profileOpen && <div className={styles.avatar}>{initials}</div>}
+                {user?.avatar_url
+                  ? <img src={ensureFreshAvatar(user.avatar_url)} alt={initials} className={styles.avatarImg} />
+                  : <div className={styles.avatar}>{initials}</div>
+                }
                 <div className={styles.userInfo}>
-                  <span className={styles.userName}>{user.full_name || 'Farmer'}</span>
-                  <span className={styles.userRole}>{user.farm_name || 'EducFarm'}</span>
+                  <span className={styles.userName}>{user?.full_name || 'Farmer'}</span>
+                  <span className={styles.userRole}>{user?.farm_name || 'EducFarm'}</span>
                 </div>
               </button>
 
               {profileOpen && (
                 <div className={styles.profileDropdown}>
                   <div className={styles.profileHeader}>
-                    <div className={styles.profileAvatar}>{initials}</div>
+                    {user?.avatar_url
+                      ? <img src={ensureFreshAvatar(user.avatar_url)} alt={initials} className={styles.profileAvatarImg} />
+                      : <div className={styles.profileAvatar}>{initials}</div>
+                    }
                     <div>
-                      <p className={styles.profileName}>{user.full_name || 'Farmer'}</p>
-                      <p className={styles.profileEmail}>{user.email || user.phone_number || ''}</p>
+                      <p className={styles.profileName}>{user?.full_name || 'Farmer'}</p>
+                      <p className={styles.profileEmail}>{user?.email || user?.phone_number || ''}</p>
                     </div>
                   </div>
                   <div className={styles.profileDivider} />
-                  <Link to="/settings" className={styles.profileItem} onClick={() => setProfileOpen(false)}>
+                  <Link to="/settings/account" className={styles.profileItem} onClick={() => setProfileOpen(false)}>
                     <User size={15} /> Account Settings
                   </Link>
                   <Link to="/notifications" className={styles.profileItem} onClick={() => setProfileOpen(false)}>
@@ -217,13 +253,15 @@ export default function DashboardLayout({ children }) {
         {/* Page content */}
         <main className={styles.content}>{children}</main>
 
-        {/* Mobile bottom tab bar */}
+        <OfflineBanner />
+
+        {/* Mobile bottom tab bar — max 5 items */}
         <nav className={styles.bottomNav}>
-          {NAV_ITEMS.map(({ to, Icon, label }) => (
+          {(user?.is_staff ? NAV_ITEMS : BOTTOM_NAV).map(({ to, Icon, label }) => (
             <NavLink
               key={to}
               to={to}
-              end={to === '/dashboard'}
+              end
               className={({ isActive }) =>
                 `${styles.bottomNavItem} ${isActive ? styles.bottomNavActive : ''}`
               }

@@ -1,0 +1,422 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 640px;
+  width: 100%;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.45rem 0.85rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-top: 0.2rem;
+  transition: border-color 0.15s, color 0.15s;
+}
+.backBtn:hover { border-color: #2d7a4f; color: #2d7a4f; }
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+.subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+/* ── Section card ─────────────────────────────────────── */
+.section {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* ── Collapse trigger (password section header) ───────── */
+.collapseTrigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #374151;
+  transition: background 0.12s;
+}
+.collapseTrigger:hover { background: #f9fafb; }
+
+/* ── Editable row ─────────────────────────────────────── */
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid #f9fafb;
+  min-height: 56px;
+}
+.row:last-child { border-bottom: none; }
+
+.rowMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.rowLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.rowValue {
+  font-size: 0.9rem;
+  color: #111827;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowEmpty {
+  color: #d1d5db;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.rowInput {
+  padding: 0.45rem 0.75rem;
+  border: 1.5px solid #2d7a4f;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #111827;
+  background: #fff;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 0 0 3px rgba(45,122,79,0.1);
+  transition: border-color 0.15s;
+}
+.rowInput:focus { border-color: #1a5c38; }
+
+.inputDanger { border-color: #ef4444 !important; box-shadow: 0 0 0 3px rgba(239,68,68,0.1) !important; }
+
+.rowActions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.editBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.75rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 7px;
+  background: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.editBtn:hover { border-color: #2d7a4f; color: #2d7a4f; }
+
+.saveRowBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.75rem;
+  border: none;
+  border-radius: 7px;
+  background: #2d7a4f;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.saveRowBtn:hover:not(:disabled) { opacity: 0.88; }
+.saveRowBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.cancelRowBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.6rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 7px;
+  background: #fff;
+  color: #6b7280;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.cancelRowBtn:hover { border-color: #9ca3af; }
+
+/* ── Inline feedback ──────────────────────────────────── */
+.inlineOk {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  color: #166534;
+  font-weight: 500;
+}
+.inlineErr {
+  font-size: 0.72rem;
+  color: #b91c1c;
+  font-weight: 500;
+}
+
+/* ── Password form (inside collapsed section) ─────────── */
+.pwdForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0 1.25rem 1.25rem;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 1rem;
+}
+
+.pwdField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.pwdWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.pwdWrap .rowInput { padding-right: 2.5rem; }
+
+.eyeBtn {
+  position: absolute;
+  right: 0.65rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color 0.15s;
+}
+.eyeBtn:hover { color: #374151; }
+
+.pwdActions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding-top: 0.25rem;
+}
+
+.saveBtn {
+  padding: 0.55rem 1.25rem;
+  border: none;
+  border-radius: 9px;
+  background: #2d7a4f;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.saveBtn:hover:not(:disabled) { opacity: 0.88; }
+.saveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Feedback banners ─────────────────────────────────── */
+.msgOk {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #166534;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 0.55rem 0.85rem;
+}
+.msgErr {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 0.55rem 0.85rem;
+}
+
+/* ── Delete section ───────────────────────────────────── */
+.deleteIntro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1rem 1.25rem;
+}
+.deleteWarning {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #6b7280;
+  line-height: 1.5;
+  flex: 1;
+}
+.deleteOpenBtn {
+  padding: 0.5rem 1rem;
+  border: 1.5px solid #fecaca;
+  border-radius: 9px;
+  background: #fff;
+  color: #ef4444;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+.deleteOpenBtn:hover { background: #fef2f2; border-color: #ef4444; }
+
+.deleteForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem 1.25rem;
+}
+.deleteActions {
+  display: flex;
+  gap: 0.65rem;
+}
+.deleteConfirmBtn {
+  padding: 0.55rem 1.1rem;
+  border: none;
+  border-radius: 9px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.deleteConfirmBtn:hover:not(:disabled) { opacity: 0.88; }
+.deleteConfirmBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Avatar ───────────────────────────────────────────── */
+.avatarRow {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.1rem 1.25rem;
+}
+
+.avatarWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatarImg {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+  display: block;
+}
+
+.avatarEditBtn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #2d7a4f;
+  border: 2px solid #fff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.15s;
+}
+.avatarEditBtn:hover { opacity: 0.85; }
+
+.avatarMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.avatarName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.avatarHint {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.avatarActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 560px) {
+  .row { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .rowActions { align-self: flex-end; }
+  .deleteIntro { flex-direction: column; align-items: flex-start; }
+  .header { flex-direction: column; gap: 0.5rem; }
+  .avatarRow { flex-direction: column; align-items: flex-start; }
+}

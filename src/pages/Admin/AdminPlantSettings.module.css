@@ -1,0 +1,363 @@
+/* Modal */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modalBox {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+  animation: modalIn 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+@keyframes modalIn {
+  from { transform: scale(0.93) translateY(12px); opacity: 0; }
+  to   { transform: scale(1)    translateY(0);    opacity: 1; }
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid #f3f4f6;
+  flex-shrink: 0;
+}
+
+.modalTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  padding: 0.25rem;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+.modalClose:hover { color: #111827; background: #f3f4f6; }
+
+.modalBody {
+  padding: 1.25rem 1.5rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  flex: 1;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.modalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #f3f4f6;
+  flex-shrink: 0;
+}
+
+.seedBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 1rem;
+  background: #1d4ed8;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.seedBtn:hover:not(:disabled) { opacity: 0.88; }
+.seedBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 0.4rem;
+  transition: color 0.15s;
+}
+.backBtn:hover { color: #2d7a4f; }
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  padding: 0.45rem 0.85rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: #111827;
+  background: #f9fafb;
+  outline: none;
+  width: 200px;
+  transition: border-color 0.15s;
+}
+.searchInput:focus { border-color: #2d7a4f; background: #fff; }
+
+/* Form card */
+.formCard {
+  background: #fafafa;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.hint {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  margin-top: 0.15rem;
+}
+
+.seasonSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.seasonTitle {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.seasonGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.6rem;
+}
+
+.activeToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+}
+.activeToggle input { accent-color: #2d7a4f; }
+
+.formActions {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+/* Plant list */
+.plantList {
+  display: flex;
+  flex-direction: column;
+}
+
+.plantRow {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid #f9fafb;
+  transition: background 0.1s;
+  flex-wrap: wrap;
+}
+.plantRow:last-child { border-bottom: none; }
+.plantRow:hover { background: #fafafa; }
+
+.plantRowInactive { opacity: 0.55; }
+
+.plantIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #f0fdf4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.plantInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 120px;
+}
+
+.plantLabel {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.plantKey {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  font-family: monospace;
+}
+
+.builtinBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: #ede9fe;
+  color: #6d28d9;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  align-self: flex-start;
+}
+
+.plantStats {
+  display: flex;
+  gap: 0.6rem;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.stat {
+  font-size: 0.75rem;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.plantActions {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: auto;
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
+  border-radius: 6px;
+  transition: background 0.1s;
+}
+.toggleBtn:hover { background: #f3f4f6; }
+
+.editWrap {
+  padding: 0.75rem 1.25rem;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.disabledBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  align-self: flex-start;
+  margin-top: 0.1rem;
+}
+
+.plantGroup {
+  font-size: 0.68rem;
+  color: #6366f1;
+  background: #ede9fe;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  font-weight: 600;
+  align-self: flex-start;
+  margin-top: 0.1rem;
+}
+
+/* Group filter tabs */
+.groupTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.groupTab {
+  padding: 0.3rem 0.75rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.groupTab:hover { border-color: #2d7a4f; color: #2d7a4f; }
+
+.groupTabActive {
+  background: #2d7a4f;
+  border-color: #2d7a4f;
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .formGrid    { grid-template-columns: 1fr 1fr; }
+  .seasonGrid  { grid-template-columns: 1fr 1fr; }
+  .plantStats  { display: none; }
+  .searchInput { width: 140px; }
+  .modalBackdrop { padding: 0.5rem; align-items: flex-end; }
+  .modalBox { max-height: 95vh; border-radius: 16px 16px 0 0; }
+}

@@ -44,6 +44,12 @@
   display: flex;
 }
 
+.collapsed .logoWrapper {
+  border: none;
+  padding: 0;
+  flex: 0;
+}
+
 .logoIcon {
   font-size: 1.5rem;
   flex-shrink: 0;
@@ -131,6 +137,19 @@
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
+@media (max-width: 768px) {
+  .navbar {
+    background: linear-gradient(180deg, #0f2e1a 0%, #1a4a2e 100%);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+
+  .titleDesktop { color: #fff; }
+  .userName { color: #fff; }
+  .userRole { color: rgba(255,255,255,0.6); }
+  .avatarBtn:hover { background: rgba(255,255,255,0.1); }
+}
+
 .menuBtn {
   display: none;
   background: none;
@@ -193,6 +212,16 @@
   white-space: nowrap;
 }
 
+@media (max-width: 768px) {
+  .titleBrand {
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: #fff;
+    background-clip: unset;
+    color: #fff;
+  }
+}
+
 .navbarRight {
   display: flex;
   align-items: center;
@@ -211,6 +240,47 @@
 }
 
 .iconBtn:hover { background: #f3f4f6; }
+
+/* ── Bell button ───────────────────────────────────────── */
+.bellBtn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #374151;
+  padding: 0.4rem;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.bellBtn:hover { background: #f3f4f6; }
+
+@media (max-width: 768px) {
+  .bellBtn { color: #fff; }
+  .bellBtn:hover { background: rgba(255,255,255,0.1); }
+}
+
+.bellBadge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 700;
+  min-width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  line-height: 1;
+  border: 1.5px solid #fff;
+}
 
 /* ── Profile dropdown ──────────────────────────────────── */
 .profileWrap {
@@ -243,6 +313,24 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.avatarImg {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid #e5e7eb;
+}
+
+.profileAvatarImg {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid #e5e7eb;
 }
 
 .userInfo {
@@ -365,7 +453,7 @@
   gap: 3px;
   flex: 1;
   padding: 0.5rem 0.25rem;
-  color: #6b7280;
+  color: rgba(255,255,255,0.55);
   text-decoration: none;
   font-size: 0.65rem;
   font-weight: 500;
@@ -395,7 +483,7 @@
   justify-content: center;
   padding: 0 3px;
   line-height: 1;
-  border: 1.5px solid #fff;
+  border: 1.5px solid #1a4a2e;
 }
 
 .profileBadge {
@@ -415,7 +503,7 @@
 }
 
 .bottomNavActive {
-  color: #2d7a4f;
+  color: #4ade80;
 }
 
 .bottomNavLabel {
@@ -432,6 +520,8 @@
   flex: 1;
   padding: 1.75rem;
   overflow-y: auto;
+  overflow-x: hidden;
+  min-width: 0;
 }
 
 /* ── Mobile overlay ────────────────────────────────────── */
@@ -465,9 +555,9 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: #fff;
-    border-top: 1px solid #e5e7eb;
-    box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+    background: linear-gradient(180deg, #0f2e1a 0%, #1a4a2e 100%);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.25);
     z-index: 200;
     padding-bottom: env(safe-area-inset-bottom);
   }

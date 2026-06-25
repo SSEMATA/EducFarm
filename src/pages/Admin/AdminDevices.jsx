@@ -1,10 +1,21 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import api from '../../services/api';
+
+// Fix leaflet default marker icons broken by bundlers
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({ iconUrl: markerIcon, iconRetinaUrl: markerIcon2x, shadowUrl: markerShadow });
 import {
   CircuitBoard, Trash2, RefreshCw, Search, CheckCircle2, XCircle,
   Wifi, WifiOff, Plus, Copy, Eye, EyeOff, X, Zap, AlertTriangle,
   Clock, Thermometer, Droplets, Activity, Key, AlertCircle, Info, ShieldAlert,
+  Wrench, UserCheck, RotateCcw, Settings2, Power, PowerOff, Leaf, Layers, Save, MapPin, CloudSun,
 } from 'lucide-react';
 import styles from './Admin.module.css';
 
@@ -46,7 +57,7 @@ function GenerateModal({ onClose, onCreated }) {
     setLoading(true);
     setError('');
     try {
-      const { data } = await api.post('/admin/devices/generate/');
+      const { data } = await api.post('/users/admin/devices/generate/');
       setGenerated(data);
     } catch {
       setError('Failed to generate. Try again.');
@@ -112,13 +123,426 @@ function GenerateModal({ onClose, onCreated }) {
   );
 }
 
+
+function MapClickHandler({ onPick }) {
+  useMapEvents({ click: (e) => onPick(e.latlng.lat, e.latlng.lng) });
+  return null;
+}
+
+function FlyTo({ coords }) {
+  const map = useMap();
+  useEffect(() => {
+    if (coords) map.flyTo(coords, 13, { duration: 1.2 });
+  }, [coords, map]);
+  return null;
+}
+
+function PlaceSearch({ onSelect }) {
+  const [query, setQuery]     = useState('');
+  const [results, setResults] = useState([]);
+  const [searching, setSearching] = useState(false);
+  const debounceRef = useRef(null);
+
+  const search = useCallback(async (q) => {
+    if (q.trim().length < 3) { setResults([]); return; }
+    setSearching(true);
+    try {
+      const { data } = await api.get(`/location-search/?q=${encodeURIComponent(q)}`);
+      setResults(data);
+    } catch { setResults([]); }
+    finally { setSearching(false); }
+  }, []);
+
+  const handleChange = (e) => {
+    const v = e.target.value;
+    setQuery(v);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => search(v), 400);
+  };
+
+  const pick = (r) => {
+    onSelect(parseFloat(r.lat), parseFloat(r.lon), r.display_name);
+    setQuery(r.display_name);
+    setResults([]);
+  };
+
+  return (
+    <div className={styles.placeSearchWrap}>
+      <div className={styles.placeInputRow}>
+        <Search size={13} className={styles.placeIcon} />
+        <input
+          className={styles.placeInput}
+          placeholder="Search place, village, city…"
+          value={query}
+          onChange={handleChange}
+        />
+        {searching && <RefreshCw size={13} className={styles.spinning} style={{ color: '#6b7280', flexShrink: 0 }} />}
+      </div>
+      {results.length > 0 && (
+        <ul className={styles.placeDropdown}>
+          {results.map((r, i) => (
+            <li key={i} className={styles.placeItem} onClick={() => pick(r)}>
+              <MapPin size={12} style={{ flexShrink: 0, color: '#2d7a4f' }} />
+              <span>{r.display_name}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+const CROP_TYPES = ['Maize','Wheat','Rice','Soybean','Tomato','Potato','Cotton','Sugarcane','Sunflower','Groundnut','Cassava','Banana','Mango','Cabbage','Onion','Pepper','Cucumber','Watermelon','Other'];
+const SOIL_TYPES = ['Sandy','Clay','Silt','Loam','Sandy Loam','Clay Loam','Peat','Chalk'];
+
+function AdminFixPanel({ device, onFixed }) {
+  const [tab, setTab]       = useState('config');
+  const [saving, setSaving] = useState(false);
+  const [log, setLog]       = useState('');
+  const [error, setError]   = useState('');
+  const [flyTo, setFlyTo]   = useState(null);
+  const [weatherPreview, setWeatherPreview] = useState(null);
+
+  // config form
+  const [cfg, setCfg] = useState({
+    device_name:          device.device_name || '',
+    crop_type:            device.crop_type   || '',
+    soil_type:            device.soil_type   || '',
+    weather_lat:          device.weather_lat  ?? '',
+    weather_lon:          device.weather_lon  ?? '',
+    weather_location_name: device.weather_location_name || '',
+  });
+
+  // farm settings form
+  const [farm, setFarm] = useState({
+    soil_type:             '',
+    plant_type:            '',
+    moisture_min:          40,
+    moisture_max:          70,
+    moisture_critical_low: 20,
+    irrigation_duration:   30,
+  });
+
+  const act = async (action, extra = {}) => {
+    setSaving(true); setLog(''); setError('');
+    try {
+      const { data } = await api.patch(`/users/admin/devices/${device.id}/fix/`, { action, ...extra });
+      setLog(data.log?.join(' ') || 'Done.');
+      if (data.weather_preview) setWeatherPreview(data.weather_preview);
+      onFixed(data);
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Action failed.');
+    } finally { setSaving(false); }
+  };
+
+  const TABS = [
+    { key: 'config',   label: 'Device Config',    Icon: Settings2 },
+    { key: 'farm',     label: 'Farm Settings',     Icon: Leaf      },
+    { key: 'location', label: 'Weather Location',  Icon: MapPin    },
+    { key: 'pairing',  label: 'Pairing',           Icon: UserCheck },
+    { key: 'status',   label: 'Status',            Icon: Power     },
+  ];
+
+  return (
+    <div className={styles.fixPanel}>
+      <div className={styles.fixPanelTitle}><Wrench size={15} color="#f59e0b" /> Admin Fix Panel</div>
+
+      <div className={styles.fixTabs}>
+        {TABS.map(({ key, label, Icon }) => (
+          <button key={key}
+            className={`${styles.fixTab} ${tab === key ? styles.fixTabActive : ''}`}
+            onClick={() => { setTab(key); setLog(''); setError(''); }}
+          >
+            <Icon size={13} /> {label}
+          </button>
+        ))}
+      </div>
+
+      {log   && <div className={styles.fixLog}><CheckCircle2 size={13} color="#10b981" /> {log}</div>}
+      {error && <div className={styles.fixError}><AlertCircle size={13} /> {error}</div>}
+
+      {/* ── Device Config ── */}
+      {tab === 'config' && (
+        <div className={styles.fixForm}>
+          <p className={styles.fixHint}>Update device name, crop type and soil type on behalf of the user.</p>
+          <div className={styles.fixField}>
+            <label>Device Name</label>
+            <input className={styles.fixInput} value={cfg.device_name}
+              onChange={e => setCfg(p => ({ ...p, device_name: e.target.value }))} />
+          </div>
+          <div className={styles.fixField}>
+            <label>Crop Type</label>
+            <select className={styles.fixInput} value={cfg.crop_type}
+              onChange={e => setCfg(p => ({ ...p, crop_type: e.target.value }))}>
+              <option value="">— Select —</option>
+              {CROP_TYPES.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div className={styles.fixField}>
+            <label>Soil Type</label>
+            <select className={styles.fixInput} value={cfg.soil_type}
+              onChange={e => setCfg(p => ({ ...p, soil_type: e.target.value }))}>
+              <option value="">— Select —</option>
+              {SOIL_TYPES.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          <button className={styles.fixBtn} disabled={saving}
+            onClick={() => act('update_config', cfg)}>
+            <Save size={13} /> {saving ? 'Saving…' : 'Save Device Config'}
+          </button>
+        </div>
+      )}
+
+      {/* ── Farm Settings ── */}
+      {tab === 'farm' && (
+        <div className={styles.fixForm}>
+          <p className={styles.fixHint}>Update the user's farm settings directly — soil type, plant type, moisture thresholds.</p>
+          <div className={styles.fixGrid2}>
+            <div className={styles.fixField}>
+              <label>Soil Type</label>
+              <select className={styles.fixInput} value={farm.soil_type}
+                onChange={e => setFarm(p => ({ ...p, soil_type: e.target.value }))}>
+                <option value="">— Select —</option>
+                {SOIL_TYPES.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            <div className={styles.fixField}>
+              <label>Plant Type</label>
+              <select className={styles.fixInput} value={farm.plant_type}
+                onChange={e => setFarm(p => ({ ...p, plant_type: e.target.value }))}>
+                <option value="">— Select —</option>
+                {CROP_TYPES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className={styles.fixField}>
+              <label>Moisture Min (%)</label>
+              <input type="number" className={styles.fixInput} min="0" max="100"
+                value={farm.moisture_min}
+                onChange={e => setFarm(p => ({ ...p, moisture_min: e.target.value }))} />
+            </div>
+            <div className={styles.fixField}>
+              <label>Moisture Max (%)</label>
+              <input type="number" className={styles.fixInput} min="0" max="100"
+                value={farm.moisture_max}
+                onChange={e => setFarm(p => ({ ...p, moisture_max: e.target.value }))} />
+            </div>
+            <div className={styles.fixField}>
+              <label>Critical Low (%)</label>
+              <input type="number" className={styles.fixInput} min="0" max="100"
+                value={farm.moisture_critical_low}
+                onChange={e => setFarm(p => ({ ...p, moisture_critical_low: e.target.value }))} />
+            </div>
+            <div className={styles.fixField}>
+              <label>Irrigation Duration (min)</label>
+              <input type="number" className={styles.fixInput} min="5" max="120"
+                value={farm.irrigation_duration}
+                onChange={e => setFarm(p => ({ ...p, irrigation_duration: e.target.value }))} />
+            </div>
+          </div>
+          <button className={styles.fixBtn} disabled={saving}
+            onClick={() => act('update_farm_settings', farm)}>
+            <Save size={13} /> {saving ? 'Saving…' : 'Save Farm Settings'}
+          </button>
+        </div>
+      )}
+
+      {/* ── Weather Location ── */}
+      {tab === 'location' && (
+        <div className={styles.fixForm}>
+          <p className={styles.fixHint}>
+            Search for a place or click anywhere on the map to drop a pin.
+          </p>
+
+          {/* Place search */}
+          <PlaceSearch
+            onSelect={(lat, lon, name) => {
+              setFlyTo([lat, lon]);
+              setCfg(p => ({
+                ...p,
+                weather_lat: lat.toFixed(6),
+                weather_lon: lon.toFixed(6),
+                weather_location_name: p.weather_location_name || name.split(',').slice(0, 2).join(',').trim(),
+              }));
+            }}
+          />
+
+          {/* Map picker */}
+          <div className={styles.mapWrap}>
+            <MapContainer
+              center={[
+                cfg.weather_lat ? parseFloat(cfg.weather_lat) : 0,
+                cfg.weather_lon ? parseFloat(cfg.weather_lon) : 20,
+              ]}
+              zoom={cfg.weather_lat ? 10 : 2}
+              className={styles.mapContainer}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              />
+              <MapClickHandler
+                onPick={(lat, lon) => {
+                  setFlyTo(null);
+                  setCfg(p => ({
+                    ...p,
+                    weather_lat: lat.toFixed(6),
+                    weather_lon: lon.toFixed(6),
+                  }));
+                }}
+              />
+              <FlyTo coords={flyTo} />
+              {cfg.weather_lat && cfg.weather_lon && (
+                <Marker position={[parseFloat(cfg.weather_lat), parseFloat(cfg.weather_lon)]} />
+              )}
+            </MapContainer>
+            <p className={styles.mapHint}><MapPin size={11} /> Click on the map to place the pin</p>
+          </div>
+
+          <div className={styles.fixGrid2}>
+            <div className={styles.fixField}>
+              <label>Latitude</label>
+              <input
+                type="number" step="any" className={styles.fixInput}
+                placeholder="e.g. -1.2921"
+                value={cfg.weather_lat ?? ''}
+                onChange={e => setCfg(p => ({ ...p, weather_lat: e.target.value }))}
+              />
+            </div>
+            <div className={styles.fixField}>
+              <label>Longitude</label>
+              <input
+                type="number" step="any" className={styles.fixInput}
+                placeholder="e.g. 36.8219"
+                value={cfg.weather_lon ?? ''}
+                onChange={e => setCfg(p => ({ ...p, weather_lon: e.target.value }))}
+              />
+            </div>
+          </div>
+          <div className={styles.fixField}>
+            <label>Location Name <span style={{ fontWeight: 400, color: '#9ca3af' }}>(optional label)</span></label>
+            <input
+              className={styles.fixInput}
+              placeholder="e.g. Nairobi, Kenya"
+              value={cfg.weather_location_name ?? ''}
+              onChange={e => setCfg(p => ({ ...p, weather_location_name: e.target.value }))}
+            />
+          </div>
+          <button
+            className={`${styles.fixBtn} ${styles.fixBtnSuccess}`} disabled={saving}
+            onClick={() => act('set_weather_location', {
+              lat: cfg.weather_lat,
+              lon: cfg.weather_lon,
+              name: cfg.weather_location_name || '',
+            })}>
+            <MapPin size={13} /> {saving ? 'Saving…' : 'Save Weather Location'}
+          </button>
+
+          {weatherPreview && !weatherPreview.error && (
+            <div className={styles.weatherPreview}>
+              <div className={styles.wpHeader}>
+                <MapPin size={13} color="#2d7a4f" />
+                <span className={styles.wpLocation}>{weatherPreview.location}</span>
+                <span className={styles.wpBadge}>Live</span>
+              </div>
+              <div className={styles.wpRow}>
+                <div className={styles.wpStat}>
+                  <Thermometer size={14} color="#f59e0b" />
+                  <span>{weatherPreview.temperature}°C</span>
+                  <small>Temp</small>
+                </div>
+                <div className={styles.wpStat}>
+                  <Droplets size={14} color="#3b82f6" />
+                  <span>{weatherPreview.humidity}%</span>
+                  <small>Humidity</small>
+                </div>
+                <div className={styles.wpStat}>
+                  <CloudSun size={14} color="#6366f1" />
+                  <span>{weatherPreview.condition}</span>
+                  <small>Condition</small>
+                </div>
+                <div className={styles.wpStat}>
+                  <Droplets size={14} color="#1d4ed8" />
+                  <span>{weatherPreview.rain_prob}%</span>
+                  <small>Rain</small>
+                </div>
+              </div>
+              <div className={`${styles.wpPump} ${weatherPreview.pump.skip ? styles.wpPumpSkip : styles.wpPumpOn}`}>
+                <Zap size={13} />
+                <span>
+                  {weatherPreview.pump.skip
+                    ? weatherPreview.pump.reason
+                    : `Pump: ${weatherPreview.pump.reason} • ${weatherPreview.pump.water_l}L estimated`}
+                </span>
+              </div>
+            </div>
+          )}
+          {weatherPreview?.error && (
+            <p className={styles.fixHint} style={{ color: '#ef4444' }}>Weather preview unavailable.</p>
+          )}
+        </div>
+      )}
+
+      {/* ── Pairing ── */}
+      {tab === 'pairing' && (
+        <div className={styles.fixForm}>
+          <p className={styles.fixHint}>Fix pairing issues — unpair so the user can re-pair, or reset credentials entirely.</p>
+          <div className={styles.fixActions}>
+            <div className={styles.fixActionCard}>
+              <div className={styles.fixActionTitle}><RotateCcw size={14} color="#f59e0b" /> Unpair Device</div>
+              <p className={styles.fixActionDesc}>Removes the current pairing so the user can re-pair using the same Device ID and Pairing Code.</p>
+              <button className={`${styles.fixBtn} ${styles.fixBtnWarning}`} disabled={saving}
+                onClick={() => act('unpair')}>
+                {saving ? 'Working…' : 'Unpair Device'}
+              </button>
+            </div>
+            <div className={styles.fixActionCard}>
+              <div className={styles.fixActionTitle}><Key size={14} color="#ef4444" /> Reset Credentials</div>
+              <p className={styles.fixActionDesc}>Generates a new Pairing Code and Secret Key. The old credentials will stop working. Share the new ones with the user.</p>
+              <button className={`${styles.fixBtn} ${styles.fixBtnDanger}`} disabled={saving}
+                onClick={() => act('reset_credentials')}>
+                {saving ? 'Working…' : 'Reset Credentials'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Status ── */}
+      {tab === 'status' && (
+        <div className={styles.fixForm}>
+          <p className={styles.fixHint}>Manually override the device connection status in the database.</p>
+          <div className={styles.fixActions}>
+            <div className={styles.fixActionCard}>
+              <div className={styles.fixActionTitle}><Power size={14} color="#10b981" /> Force Online</div>
+              <p className={styles.fixActionDesc}>Marks the device as Online and updates last_seen to now. Use when the device is actually connected but status is stuck.</p>
+              <button className={`${styles.fixBtn} ${styles.fixBtnSuccess}`} disabled={saving}
+                onClick={() => act('force_online')}>
+                {saving ? 'Working…' : 'Force Online'}
+              </button>
+            </div>
+            <div className={styles.fixActionCard}>
+              <div className={styles.fixActionTitle}><PowerOff size={14} color="#6b7280" /> Force Offline</div>
+              <p className={styles.fixActionDesc}>Marks the device as Offline. Use to correct a stuck Online status when the device is not actually connected.</p>
+              <button className={`${styles.fixBtn} ${styles.fixBtnGray}`} disabled={saving}
+                onClick={() => act('force_offline')}>
+                {saving ? 'Working…' : 'Force Offline'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function DeviceDetailModal({ device, onClose }) {
   const [stats, setStats]         = useState(null);
   const [loading, setLoading]     = useState(true);
   const [showSecret, setShowSecret] = useState(false);
+  const [showFix, setShowFix]     = useState(false);
 
   useEffect(() => {
-    api.get(`/admin/devices/${device.id}/stats/`)
+    api.get(`/users/admin/devices/${device.id}/stats/`)
       .then(({ data }) => setStats(data))
       .catch(() => setStats(device))
       .finally(() => setLoading(false));
@@ -139,7 +563,12 @@ function DeviceDetailModal({ device, onClose }) {
       <div className={styles.detailModal}>
         <div className={styles.genHeader}>
           <div className={styles.genTitle}><CircuitBoard size={18} color="#6366f1" />{d.device_name || d.device_id}</div>
-          <button className={styles.closeBtn} onClick={onClose}><X size={16} /></button>
+          <div style={{display:'flex',gap:'0.4rem'}}>
+            <button className={styles.fixToggleBtn} onClick={() => setShowFix(v => !v)} title="Admin Fix Panel">
+              <Wrench size={14} /> {showFix ? 'Hide Fix Panel' : 'Fix'}
+            </button>
+            <button className={styles.closeBtn} onClick={onClose}><X size={16} /></button>
+          </div>
         </div>
         {loading ? (
           <div className={styles.genBody}><p className={styles.genLoading}>Loading…</p></div>
@@ -264,6 +693,12 @@ function DeviceDetailModal({ device, onClose }) {
                 </div>
               )}
             </div>
+            {showFix && (
+              <AdminFixPanel
+                device={d}
+                onFixed={(updated) => setStats(s => ({ ...s, ...updated }))}
+              />
+            )}
           </div>
         )}
       </div>
@@ -285,7 +720,7 @@ export default function AdminDevices() {
 
   const fetchDevices = useCallback(async () => {
     setLoading(true);
-    try { const { data } = await api.get('/admin/devices/'); setDevices(data); }
+    try { const { data } = await api.get('/users/admin/devices/'); setDevices(data); }
     catch { /* interceptor handles */ } finally { setLoading(false); }
   }, []);
 
@@ -293,7 +728,7 @@ export default function AdminDevices() {
 
   const handleDelete = async (id) => {
     try {
-      await api.delete(`/admin/devices/${id}/`);
+      await api.delete(`/users/admin/devices/${id}/`);
       setDevices(d => d.filter(x => x.id !== id));
       showToast('Device deleted.');
     } catch { showToast('Delete failed.'); }

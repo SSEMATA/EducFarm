@@ -53,7 +53,12 @@ export default function DeviceList() {
     setSaving(true);
     setActionError('');
     try {
-      const { data } = await api.put(`/devices/${editForm.id}/`, editForm);
+      const payload = {
+        device_name: editForm.device_name,
+        crop_type:   editForm.crop_type,
+        soil_type:   editForm.soil_type,
+      };
+      const { data } = await api.put(`/devices/${editForm.id}/`, payload);
       setDevices((prev) => prev.map((d) => (d.id === data.id ? data : d)));
       closeModal();
     } catch {
@@ -174,9 +179,9 @@ export default function DeviceList() {
                     <td className={styles.lastSeen}>{device.last_seen ? new Date(device.last_seen).toLocaleString() : '—'}</td>
                     <td>
                       <div className={styles.actions}>
-                        <button className={`${styles.actionBtn} ${styles.viewBtn}`}   onClick={() => openView(device)}><Eye size={13} /> View</button>
-                        <button className={`${styles.actionBtn} ${styles.editBtn}`}   onClick={() => openEdit(device)}><Pencil size={13} /> Edit</button>
-                        <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => openDelete(device)}><Trash2 size={13} /> Delete</button>
+                        <button className={`${styles.actionBtn} ${styles.viewBtn}`}   onClick={() => openView(device)}><Eye size={13} /> <span className={styles.btnLabel}>View</span></button>
+                        <button className={`${styles.actionBtn} ${styles.editBtn}`}   onClick={() => openEdit(device)}><Pencil size={13} /> <span className={styles.btnLabel}>Edit</span></button>
+                        <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => openDelete(device)}><Trash2 size={13} /> <span className={styles.btnLabel}>Delete</span></button>
                       </div>
                     </td>
                   </tr>
@@ -233,29 +238,38 @@ export default function DeviceList() {
                 </div>
                 {actionError && <div className={styles.modalError}>{actionError}</div>}
                 <div className={styles.editGrid}>
-                  {[
-                    { name: 'device_name', label: 'Device Name' },
-                    { name: 'soil_type',   label: 'Soil Type'   },
-                    { name: 'crop_type',   label: 'Crop Type'   },
-                  ].map(({ name, label }) => (
-                    <div key={name} className={styles.editField}>
-                      <label className={styles.editLabel}>{label}</label>
-                      <input
-                        className={styles.editInput}
-                        value={editForm[name] ?? ''}
-                        onChange={(e) => setEditForm((p) => ({ ...p, [name]: e.target.value }))}
-                      />
-                    </div>
-                  ))}
                   <div className={styles.editField}>
-                    <label className={styles.editLabel}>Status</label>
+                    <label className={styles.editLabel}>Device Name</label>
+                    <input
+                      className={styles.editInput}
+                      value={editForm.device_name ?? ''}
+                      onChange={(e) => setEditForm((p) => ({ ...p, device_name: e.target.value }))}
+                    />
+                  </div>
+                  <div className={styles.editField}>
+                    <label className={styles.editLabel}>Crop Type</label>
                     <select
                       className={styles.editInput}
-                      value={editForm.status ?? ''}
-                      onChange={(e) => setEditForm((p) => ({ ...p, status: e.target.value }))}
+                      value={editForm.crop_type ?? ''}
+                      onChange={(e) => setEditForm((p) => ({ ...p, crop_type: e.target.value }))}
                     >
-                      <option value="Online">Online</option>
-                      <option value="Offline">Offline</option>
+                      <option value="">— Select crop —</option>
+                      {['Maize','Wheat','Rice','Soybean','Tomato','Potato','Cotton','Sugarcane','Sunflower','Groundnut','Cassava','Banana','Mango','Cabbage','Onion','Pepper','Cucumber','Watermelon','Other'].map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className={styles.editField}>
+                    <label className={styles.editLabel}>Soil Type</label>
+                    <select
+                      className={styles.editInput}
+                      value={editForm.soil_type ?? ''}
+                      onChange={(e) => setEditForm((p) => ({ ...p, soil_type: e.target.value }))}
+                    >
+                      <option value="">— Select soil —</option>
+                      {['Sandy','Clay','Silt','Loam','Sandy Loam','Clay Loam','Peat','Chalk'].map(s => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
                     </select>
                   </div>
                 </div>

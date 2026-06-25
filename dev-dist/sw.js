@@ -77,11 +77,11 @@ define(['./workbox-7e5eb42b'], (function (workbox) { 'use strict';
    * See https://goo.gl/S9QRab
    */
   workbox.precacheAndRoute([{
-    "url": "index.html",
-    "revision": "0.rkjfpqhdre8"
+    "url": "/EducFarm/index.html",
+    "revision": "0.qrno76oons8"
   }], {});
   workbox.cleanupOutdatedCaches();
-  workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
+  workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("/EducFarm/index.html"), {
     allowlist: [/^\/$/],
     denylist: [/^\/api\//]
   }));

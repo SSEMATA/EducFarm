@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   ResponsiveContainer, AreaChart, Area, LineChart, Line,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -11,6 +11,7 @@ import {
   Sunrise, Sunset, Moon, Leaf, UserCheck,
 } from 'lucide-react';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import styles from './Dashboard.module.css';
 
@@ -37,12 +38,12 @@ const HOURLY_META = {
 };
 
 function getCondMeta(condition = '') {
-  const key = condition.toLowerCase().replace(' ', '_');
+  const key = condition.toLowerCase().replace(/\s+/g, '_');
   return CONDITION_META[key] ?? { Icon: Sun, label: condition, grad: ['#6b7280','#9ca3af'] };
 }
 
 function getHourlyMeta(condition = '') {
-  const key = condition.toLowerCase().replace(' ', '_');
+  const key = condition.toLowerCase().replace(/\s+/g, '_');
   return HOURLY_META[key] ?? { Icon: Sun, color: '#f59e0b' };
 }
 
@@ -59,6 +60,8 @@ const FALLBACK = {
   irrigation_cycles: 0,
   moisture_trend:    [],
   temperature_trend: [],
+  soil_temperature_trend: [],
+  soil_humidity_trend: [],
   irrigation_history:[],
 };
 
@@ -176,6 +179,7 @@ const ChartTooltip = ({ active, payload, label }) => {
 };
 
 export default function Dashboard() {
+  const { user } = useAuth();
   const [data, setData]               = useState(FALLBACK);
   const [initialLoad, setInitialLoad] = useState(true);
   const [refreshing, setRefreshing]   = useState(false);
@@ -185,6 +189,7 @@ export default function Dashboard() {
   const [weather, setWeather]         = useState(null);
   const [locModal, setLocModal]       = useState(false); // custom location modal
   const [coords, setCoords]           = useState(null);  // cached coords
+  const coordsRef = useRef(null); // always holds latest coords for interval
   const [welcome, setWelcome] = useState(() => {
     const reg = sessionStorage.getItem('justRegistered');
     const log = sessionStorage.getItem('justLoggedIn');
@@ -192,6 +197,11 @@ export default function Dashboard() {
     if (log) { sessionStorage.removeItem('justLoggedIn');   return 'login'; }
     return null;
   });
+
+  const setCoordsBoth = (c) => {
+    setCoords(c);
+    coordsRef.current = c;
+  };
 
   const greetingInfo = () => {
     const h = new Date().getHours();
@@ -207,8 +217,9 @@ export default function Dashboard() {
     return () => clearTimeout(t);
   }, [welcome]);
 
-  const fetchWeather = useCallback((c = coords) => {
-    const params = c ? `?lat=${c.lat}&lon=${c.lon}` : '';
+  const fetchWeather = useCallback((c) => {
+    const coords = c ?? coordsRef.current;
+    const params = coords ? `?lat=${coords.lat}&lon=${coords.lon}` : '';
     const doFetch = async () => {
       setWeatherRefreshing(true);
       try {
@@ -218,10 +229,11 @@ export default function Dashboard() {
       finally { setWeatherRefreshing(false); }
     };
     doFetch();
-  }, [coords]);
+  }, []);
 
-  const fetchData = useCallback((c = coords) => {
-    const params = c ? `?lat=${c.lat}&lon=${c.lon}` : '';
+  const fetchData = useCallback((c) => {
+    const coords = c ?? coordsRef.current;
+    const params = coords ? `?lat=${coords.lat}&lon=${coords.lon}` : '';
     const doFetch = async () => {
       setRefreshing(true);
       try {
@@ -237,46 +249,57 @@ export default function Dashboard() {
       }
     };
     doFetch();
-  }, [coords]);
+  }, []);
 
-  // On mount: check if we already have permission/coords cached
   useEffect(() => {
-    const saved = localStorage.getItem('ef_coords');
-    if (saved) {
-      const c = JSON.parse(saved);
-      setCoords(c);
-      fetchData(c);
-      fetchWeather(c);
-    } else {
-      // Check permission state without triggering the browser prompt
-      navigator.permissions?.query({ name: 'geolocation' }).then((result) => {
-        if (result.state === 'granted') {
-          navigator.geolocation.getCurrentPosition(({ coords: gc }) => {
-            const c = { lat: gc.latitude, lon: gc.longitude };
-            localStorage.setItem('ef_coords', JSON.stringify(c));
-            setCoords(c);
-            fetchData(c);
-            fetchWeather(c);
-          }, () => { fetchData(); fetchWeather(); });
-        } else if (result.state === 'denied') {
+    const init = async () => {
+      // If admin has set a location, use it — skip GPS entirely
+      try {
+        const { data: fs } = await api.get('/farm-settings/');
+        if (fs.admin_weather_lat != null && fs.admin_weather_lon != null) {
+          localStorage.removeItem('ef_coords');
           fetchData();
           fetchWeather();
-        } else {
-          // 'prompt' — show our custom modal instead of browser prompt
-          setLocModal(true);
-          fetchData();
-          fetchWeather();
+          return;
         }
-      }).catch(() => {
-        // permissions API not supported — just fetch without location
+      } catch { /* fall through */ }
+
+      // No admin location — proceed with GPS flow as before
+      const saved = localStorage.getItem('ef_coords');
+      if (saved && saved !== 'denied') {
+        const c = JSON.parse(saved);
+        setCoordsBoth(c);
+        fetchData(c);
+        fetchWeather(c);
+      } else if (saved === 'denied') {
         fetchData();
         fetchWeather();
-      });
-    }
-    const interval = setInterval(() => fetchData(coords), 30_000);
+      } else {
+        navigator.permissions?.query({ name: 'geolocation' }).then((result) => {
+          if (result.state === 'granted') {
+            navigator.geolocation.getCurrentPosition(({ coords: gc }) => {
+              const c = { lat: gc.latitude, lon: gc.longitude };
+              localStorage.setItem('ef_coords', JSON.stringify(c));
+              setCoordsBoth(c);
+              fetchData(c);
+              fetchWeather(c);
+            }, () => { fetchData(); fetchWeather(); });
+          } else if (result.state === 'denied') {
+            fetchData();
+            fetchWeather();
+          } else {
+            setLocModal(true);
+            fetchData();
+            fetchWeather();
+          }
+        }).catch(() => { fetchData(); fetchWeather(); });
+      }
+    };
+
+    init();
+    const interval = setInterval(() => fetchData(coordsRef.current), 30_000);
     return () => clearInterval(interval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchData, fetchWeather]);
 
   const handleAllowLocation = () => {
     setLocModal(false);
@@ -284,7 +307,7 @@ export default function Dashboard() {
       ({ coords: gc }) => {
         const c = { lat: gc.latitude, lon: gc.longitude };
         localStorage.setItem('ef_coords', JSON.stringify(c));
-        setCoords(c);
+        setCoordsBoth(c);
         fetchData(c);
         fetchWeather(c);
       },
@@ -350,7 +373,7 @@ export default function Dashboard() {
           </div>
           <button
             className={styles.refreshBtn}
-            onClick={() => { fetchData(coords); fetchWeather(coords); }}
+            onClick={() => { fetchData(coordsRef.current); fetchWeather(coordsRef.current); }}
             disabled={refreshing || weatherRefreshing}
             aria-label="Refresh"
           >
@@ -361,8 +384,7 @@ export default function Dashboard() {
 
         {/* Permanent greeting */}
         {(() => {
-          const user = JSON.parse(localStorage.getItem('user') || '{}');
-          const firstName = user.full_name?.split(' ')[0] || 'Farmer';
+          const firstName = user?.full_name?.split(' ')[0] || 'Farmer';
           const { text, Icon: GreetIcon } = greetingInfo();
           return (
             <div className={styles.greeting}>
@@ -385,52 +407,86 @@ export default function Dashboard() {
 
         {error && <div className={styles.errorBanner}>{error}</div>}
 
-        {/* Stat cards */}
-        <div className={styles.cardsGrid}>
-          {cards.map(({ key, label, value, Icon, accent, bg, badge, bar, barColor, tankVisual, sub }) => (
-            <div
-              key={key}
-              className={`${styles.card} ${loading ? styles.skeleton : ''}`}
-              style={{ '--card-bg': bg, '--card-accent': accent }}
-            >
-              <div className={styles.cardTop}>
-                <span className={styles.cardIcon} style={{ color: accent }}>
-                  <Icon size={18} strokeWidth={2} />
+        {/* Stat cards — full width table */}
+        <div className={`${styles.statsTable} ${loading ? styles.skeleton : ''}`}>
+          {cards.map(({ key, label, value, Icon, accent, bg, badge, bar, barColor, sub }) => (
+            <div key={key} className={styles.statsRow} style={{ '--row-accent': accent, '--row-bg': bg }}>
+              <div className={styles.statsRowLeft}>
+                <span className={styles.statsIcon} style={{ background: bg, color: accent }}>
+                  <Icon size={15} strokeWidth={2} />
                 </span>
-                <span className={styles.cardLabel}>{label}</span>
+                <span className={styles.statsLabel}>{label}</span>
               </div>
-
-              {badge ? (
-                <span className={styles.badge} style={{ background: accent + '22', color: accent }}>
-                  <span className={styles.badgeDot} style={{ background: accent }} />
-                  {value}
-                </span>
-              ) : (
-                <p className={styles.cardValue} style={{ color: accent }}>{value}</p>
-              )}
-
-              {sub && <span className={styles.cardSub}>{sub}</span>}
-
-              {bar !== undefined && (
-                <div className={styles.progressTrack}>
-                  <div className={styles.progressFill} style={{ width: `${bar}%`, background: barColor }} />
-                </div>
-              )}
-
-              {tankVisual && (
-                <div className={styles.tankWrap}>
-                  <div className={styles.tank}>
-                    <div className={styles.tankFill} style={{ height: `${data.water_tank_level}%`, background: barColor }} />
+              <div className={styles.statsRowRight}>
+                {badge ? (
+                  <span className={styles.badge} style={{ background: accent + '22', color: accent }}>
+                    <span className={styles.badgeDot} style={{ background: accent }} />
+                    {value}
+                  </span>
+                ) : (
+                  <span className={styles.statsValue} style={{ color: accent }}>{value}</span>
+                )}
+                {sub && <span className={styles.cardSub}>{sub}</span>}
+                {bar !== undefined && (
+                  <div className={styles.progressTrack}>
+                    <div className={styles.progressFill} style={{ width: `${bar}%`, background: barColor }} />
                   </div>
-                  <span className={styles.tankPct}>{data.water_tank_level}%</span>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           ))}
         </div>
 
+        {/* Soil Moisture + Soil Humidity — 2-column row, above weather */}
+        <div className={styles.soilChartsRow}>
+          <div className={styles.chartCard}>
+            <h3 className={styles.chartTitle}>
+              <Droplets size={15} style={{ color: '#3b82f6' }} /> Soil Moisture
+            </h3>
+            {loading ? <div className={styles.chartSkeleton} /> : (
+            <ResponsiveContainer width="100%" height={200}>
+              <AreaChart data={data.moisture_trend} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="moistureGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#3b82f6" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="time" tick={{ fontSize: 11, fill: '#6b7280' }} />
+                <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} unit="%" domain={[0, 100]} />
+                <Tooltip content={<ChartTooltip />} />
+                <Area type="monotone" dataKey="moisture" name="Moisture" unit="%" stroke="#3b82f6" strokeWidth={2} fill="url(#moistureGrad)" dot={false} activeDot={{ r: 4 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+            )}
+          </div>
+          <div className={styles.chartCard}>
+            <h3 className={styles.chartTitle}>
+              <Droplets size={15} style={{ color: '#06b6d4' }} /> Soil Humidity
+            </h3>
+            {loading ? <div className={styles.chartSkeleton} /> : (
+            <ResponsiveContainer width="100%" height={200}>
+              <AreaChart data={data.soil_humidity_trend} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="soilHumidGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#06b6d4" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="time" tick={{ fontSize: 11, fill: '#6b7280' }} />
+                <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} unit="%" domain={[0, 100]} />
+                <Tooltip content={<ChartTooltip />} />
+                <Area type="monotone" dataKey="humidity" name="Soil Humidity" unit="%" stroke="#06b6d4" strokeWidth={2} fill="url(#soilHumidGrad)" dot={false} activeDot={{ r: 4 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+            )}
+          </div>
+        </div>
+
         {/* ── Weather summary ─────────────────────────── */}
-        {current && (
+        {current ? (
           <div className={styles.weatherRow}>
             {/* Current weather mini-card */}
             <div className={styles.weatherMini} style={{ '--g1': grad[0], '--g2': grad[1] }}>
@@ -458,8 +514,8 @@ export default function Dashboard() {
                       <div key={i} className={`${styles.hourlyCol} ${h.pump_active ? styles.hourlyColPump : ''}`}>
                         <span className={styles.hourlyTime}>{h.time}</span>
                         <HIcon size={18} color={color} strokeWidth={1.75} />
-                        <span className={styles.hourlyTemp}>{h.temp}°</span>
-                        <span className={styles.hourlyRain}><Droplets size={9} />{h.rain_probability}%</span>
+                        <span className={styles.hourlyTemp}>{Number(h.temp).toFixed(1)}°</span>
+                        <span className={styles.hourlyRain}><Droplets size={9} />{Number(h.rain_probability).toFixed(1)}%</span>
                         {h.pump_active && <span className={styles.pumpBadge}><Zap size={9} />Pump</span>}
                       </div>
                     );
@@ -468,10 +524,15 @@ export default function Dashboard() {
               </div>
             )}
           </div>
+        ) : (
+          <div className={styles.weatherPlaceholder}>
+            <CloudSun size={22} color="#9ca3af" strokeWidth={1.5} />
+            <span>Weather data unavailable — add an OpenWeather API key to see forecasts</span>
+          </div>
         )}
 
         {/* ── Today's irrigation plan ──────────────────── */}
-        {todayIrr && (
+        {todayIrr ? (
           <div className={styles.irrigCard}>
             <p className={styles.irrigTitle}><CalendarClock size={14} /> Today's Irrigation Plan</p>
             {todayIrr.skip ? (
@@ -520,35 +581,40 @@ export default function Dashboard() {
               </div>
             )}
           </div>
+        ) : (
+          <div className={styles.irrigPlaceholder}>
+            <CalendarClock size={22} color="#9ca3af" strokeWidth={1.5} />
+            <span>Irrigation plan unavailable — configure farm settings and add a weather API key</span>
+          </div>
         )}
 
         {/* Charts */}
         <div className={styles.chartsGrid}>
           <div className={styles.chartCard}>
             <h3 className={styles.chartTitle}>
-              <Droplets size={15} style={{ color: '#3b82f6' }} /> Soil Moisture Trend
+              <Thermometer size={15} style={{ color: '#f97316' }} /> Soil Temperature
             </h3>
+            {loading ? <div className={styles.chartSkeleton} /> : (
             <ResponsiveContainer width="100%" height={220}>
-              <AreaChart data={data.moisture_trend} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={data.soil_temperature_trend} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="moistureGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#3b82f6" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  <linearGradient id="soilTempGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#f97316" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis dataKey="time" tick={{ fontSize: 11, fill: '#6b7280' }} />
-                <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} unit="%" domain={[0, 100]} />
+                <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} unit="°C" />
                 <Tooltip content={<ChartTooltip />} />
-                <Area type="monotone" dataKey="moisture" name="Moisture" unit="%" stroke="#3b82f6" strokeWidth={2} fill="url(#moistureGrad)" dot={false} activeDot={{ r: 4 }} />
+                <Area type="monotone" dataKey="temperature" name="Soil Temp" unit="°C" stroke="#f97316" strokeWidth={2} fill="url(#soilTempGrad)" dot={false} activeDot={{ r: 4 }} />
               </AreaChart>
             </ResponsiveContainer>
+            )}
           </div>
 
           <div className={styles.chartCard}>
-            <h3 className={styles.chartTitle}>
-              <Thermometer size={15} style={{ color: '#f97316' }} /> Temperature Trend
-            </h3>
+            {loading ? <div className={styles.chartSkeleton} /> : (
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={tempTrendData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -560,12 +626,14 @@ export default function Dashboard() {
                 <Line type="monotone" dataKey="humidity" name="Humidity" unit="%" stroke="#06b6d4" strokeWidth={2} dot={false} activeDot={{ r: 4 }} strokeDasharray="4 2" />
               </LineChart>
             </ResponsiveContainer>
+            )}
           </div>
 
           <div className={`${styles.chartCard} ${styles.chartFull}`}>
             <h3 className={styles.chartTitle}>
               <Sprout size={15} style={{ color: '#2d7a4f' }} /> Irrigation History
             </h3>
+            {loading ? <div className={styles.chartSkeleton} /> : (
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={data.irrigation_history} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                 <defs>
@@ -575,13 +643,14 @@ export default function Dashboard() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#6b7280' }} />
+                <XAxis dataKey="time" tick={{ fontSize: 11, fill: '#6b7280' }} />
                 <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} unit="L" />
                 <Tooltip content={<ChartTooltip />} />
                 <Legend wrapperStyle={{ fontSize: '12px' }} />
-                <Bar dataKey="volume" name="Water Used" unit="L" fill="url(#irrigGrad)" radius={[4, 4, 0, 0]} maxBarSize={48} />
+                <Bar dataKey="cycles" name="Irrigation Cycles" unit="" fill="url(#irrigGrad)" radius={[4, 4, 0, 0]} maxBarSize={48} />
               </BarChart>
             </ResponsiveContainer>
+            )}
           </div>
         </div>
       </div>

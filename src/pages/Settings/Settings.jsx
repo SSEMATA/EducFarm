@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { Wifi, MessageSquare, Sprout, ChevronRight, User, Mail, MapPin, CircuitBoard, Download, Smartphone } from 'lucide-react';
+import { Wifi, MessageSquare, Sprout, ChevronRight, User, Mail, MapPin, CircuitBoard, Download, Smartphone, Radio, Bell } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
+import { useAuth } from '../../context/AuthContext';
 import styles from './Settings.module.css';
 
 const SETTINGS_CARDS = [
@@ -35,8 +36,8 @@ const SETTINGS_CARDS = [
 
 export default function Settings() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const initials = user.full_name
+  const { user } = useAuth();
+  const initials = user?.full_name
     ? user.full_name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
     : 'U';
 
@@ -72,30 +73,20 @@ export default function Settings() {
           ))}
         </div>
 
-        {/* Account section — below cards */}
-        <div className={styles.sectionLabel}>Account</div>
-        <div className={styles.profileCard}>
-          <div className={styles.avatar}>{initials}</div>
-          <div className={styles.profileInfo}>
-            <span className={styles.profileName}>{user.full_name || 'Farmer'}</span>
-            {user.email && (
-              <span className={styles.profileMeta}>
-                <Mail size={12} /> {user.email}
-              </span>
-            )}
-            {(user.farm_name || user.country) && (
-              <span className={styles.profileMeta}>
-                <MapPin size={12} />
-                {user.farm_name}{user.country ? ` · ${user.country}` : ''}
-              </span>
-            )}
+        {/* My Devices — above Device Management */}
+        <div className={styles.sectionLabel}>Devices</div>
+        <button className={styles.navCard} onClick={() => navigate('/devices')}>
+          <div className={styles.navIconWrap} style={{ background: '#eff6ff', border: '1.5px solid #bfdbfe' }}>
+            <Radio size={24} strokeWidth={1.8} color="#3b82f6" />
           </div>
-          <div className={styles.profileBadge}>
-            <User size={13} /> Farmer
+          <div className={styles.navInfo}>
+            <span className={styles.navTitle}>My Devices</span>
+            <span className={styles.navDesc}>View, edit and manage your connected farm devices.</span>
           </div>
-        </div>
+          <ChevronRight size={18} className={styles.navArrow} />
+        </button>
 
-        {/* Device Management section */}
+        {/* Device Management */}
         <div className={styles.sectionLabel}>Device Management</div>
         <button className={styles.navCard} onClick={() => navigate('/settings/devices')}>
           <div className={styles.navIconWrap}>
@@ -112,6 +103,19 @@ export default function Settings() {
         <div className={styles.sectionLabel}>App</div>
         <button
           className={styles.navCard}
+          onClick={() => navigate('/notifications')}
+        >
+          <div className={styles.navIconWrap} style={{ background: '#f5f3ff', border: '1.5px solid #ddd6fe' }}>
+            <Bell size={24} strokeWidth={1.8} color="#7c3aed" />
+          </div>
+          <div className={styles.navInfo}>
+            <span className={styles.navTitle}>Push Notifications</span>
+            <span className={styles.navDesc}>Enable push alerts for irrigation, weather and sensor events.</span>
+          </div>
+          <ChevronRight size={18} className={styles.navArrow} />
+        </button>
+        <button
+          className={styles.navCard}
           onClick={() => window.__pwaPromptShow?.()}
         >
           <div className={styles.navIconWrap} style={{ background: '#f0fdf4', border: '1.5px solid #bbf7d0' }}>
@@ -122,6 +126,19 @@ export default function Settings() {
             <span className={styles.navDesc}>Add EducFarm to your home screen for offline access and a native app feel.</span>
           </div>
           <Smartphone size={18} className={styles.navArrow} color="#2d7a4f" />
+        </button>
+
+        {/* My Account — last */}
+        <div className={styles.sectionLabel}>My Account</div>
+        <button className={styles.navCard} onClick={() => navigate('/settings/account')}>
+          <div className={styles.navIconWrap} style={{ background: '#f0fdf4', border: '1.5px solid #bbf7d0' }}>
+            <div className={styles.avatar} style={{width:44,height:44,fontSize:'0.95rem'}}>{initials}</div>
+          </div>
+          <div className={styles.navInfo}>
+            <span className={styles.navTitle}>{user?.full_name || 'Farmer'}</span>
+            <span className={styles.navDesc}>{user?.email || user?.phone_number || 'Change name, password, email or delete account'}</span>
+          </div>
+          <ChevronRight size={18} className={styles.navArrow} />
         </button>
 
       </div>

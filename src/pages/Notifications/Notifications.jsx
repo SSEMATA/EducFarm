@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Settings2, CloudRain, Droplets, Radio, Bell, BellOff, RefreshCw, Check, CircuitBoard } from 'lucide-react';
+import { Settings2, CloudRain, Droplets, Radio, Bell, BellOff, RefreshCw, Check, CircuitBoard, Settings } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
+import NotificationSettings from '../../components/NotificationSettings';
+import pushNotificationService from '../../services/pushNotificationService';
 import api from '../../services/api';
 import styles from './Notifications.module.css';
 
@@ -25,6 +27,7 @@ function timeAgo(dateStr) {
 }
 
 export default function Notifications() {
+  const [tab, setTab] = useState('list'); // list | settings
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading]             = useState(true);
   const [error, setError]                 = useState('');
@@ -58,6 +61,7 @@ export default function Notifications() {
     try {
       await api.post('/notifications/mark-all-read/');
       setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+      pushNotificationService.clearBadge();
     } catch { /* silent */ }
   };
 
@@ -82,18 +86,29 @@ export default function Notifications() {
             </p>
           </div>
           <div className={styles.headerActions}>
-            {unreadCount > 0 && (
+            <button
+              className={`${styles.refreshBtn} ${tab === 'settings' ? styles.filterActive : ''}`}
+              onClick={() => setTab((t) => t === 'settings' ? 'list' : 'settings')}
+            >
+              <Settings size={14} /> {tab === 'settings' ? 'Back' : 'Push Settings'}
+            </button>
+            {tab === 'list' && unreadCount > 0 && (
               <button className={styles.markAllBtn} onClick={markAllRead}>
                 <Check size={14} /> Mark all read
               </button>
             )}
-            <button className={styles.refreshBtn} onClick={fetchNotifications} disabled={loading}>
-              <RefreshCw size={14} className={loading ? styles.spinning : ''} /> Refresh
-            </button>
+            {tab === 'list' && (
+              <button className={styles.refreshBtn} onClick={fetchNotifications} disabled={loading}>
+                <RefreshCw size={14} className={loading ? styles.spinning : ''} /> Refresh
+              </button>
+            )}
           </div>
         </div>
 
         {/* ── Filter tabs ──────────────────────────────── */}
+        {tab === 'settings' ? (
+          <NotificationSettings />
+        ) : (<>
         <div className={styles.filterRow}>
           {['all', 'unread', 'read'].map((f) => (
             <button
@@ -161,6 +176,7 @@ export default function Notifications() {
             Showing {visible.length} of {notifications.length} notification{notifications.length !== 1 ? 's' : ''}
           </p>
         )}
+        </>)}
       </div>
     </DashboardLayout>
   );

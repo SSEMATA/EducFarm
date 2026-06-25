@@ -1,11 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { registerSW } from 'virtual:pwa-register'
 import './index.css'
 import App from './App.jsx'
 
-// Register service worker — auto-updates silently
-registerSW({ immediate: true })
+// Service Worker is registered by pushNotificationService.js — don't register here
+// This prevents conflicts between VitePWA and custom sw.js
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

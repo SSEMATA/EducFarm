@@ -89,7 +89,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .searchWrap {
@@ -97,7 +97,7 @@
   display: flex;
   align-items: center;
   flex: 1;
-  min-width: 220px;
+  min-width: 0;
 }
 
 .searchIcon {
@@ -146,7 +146,7 @@
 }
 
 .filterBtn {
-  padding: 0.5rem 0.9rem;
+  padding: 0.5rem 0.75rem;
   border: 1.5px solid #d1d5db;
   border-radius: 8px;
   background: #fff;
@@ -155,6 +155,7 @@
   color: #6b7280;
   cursor: pointer;
   transition: all 0.15s;
+  white-space: nowrap;
 }
 
 .filterBtn:hover { border-color: #2d7a4f; color: #2d7a4f; }
@@ -281,6 +282,8 @@
 }
 
 .actionBtn:hover { opacity: 0.85; transform: translateY(-1px); }
+
+.actionBtn .btnLabel { display: inline; }
 
 .viewBtn   { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
 .editBtn   { background: #fefce8; border-color: #fde68a; color: #92400e; }
@@ -536,9 +539,9 @@
 @media (max-width: 640px) {
   .pageHeader { flex-direction: column; align-items: stretch; }
   .refreshBtn { align-self: flex-end; }
-  .toolbar { flex-direction: column; align-items: stretch; }
-  .filterBtns { justify-content: center; }
   .tableWrap { border-radius: 10px; }
+  .filterBtn { padding: 0.45rem 0.5rem; font-size: 0.75rem; }
+  .searchInput { font-size: 0.8rem; padding: 0.45rem 2rem 0.45rem 2rem; }
   /* hide less important columns on mobile */
   .table { min-width: unset; }
   .table th:nth-child(1),
@@ -549,8 +552,9 @@
   .table td:nth-child(6),
   .table th:nth-child(7),
   .table td:nth-child(7) { display: none; }
-  .actions { flex-wrap: wrap; gap: 0.3rem; }
-  .actionBtn { font-size: 0.72rem; padding: 0.25rem 0.5rem; }
+  .actions { gap: 0.3rem; }
+  .actionBtn { padding: 0.35rem; border-radius: 6px; }
+  .actionBtn .btnLabel { display: none; }
   .modalCard { max-width: 100%; border-radius: 12px; }
   .modalHeader { padding: 0.9rem 1.1rem; }
   .detailGrid, .editGrid { padding: 1rem 1.1rem; }

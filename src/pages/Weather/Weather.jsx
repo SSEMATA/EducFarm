@@ -3,7 +3,7 @@ import {
   Sun, Cloud, CloudRain, CloudLightning, Wind, CloudFog, Snowflake, CloudSun,
   Droplets, Umbrella, Gauge, Eye, RefreshCw, AlertCircle, MapPin,
   ArrowUp, ArrowDown, Clock, Repeat2, Droplet, Ban, CalendarDays,
-  Sprout, FlaskConical, Leaf, CloudOff, CalendarClock, Zap,
+  Sprout, FlaskConical, Leaf, CloudOff, CalendarClock, Zap, Thermometer,
 } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import api from '../../services/api';
@@ -46,6 +46,7 @@ export default function IrrigationPlanner() {
   const [loading, setLoading]     = useState(true);
   const [error, setError]         = useState('');
   const [activeDay, setActiveDay] = useState(0);
+  const [liveData, setLiveData]   = useState(null);
 
   const fetchWeather = useCallback(async (params = '') => {
     setLoading(true);
@@ -60,7 +61,18 @@ export default function IrrigationPlanner() {
     }
   }, []);
 
-  const fetchWithLocation = useCallback(() => {
+  const fetchWithLocation = useCallback(async () => {
+    // If admin has set a location, use it — no GPS needed
+    try {
+      const { data: fs } = await api.get('/farm-settings/');
+      if (fs.admin_weather_lat != null && fs.admin_weather_lon != null) {
+        localStorage.removeItem('ef_coords');
+        fetchWeather();
+        return;
+      }
+    } catch { /* fall through to GPS */ }
+
+    // No admin location — use GPS if available
     const saved = localStorage.getItem('ef_coords');
     if (saved && saved !== 'denied') {
       const c = JSON.parse(saved);
@@ -70,18 +82,25 @@ export default function IrrigationPlanner() {
     }
   }, [fetchWeather]);
 
-  useEffect(() => { fetchWithLocation(); }, [fetchWithLocation]);
+  useEffect(() => {
+    fetchWithLocation();
+    api.get('/live-data/').then(r => setLiveData(r.data)).catch(() => {});
+  }, [fetchWithLocation]);
 
   const current    = data?.current  ?? {};
   const forecast   = data?.forecast ?? [];
   const hourly     = data?.hourly   ?? [];
   const settings   = data?.irrigation_settings ?? {};
+  const intel      = data?.intelligence ?? {};
   const { Icon: HeroIcon, label, grad } = getMeta(current.condition);
 
   const selectedDay = forecast[activeDay];
   const irrigation  = selectedDay?.irrigation ?? current.irrigation ?? {};
   const weeklyWater = settings.weekly_water_l  ?? 0;
   const weeklySave  = settings.weekly_saving_l ?? 0;
+
+  // Live sensor data from device
+  const latestReading = liveData?.latest?.[0] ?? null;
 
   return (
     <DashboardLayout>
@@ -153,6 +172,62 @@ export default function IrrigationPlanner() {
             </section>
 
             {/* ════════════════════════════════════════════
+                SECTION 1b — Weather Insights
+            ════════════════════════════════════════════ */}
+            <section className={styles.section}>
+              <div className={styles.sectionLabel}>
+                <Sprout size={15} /> Weather Insights for Farming
+              </div>
+              <div className={styles.insightsGrid}>
+                <div className={styles.insightCard}>
+                  <div className={styles.insightHeader}>
+                    <Umbrella size={16} color="#6366f1" />
+                    <span className={styles.insightField}>Precipitation Probability</span>
+                  </div>
+                  <p className={styles.insightValue}>{current.rain_probability ?? '—'}%</p>
+                  <p className={styles.insightLabel}>Chance of Rain</p>
+                </div>
+                <div className={styles.insightCard}>
+                  <div className={styles.insightHeader}>
+                    <CloudRain size={16} color="#3b82f6" />
+                    <span className={styles.insightField}>Rain Volume</span>
+                  </div>
+                  <p className={styles.insightValue}>
+                    {irrigation.rain_saving_l != null ? (irrigation.rain_saving_l / 10).toFixed(1) : '—'} mm
+                  </p>
+                  <p className={styles.insightLabel}>Actual Useful Rainfall</p>
+                </div>
+                <div className={styles.insightCard}>
+                  <div className={styles.insightHeader}>
+                    <Droplets size={16} color="#06b6d4" />
+                    <span className={styles.insightField}>Humidity</span>
+                  </div>
+                  <p className={styles.insightValue}>{current.humidity ?? '—'}%</p>
+                  <p className={styles.insightLabel}>Evaporation Estimation</p>
+                </div>
+                <div className={styles.insightCard}>
+                  <div className={styles.insightHeader}>
+                    <Thermometer size={16} color="#ef4444" />
+                    <span className={styles.insightField}>Temperature</span>
+                  </div>
+                  <p className={styles.insightValue}>{current.temperature ?? '—'}°C</p>
+                  <p className={styles.insightLabel}>Plant Stress</p>
+                </div>
+                <div className={`${styles.insightCard} ${styles.windCard}`}>
+                  <div className={styles.insightHeader}>
+                    <Wind size={16} color="#10b981" />
+                    <span className={styles.insightField}>Wind Speed</span>
+                  </div>
+                  <p className={styles.insightValue}>{current.wind_speed ?? '—'} km/h</p>
+                  <p className={styles.insightLabel}>Evaporation / Sprinkler Efficiency</p>
+                  <div className={styles.windLines} aria-hidden="true">
+                    <span /><span /><span /><span /><span />
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* ════════════════════════════════════════════
                 SECTION 2 — Hourly Forecast
             ════════════════════════════════════════════ */}
             {hourly.length > 0 && (
@@ -213,6 +288,73 @@ export default function IrrigationPlanner() {
                 </div>
               </section>
             )}
+
+            {/* ════════════════════════════════════════════
+                SECTION 4 — Smart Intelligence
+            ════════════════════════════════════════════ */}
+            <section className={styles.section}>
+              <div className={styles.sectionLabel}>
+                <Zap size={15} /> Smart Agriculture Intelligence
+              </div>
+              <div className={styles.intelCard}>
+
+                {/* Season + Crop row */}
+                <div className={styles.intelRow}>
+                  <div className={styles.intelBlock}>
+                    <span className={styles.intelBlockTitle}>Current Season</span>
+                    <span className={styles.intelBlockValue}>{intel.season?.label ?? '—'}</span>
+                    <span className={styles.intelBlockSub}>
+                      {intel.crop ? `Irrigation scaled ×${intel.crop.season_factor}` : 'Run migration to enable'}
+                    </span>
+                  </div>
+                  <div className={styles.intelBlock}>
+                    <span className={styles.intelBlockTitle}>Crop Profile</span>
+                    <span className={styles.intelBlockValue}>{intel.crop?.label ?? settings.plant_type ?? '—'}</span>
+                    <span className={styles.intelBlockSub}>
+                      {intel.crop ? `Stress above ${intel.crop.stress_temp}°C` : 'Set plant type in Settings'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Drying rate */}
+                <div className={styles.intelDrying}>
+                  <div className={styles.intelDryingDot}
+                    style={{
+                      background:
+                        intel.drying?.trend === 'fast_drying'  ? '#ef4444' :
+                        intel.drying?.trend === 'slow_drying'  ? '#10b981' :
+                        intel.drying?.trend === 'stable'       ? '#3b82f6' : '#9ca3af'
+                    }}
+                  />
+                  <div>
+                    <p className={styles.intelDryingLabel}>
+                      {intel.drying?.label ?? 'Seasonal learning active'}
+                    </p>
+                    <p className={styles.intelDryingSub}>
+                      {intel.drying?.rate != null
+                        ? `Avg moisture drop: ${intel.drying.rate}% / day • Based on ${intel.log_count} day${intel.log_count !== 1 ? 's' : ''} of data`
+                        : intel.drying?.trend === 'insufficient_data' || !intel.drying
+                          ? 'System is learning — insights improve after a few days of use'
+                          : null
+                      }
+                    </p>
+                  </div>
+                </div>
+
+                {/* Smart reasons from today's plan */}
+                {irrigation.smart_reasons?.length > 0 && (
+                  <div className={styles.intelReasons}>
+                    <span className={styles.intelReasonsTitle}>Why this irrigation plan?</span>
+                    <ul className={styles.intelReasonsList}>
+                      {irrigation.smart_reasons.map((r, i) => (
+                        <li key={i}>{r}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+              </div>
+            </section>
 
             {/* ════════════════════════════════════════════
                 SECTION 3 — Irrigation Plan
@@ -290,6 +432,35 @@ export default function IrrigationPlanner() {
 
                     <p className={styles.irrigationReason}>{irrigation.reason}</p>
                   </>
+                )}
+
+                {/* Live device sensor readings */}
+                {latestReading && (
+                  <div className={styles.weeklySummary} style={{marginTop:'12px', borderTop:'1px solid rgba(255,255,255,0.08)', paddingTop:'12px'}}>
+                    <div className={styles.weeklyItem}>
+                      <Droplets size={15} color="#22c55e" />
+                      <span className={styles.weeklyLabel}>Soil Moisture</span>
+                      <span className={styles.weeklyValue}>{latestReading.soil_moisture ?? '—'}%</span>
+                    </div>
+                    <div className={styles.weeklyDivider} />
+                    <div className={styles.weeklyItem}>
+                      <Thermometer size={15} color="#ef4444" />
+                      <span className={styles.weeklyLabel}>Temp</span>
+                      <span className={styles.weeklyValue}>{latestReading.temperature ?? '—'}°C</span>
+                    </div>
+                    <div className={styles.weeklyDivider} />
+                    <div className={styles.weeklyItem}>
+                      <Droplet size={15} color="#3b82f6" />
+                      <span className={styles.weeklyLabel}>Tank</span>
+                      <span className={styles.weeklyValue}>{latestReading.water_tank ?? '—'}%</span>
+                    </div>
+                    <div className={styles.weeklyDivider} />
+                    <div className={styles.weeklyItem}>
+                      <Zap size={15} color={latestReading.pump_status === 'On' ? '#22c55e' : '#f59e0b'} />
+                      <span className={styles.weeklyLabel}>Pump</span>
+                      <span className={styles.weeklyValue}>{latestReading.pump_status}</span>
+                    </div>
+                  </div>
                 )}
 
                 {/* Weekly summary */}

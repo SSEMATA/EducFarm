@@ -84,14 +84,14 @@ export default function LiveData() {
       setDevices(data.devices || []);
 
       // Pick reading for selected device or first available
-      const reading = data.latest?.find((r) => r.device === deviceId) ?? data.latest?.[0] ?? null;
+      const reading = data.latest?.find((r) => r.device_id === deviceId) ?? data.latest?.[0] ?? null;
 
       // Compare against ref — never against stale closure state
       if (reading && latestRef.current) {
         if (reading.pump_status !== latestRef.current.pump_status) {
           addLog(
-            `Pump ${reading.pump_status === 'Running' ? 'started' : 'stopped'} by device`,
-            reading.pump_status === 'Running' ? 'success' : 'info'
+            `Pump ${reading.pump_status === 'On' ? 'started' : 'stopped'} by device`,
+            reading.pump_status === 'On' ? 'success' : 'info'
           );
         }
       }
@@ -129,7 +129,7 @@ export default function LiveData() {
 
   const togglePump = async () => {
     if (!latest || pumpLoading) return;
-    const deviceId = latest.device_id ?? devices.find((d) => d.id === latest.device)?.device_id;
+    const deviceId = latest.device_id;
     if (!deviceId) return;
     const pumpOn = latest.pump_status !== 'Running';
     setPumpLoading(true);
@@ -146,7 +146,7 @@ export default function LiveData() {
 
   const alerts = evalAlerts(latest);
   const deviceOnline = latest != null;
-  const pumpRunning  = latest?.pump_status === 'Running';
+  const pumpRunning  = latest?.pump_status === 'On';
 
   return (
     <DashboardLayout>

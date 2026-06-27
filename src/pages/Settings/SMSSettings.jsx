@@ -70,12 +70,17 @@ export default function SMSSettings() {
 
   const fetchSettings = useCallback(async () => {
     try {
-      const { data } = await api.get('/notifications/');
-      setForm((p) => ({
-        ...p,
-        ...data,
-        contacts: data.contacts?.length ? data.contacts : [BLANK_CONTACT()],
-      }));
+      const { data } = await api.get('/sms-settings/');
+      // Convert flat phone_numbers array back to contact objects
+      const contacts = data.phone_numbers?.length
+        ? data.phone_numbers.map((num) => {
+            const match = EAST_AFRICA.concat(POPULAR).find(c => num.startsWith(c.code));
+            return match
+              ? { country_code: match.code, phone_number: num.slice(match.code.length) }
+              : { country_code: '+256', phone_number: num };
+          })
+        : [BLANK_CONTACT()];
+      setForm((p) => ({ ...p, ...data, contacts }));
     } catch { /* silent */ }
     finally { setLoading(false); }
   }, []);
@@ -114,15 +119,22 @@ export default function SMSSettings() {
     if (!form.contacts.some(c => c.phone_number.trim())) {
       setError('At least one phone number is required.'); return;
     }
-    const contacts = form.contacts
+    const phone_numbers = form.contacts
       .filter(c => c.phone_number.trim())
-      .map(c => ({ ...c, phone_number: `${c.country_code}${c.phone_number.replace(/^0+/, '')}` }));
-    const payload = { ...form, contacts };
+      .map(c => `${c.country_code}${c.phone_number.replace(/^0+/, '')}`);
+    const payload = {
+      sms_enabled: form.sms_enabled,
+      pump_alerts: form.pump_alerts,
+      weather_alerts: form.weather_alerts,
+      low_water_alerts: form.low_water_alerts,
+      sensor_failure_alerts: form.sensor_failure_alerts,
+      phone_numbers,
+    };
     setSaving(true);
     setError('');
     setSuccess('');
     try {
-      await api.post('/notifications/', payload);
+      await api.post('/sms-settings/', payload);
       setSuccess('SMS settings saved successfully.');
     } catch (err) {
       const d = err.response?.data;

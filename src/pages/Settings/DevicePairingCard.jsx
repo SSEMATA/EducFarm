@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { CheckCircle, AlertCircle, Loader, Link2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { CheckCircle, AlertCircle, Loader, Link2, Wifi } from 'lucide-react';
 import api from '../../services/api';
 import styles from './DevicePairingCard.module.css';
 
@@ -9,20 +9,41 @@ export default function DevicePairingCard() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [success, setSuccess] = useState(false);
+  const [pairedDevice, setPairedDevice] = useState(null);
+  const [hwConnected, setHwConnected] = useState(false);
+  const pollRef = useRef(null);
+
+  // Poll device status after pairing until it goes Online
+  useEffect(() => {
+    if (!pairedDevice) return;
+    pollRef.current = setInterval(async () => {
+      try {
+        const { data } = await api.get('/devices/');
+        const found = data.find(d => d.device_id === pairedDevice.device_id);
+        if (found?.status === 'Online') {
+          setHwConnected(true);
+          clearInterval(pollRef.current);
+        }
+      } catch { /* silent */ }
+    }, 4000);
+    return () => clearInterval(pollRef.current);
+  }, [pairedDevice]);
 
   const handlePairDevice = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
     setSuccess(false);
+    setHwConnected(false);
+    setPairedDevice(null);
 
     try {
-      await api.post('/device/pair/', { device_id: deviceId, pairing_code: pairingCode });
+      const { data } = await api.post('/device/pair/', { device_id: deviceId, pairing_code: pairingCode });
       setSuccess(true);
-      setMessage('Device successfully paired to your account.');
+      setPairedDevice(data.device);
+      setMessage('Device paired! Waiting for hardware to connect…');
       setDeviceId('');
       setPairingCode('');
-      setTimeout(() => window.location.reload(), 2000);
     } catch (err) {
       const errors = err.response?.data?.errors;
       setMessage(
@@ -54,14 +75,14 @@ export default function DevicePairingCard() {
           <label className={styles.label}>Device ID</label>
           <input
             type="text"
-            placeholder="e.g., EDF-IRR-1024"
+            placeholder="e.g., EF-93B1A4F3"
             value={deviceId}
             onChange={(e) => setDeviceId(e.target.value.toUpperCase())}
-            disabled={loading}
+            disabled={loading || success}
             required
             className={styles.input}
           />
-          <span className={styles.fieldHint}>Format: <code>EDF-IRR-XXXX</code> — found on the device label</span>
+          <span className={styles.fieldHint}>Printed on the device label</span>
         </div>
 
         <div className={styles.formGroup}>
@@ -71,11 +92,11 @@ export default function DevicePairingCard() {
             placeholder="e.g., GX92A7"
             value={pairingCode}
             onChange={(e) => setPairingCode(e.target.value)}
-            disabled={loading}
+            disabled={loading || success}
             required
             className={styles.input}
           />
-          <span className={styles.fieldHint}>6-character code printed on your device or packaging</span>
+          <span className={styles.fieldHint}>6-character code on the device or packaging</span>
         </div>
 
         {message && (
@@ -85,24 +106,33 @@ export default function DevicePairingCard() {
           </div>
         )}
 
-        <button
-          type="submit"
-          disabled={loading || !deviceId || !pairingCode}
-          className={styles.submitBtn}
-        >
-          {loading ? (
-            <>
-              <Loader size={18} className={styles.spinner} />
-              Pairing...
-            </>
-          ) : (
-            'Pair Device'
-          )}
-        </button>
+        {hwConnected && (
+          <div className={styles.hwConnected}>
+            <Wifi size={18} color="#10b981" />
+            <span>Hardware connected! Your device is now live.</span>
+          </div>
+        )}
+
+        {success && !hwConnected && (
+          <div className={styles.hwWaiting}>
+            <Loader size={15} className={styles.spinner} />
+            <span>Power on your device — it will connect automatically…</span>
+          </div>
+        )}
+
+        {!success && (
+          <button
+            type="submit"
+            disabled={loading || !deviceId || !pairingCode}
+            className={styles.submitBtn}
+          >
+            {loading ? <><Loader size={18} className={styles.spinner} /> Pairing...</> : 'Pair Device'}
+          </button>
+        )}
       </form>
 
       <div className={styles.hint}>
-        <p>Both Device ID and Pairing Code are required. Check your device documentation for these codes.</p>
+        <p>Both Device ID and Pairing Code are required. Check your device label for these codes.</p>
       </div>
     </div>
   );

@@ -4,24 +4,97 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <!-- PWA -->
+    <!-- ── Primary SEO ─────────────────────────────────────────────── -->
+    <title>EducFarm — Smart Irrigation System for African Farmers</title>
+    <meta name="description" content="EducFarm automates farm irrigation using soil moisture sensors, weather forecasts, and SMS alerts. Monitor your farm live from anywhere. Built by Kyebambe Girls' School, Uganda." />
+    <meta name="keywords" content="smart irrigation, farm automation, soil moisture sensor, ESP32 irrigation, Uganda farming, precision agriculture, IoT farming, automatic pump, weather-based irrigation, EducFarm" />
+    <meta name="author" content="Kyebambe EducFarm Innovators Limited" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://www.educfarm.com/" />
+
+    <!-- ── Open Graph (Facebook, WhatsApp, LinkedIn) ───────────────── -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content="https://www.educfarm.com/" />
+    <meta property="og:title"       content="EducFarm — Smart Irrigation System for African Farmers" />
+    <meta property="og:description" content="Automate your farm irrigation with soil sensors, weather intelligence and SMS alerts. Monitor live from anywhere. Free to get started." />
+    <meta property="og:image"       content="https://www.educfarm.com/icons/pwa-512.png" />
+    <meta property="og:image:width"  content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:site_name"   content="EducFarm" />
+    <meta property="og:locale"      content="en_UG" />
+
+    <!-- ── Twitter / X Card ───────────────────────────────────────── -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:site"        content="@EducFarm" />
+    <meta name="twitter:title"       content="EducFarm — Smart Irrigation System for African Farmers" />
+    <meta name="twitter:description" content="Automate your farm irrigation with soil sensors, weather intelligence and SMS alerts. Monitor live from anywhere." />
+    <meta name="twitter:image"       content="https://www.educfarm.com/icons/pwa-512.png" />
+
+    <!-- ── PWA ────────────────────────────────────────────────────── -->
     <meta name="theme-color" content="#0f2e1a" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="EducFarm" />
-
-    <!-- SEO / description -->
-    <meta name="description" content="Smart irrigation management and weather-based farm planning" />
     <meta name="application-name" content="EducFarm" />
 
-    <!-- Icons -->
+    <!-- ── Icons ──────────────────────────────────────────────────── -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/pwa-192.png" />
     <link rel="apple-touch-icon" sizes="512x512" href="/icons/pwa-512.png" />
     <!-- manifest injected by VitePWA at build time -->
 
-    <title>EducFarm</title>
+    <!-- ── Structured Data (JSON-LD) ──────────────────────────────── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "EducFarm",
+      "url": "https://www.educfarm.com",
+      "description": "Smart irrigation management system that automates farm watering using soil moisture sensors, weather forecasts, and SMS alerts.",
+      "applicationCategory": "AgricultureApplication",
+      "operatingSystem": "Web, Android, iOS",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "UGX"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "Kyebambe EducFarm Innovators Limited",
+        "url": "https://www.educfarm.com"
+      },
+      "screenshot": "https://www.educfarm.com/icons/pwa-512.png",
+      "featureList": [
+        "Automatic soil moisture-based irrigation",
+        "Real-time sensor monitoring dashboard",
+        "Weather-based irrigation skip",
+        "SMS alerts and remote pump control",
+        "GPS location tracking",
+        "Progressive Web App — works offline"
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Kyebambe EducFarm Innovators Limited",
+      "url": "https://www.educfarm.com",
+      "logo": "https://www.educfarm.com/icons/pwa-512.png",
+      "description": "Student-built smart farming technology from Kyebambe Girls' Secondary School, Uganda.",
+      "foundingLocation": {
+        "@type": "Place",
+        "name": "Fort Portal, Uganda"
+      },
+      "sameAs": [
+        "https://www.linkedin.com/company/kyebambe-educfarm-innovators-limited/"
+      ]
+    }
+    </script>
+
+    <title>EducFarm — Smart Irrigation System for African Farmers</title>
     <script>
       (function(){
         var p = new URLSearchParams(window.location.search).get('p');

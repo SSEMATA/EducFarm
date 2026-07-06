@@ -6,14 +6,25 @@
  *   showText — show wordmark beside icon (default true)
  */
 import { useId } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function EducFarmLogo({ size = 36, variant = 'dark', showText = true }) {
   const uid       = useId().replace(/:/g, '');
-  const textColor = variant === 'dark' ? '#ffffff' : '#0f2e1a';
-  const subColor  = variant === 'dark' ? 'rgba(255,255,255,0.55)' : '#6b7280';
+  const textColor = '#0f2e1a';
+  const subColor  = '#6b7280';
 
   return (
-    <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', textDecoration: 'none' }}>
+    <Link to="/" style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      textDecoration: 'none',
+      background: '#ffffff',
+      borderRadius: '14px',
+      padding: '5px 12px 5px 6px',
+      boxShadow: '0 1px 8px rgba(0,0,0,0.18)',
+      cursor: 'pointer',
+    }}>
       {/* Icon mark */}
       <svg
         width={size}
@@ -102,6 +113,6 @@ export default function EducFarmLogo({ size = 36, variant = 'dark', showText = t
           </span>
         </span>
       )}
-    </span>
+    </Link>
   );
 }

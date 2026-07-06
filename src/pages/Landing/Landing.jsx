@@ -191,27 +191,26 @@ export default function Landing() {
       <nav className={styles.nav}>
         <EducFarmLogo size={36} variant="dark" showText />
         <div className={styles.navLinks}>
-          <button
-            className={styles.navOrder}
-            onClick={() => setShopOpen(true)}
-          >
-            <ShoppingCart size={13} strokeWidth={2.5} /> Order Kit
-          </button>
           {user ? (
             <>
-              <button className={styles.navLogin} onClick={() => { logout(); }}>
+              <button className={styles.navLogin} onClick={() => logout()}>
                 <LogOut size={13} strokeWidth={2.5} /> Sign Out
               </button>
               <button className={styles.navSignup} onClick={() => navigate(dashPath)}>
-                <LayoutDashboard size={13} strokeWidth={2.5} /> View Dashboard
+                <LayoutDashboard size={13} strokeWidth={2.5} /> Dashboard
               </button>
             </>
           ) : (
             <>
-              <Link to="/login"  className={styles.navLogin}>Log In</Link>
+              <Link to="/login" className={styles.navLogin}>Log In</Link>
               <Link to="/signup" className={styles.navSignup}>Get Started</Link>
             </>
           )}
+          <div className={styles.navDivider} />
+          <button className={styles.navOrder} onClick={() => setShopOpen(true)}>
+            <ShoppingCart size={14} strokeWidth={2.5} />
+            <span className={styles.navOrderLabel}>Order Kit</span>
+          </button>
         </div>
       </nav>
 

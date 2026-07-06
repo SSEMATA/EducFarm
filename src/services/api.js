@@ -52,8 +52,9 @@ api.interceptors.response.use(
       return new Promise((resolve, reject) => {
         queue.push({ resolve, reject });
       }).then((token) => {
-        original.headers.Authorization = `Bearer ${token}`;
-        return api(original);
+        const retryConfig = { ...original, method: original.method || 'get' };
+        retryConfig.headers = { ...(retryConfig.headers || {}), Authorization: `Bearer ${token}` };
+        return api(retryConfig);
       });
     }
 
@@ -69,8 +70,9 @@ api.interceptors.response.use(
       localStorage.setItem('token', newToken);
       api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
       processQueue(null, newToken);
-      original.headers.Authorization = `Bearer ${newToken}`;
-      return api(original);
+      const retryConfig = { ...original, method: original.method || 'get' };
+      retryConfig.headers = { ...(retryConfig.headers || {}), Authorization: `Bearer ${newToken}` };
+      return api(retryConfig);
     } catch (refreshErr) {
       processQueue(refreshErr, null);
       localStorage.removeItem('token');

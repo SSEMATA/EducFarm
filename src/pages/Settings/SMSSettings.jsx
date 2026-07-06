@@ -74,10 +74,12 @@ export default function SMSSettings() {
       // Convert flat phone_numbers array back to contact objects
       const contacts = data.phone_numbers?.length
         ? data.phone_numbers.map((num) => {
-            const match = EAST_AFRICA.concat(POPULAR).find(c => num.startsWith(c.code));
+            // Clean up any double-prefixed numbers already in DB
+            const cleaned = num.replace(/^(\+\d{1,4})\1/, '$1');
+            const match = EAST_AFRICA.concat(POPULAR).find(c => cleaned.startsWith(c.code));
             return match
-              ? { country_code: match.code, phone_number: num.slice(match.code.length) }
-              : { country_code: '+256', phone_number: num };
+              ? { country_code: match.code, phone_number: cleaned.slice(match.code.length) }
+              : { country_code: '+256', phone_number: cleaned };
           })
         : [BLANK_CONTACT()];
       setForm((p) => ({ ...p, ...data, contacts }));
@@ -93,6 +95,24 @@ export default function SMSSettings() {
   };
 
   const updateContact = (i, field, value) => {
+    if (field === 'phone_number') {
+      // If user pastes/types a full international number, auto-split it
+      if (value.startsWith('+')) {
+        const match = EAST_AFRICA.concat(POPULAR).find(c => value.startsWith(c.code));
+        if (match) {
+          value = value.slice(match.code.length).replace(/^0+/, '');
+          setForm((p) => {
+            const contacts = [...p.contacts];
+            contacts[i] = { country_code: match.code, phone_number: value };
+            return { ...p, contacts };
+          });
+          setError(''); setSuccess('');
+          return;
+        }
+      }
+      // Strip any leading + or zeros from plain local number
+      value = value.replace(/^\+/, '').replace(/^0+/, '');
+    }
     setForm((p) => {
       const contacts = [...p.contacts];
       contacts[i] = { ...contacts[i], [field]: value };
@@ -121,7 +141,10 @@ export default function SMSSettings() {
     }
     const phone_numbers = form.contacts
       .filter(c => c.phone_number.trim())
-      .map(c => `${c.country_code}${c.phone_number.replace(/^0+/, '')}`);
+      .map(c => {
+        const num = c.phone_number.trim();
+        return num.startsWith('+') ? num : `${c.country_code}${num.replace(/^0+/, '')}`;
+      });
     const payload = {
       sms_enabled: form.sms_enabled,
       pump_alerts: form.pump_alerts,

@@ -18,12 +18,14 @@ import DeviceManagement from './pages/Settings/DeviceManagement';
 import FarmSettings   from './pages/Settings/FarmSettings';
 import LiveData       from './pages/LiveData/LiveData';
 import AccountSettings from './pages/Settings/AccountSettings';
+import Landing        from './pages/Landing/Landing';
 import Admin          from './pages/Admin/Admin';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminDevices   from './pages/Admin/AdminDevices';
 import AdminWeather   from './pages/Admin/AdminWeather';
 import AdminSettings  from './pages/Admin/AdminSettings';
 import AdminPlantSettings from './pages/Admin/AdminPlantSettings';
+import AdminOrders from './pages/Admin/AdminOrders';
 
 function useCountdown(target) {
   const [remaining, setRemaining] = useState(null);
@@ -84,27 +86,22 @@ function SystemGuard({ children }) {
   const wasMaintenanceRef = useRef(false);
 
   useEffect(() => {
+    let t;
     const check = () =>
       fetch(`${import.meta.env.VITE_API_URL}/api/users/system/status/`)
         .then(r => r.json())
         .then(s => {
-          // Track if we were in maintenance
-          if (!s.online) {
-            wasMaintenanceRef.current = true;
-          }
-          
-          // Only show one automatic reload notification, not automatic reload
-          // User can manually refresh if needed
+          if (!s.online) wasMaintenanceRef.current = true;
           setStatus(s);
         })
-        .catch(err => {
-          console.warn('[SystemGuard] Status check failed:', err);
-          // Default to online on network errors
+        .catch(() => {
+          // Backend unreachable — default to online and stop polling
           setStatus(prev => prev ?? { online: true });
+          clearInterval(t);
         });
 
     check();
-    const t = setInterval(check, 30000);
+    t = setInterval(check, 30000);
     return () => clearInterval(t);
   }, []);
 
@@ -172,19 +169,19 @@ const ADMIN_PERM_ROUTES = [
 
 const AdminRoute = ({ children, perm }) => {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/" replace />;
   if (!user.is_staff) return <Navigate to="/dashboard" replace />;
   const isSuperAdmin = user.admin_level === 'superadmin';
   if (perm && !isSuperAdmin && !user[perm]) {
     const first = ADMIN_PERM_ROUTES.find(r => !r.perm || user[r.perm]);
-    return <Navigate to={first ? first.path : '/login'} replace />;
+    return <Navigate to={first ? first.path : '/'} replace />;
   }
   return children;
 };
 
 const P = ({ children }) => {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/" replace />;
   if (user.is_staff) return <Navigate to="/admin/dashboard" replace />;
   return children;
 };
@@ -192,7 +189,7 @@ const P = ({ children }) => {
 // Auth = both regular users and admins
 const Auth = ({ children }) => {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/" replace />;
   return children;
 };
 
@@ -207,12 +204,12 @@ function App() {
   return (
     <ErrorBoundary>
     <AuthProvider>
-    <BrowserRouter basename="/EducFarm/">
+    <BrowserRouter basename="/">
     <SystemGuard>
       <PushNotificationInit />
       <InstallPrompt />
       <Routes>
-        <Route path="/"                element={<Navigate to="/login" replace />} />
+        <Route path="/"                element={window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone ? <Navigate to="/login" replace /> : <Landing />} />
         <Route path="/login"           element={<Login />} />
         <Route path="/signup"          element={<Signup />} />
         <Route path="/set-password"    element={<SetPassword />} />
@@ -236,6 +233,7 @@ function App() {
         <Route path="/admin/weather"         element={<AdminRoute perm="can_manage_weather"><AdminWeather /></AdminRoute>} />
         <Route path="/admin/settings"        element={<AdminRoute perm="can_manage_system"><AdminSettings /></AdminRoute>} />
         <Route path="/admin/plant-settings"   element={<AdminRoute perm="can_manage_system"><AdminPlantSettings /></AdminRoute>} />
+        <Route path="/admin/orders"            element={<AdminRoute><AdminOrders /></AdminRoute>} />
         {isDev && Simulate && (
           <Route path="/simulate" element={<P><Suspense fallback={null}><Simulate /></Suspense></P>} />
         )}

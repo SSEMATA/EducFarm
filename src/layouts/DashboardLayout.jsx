@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate, Link } from 'react-router-dom';
 import {
   LayoutDashboard, CircuitBoard, CloudSun, Bell, Settings,
-  LogOut, ChevronLeft, ChevronRight, Menu, Download, X, User, FlaskConical, Activity, Server, Users,
+  LogOut, ChevronLeft, ChevronRight, Menu, Download, X, User, FlaskConical, Activity, Server, Users, ShoppingCart, Home,
 } from 'lucide-react';
 import EducFarmLogo from '../components/EducFarmLogo';
 import OfflineBanner from '../components/OfflineBanner';
@@ -12,6 +12,7 @@ import { ensureFreshAvatar } from '../utils/avatarCache';
 import styles from './DashboardLayout.module.css';
 
 const USER_NAV = [
+  { to: '/',                   Icon: Home,            label: 'Home'               },
   { to: '/dashboard',          Icon: LayoutDashboard, label: 'Dashboard'          },
   { to: '/devices',            Icon: CircuitBoard,    label: 'Devices'            },
   { to: '/irrigation-planner', Icon: CloudSun,        label: 'Irrigation Planner' },
@@ -21,6 +22,7 @@ const USER_NAV = [
 ];
 
 const BOTTOM_NAV = [
+  { to: '/',                   Icon: Home,            label: 'Home'      },
   { to: '/dashboard',          Icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/irrigation-planner', Icon: CloudSun,        label: 'Planner'   },
   { to: '/live-data',          Icon: Activity,        label: 'Live Data' },
@@ -29,9 +31,11 @@ const BOTTOM_NAV = [
 
 
 const ADMIN_NAV = [
+  { to: '/',                Icon: Home,            label: 'Home',         perm: null                },
   { to: '/admin/dashboard', Icon: LayoutDashboard, label: 'Dashboard',    perm: null                },
   { to: '/admin/users',     Icon: Users,           label: 'Users',        perm: 'can_manage_users'  },
   { to: '/admin/devices',   Icon: Server,          label: 'Devices',      perm: 'can_manage_devices'},
+  { to: '/admin/orders',    Icon: ShoppingCart,    label: 'Orders',       perm: null                },
   { to: '/admin/weather',   Icon: CloudSun,        label: 'Weather API',  perm: 'can_manage_weather'},
   { to: '/admin/settings',  Icon: Settings,        label: 'Settings',     perm: 'can_manage_system' },
 ];
@@ -127,7 +131,7 @@ export default function DashboardLayout({ children }) {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
   };
 
   return (
@@ -233,6 +237,9 @@ export default function DashboardLayout({ children }) {
                     </div>
                   </div>
                   <div className={styles.profileDivider} />
+                  <Link to="/" className={styles.profileItem} onClick={() => setProfileOpen(false)}>
+                    <Home size={15} /> Home
+                  </Link>
                   <Link to="/settings/account" className={styles.profileItem} onClick={() => setProfileOpen(false)}>
                     <User size={15} /> Account Settings
                   </Link>

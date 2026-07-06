@@ -1,5 +1,5 @@
 // Service Worker with Push Notifications and Badge Support
-const CACHE_NAME = 'educfarm-v1';
+const CACHE_NAME = 'educfarm-v2';
 
 // Install event - cache assets
 self.addEventListener('install', (event) => {

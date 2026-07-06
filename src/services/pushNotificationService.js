@@ -148,11 +148,17 @@ class PushNotificationService {
         return false;
       }
 
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.warn('[PN] No auth token, skipping subscription sync');
+        return false;
+      }
+
       const response = await fetch(`${API_URL}/api/notifications/subscribe/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           endpoint: this.subscription.endpoint,

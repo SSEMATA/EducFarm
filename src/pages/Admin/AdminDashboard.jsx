@@ -4,7 +4,7 @@ import DashboardLayout from '../../layouts/DashboardLayout';
 import api from '../../services/api';
 import {
   Users, CircuitBoard, CloudSun, Settings, ShieldCheck,
-  RefreshCw, Activity, CheckCircle2, ShieldOff, Wifi, WifiOff,
+  RefreshCw, Activity, CheckCircle2, ShieldOff, Wifi, WifiOff, ShoppingCart,
 } from 'lucide-react';
 import styles from './AdminDashboard.module.css';
 
@@ -84,10 +84,11 @@ export default function AdminDashboard() {
   const visibleCards = CARDS.filter(c => isSuperAdmin || user[c.perm]);
 
   const QUICK_LINKS = [
-    { perm: 'can_manage_users',   to: '/admin/users',    Icon: Users,       label: 'Manage Users'    },
-    { perm: 'can_manage_devices', to: '/admin/devices',  Icon: CircuitBoard,label: 'Manage Devices'  },
-    { perm: 'can_manage_weather', to: '/admin/weather',  Icon: CloudSun,    label: 'Weather API'     },
-    { perm: 'can_manage_system',  to: '/admin/settings', Icon: Settings,    label: 'System Settings' },
+    { perm: 'can_manage_users',   to: '/admin/users',    Icon: Users,          label: 'Manage Users'    },
+    { perm: 'can_manage_devices', to: '/admin/devices',  Icon: CircuitBoard,   label: 'Manage Devices'  },
+    { perm: null,                 to: '/admin/orders',   Icon: ShoppingCart,   label: 'Orders'          },
+    { perm: 'can_manage_weather', to: '/admin/weather',  Icon: CloudSun,       label: 'Weather API'     },
+    { perm: 'can_manage_system',  to: '/admin/settings', Icon: Settings,       label: 'System Settings' },
   ].filter(l => isSuperAdmin || user[l.perm]);
 
   return (

@@ -131,7 +131,7 @@ export default function LiveData() {
     if (!latest || pumpLoading) return;
     const deviceId = latest.device_id;
     if (!deviceId) return;
-    const pumpOn = latest.pump_status !== 'Running';
+    const pumpOn = latest.pump_status !== 'On' && latest.pump_status !== 'Running';
     setPumpLoading(true);
     try {
       await api.post('/pump/control/', { device_id: deviceId, pump_on: pumpOn });
@@ -146,7 +146,7 @@ export default function LiveData() {
 
   const alerts = evalAlerts(latest);
   const deviceOnline = latest != null;
-  const pumpRunning  = latest?.pump_status === 'On';
+  const pumpRunning  = latest?.pump_status === 'On' || latest?.pump_status === 'Running';
 
   return (
     <DashboardLayout>

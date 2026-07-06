@@ -12,8 +12,8 @@ export default defineConfig({
         name: 'EducFarm',
         short_name: 'EducFarm',
         description: 'Smart irrigation management and weather-based farm planning',
-        start_url: '/EducFarm/',
-        scope: '/EducFarm/',
+        start_url: '/',
+        scope: '/',
         display: 'standalone',
         background_color: '#0f2e1a',
         theme_color: '#0f2e1a',
@@ -41,7 +41,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        navigateFallback: '/EducFarm/index.html',
+        navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
       },
       devOptions: {
@@ -49,5 +49,5 @@ export default defineConfig({
       },
     }),
   ],
-  base: '/EducFarm/',
+  base: '/',
 })

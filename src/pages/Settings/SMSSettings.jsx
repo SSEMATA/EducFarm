@@ -74,12 +74,13 @@ export default function SMSSettings() {
       // Convert flat phone_numbers array back to contact objects
       const contacts = data.phone_numbers?.length
         ? data.phone_numbers.map((num) => {
-            // Clean up any double-prefixed numbers already in DB
-            const cleaned = num.replace(/^(\+\d{1,4})\1/, '$1');
-            const match = EAST_AFRICA.concat(POPULAR).find(c => cleaned.startsWith(c.code));
+            const all = EAST_AFRICA.concat(POPULAR);
+            // Sort by code length descending so +256 matches before +25
+            const sorted = [...all].sort((a, b) => b.code.length - a.code.length);
+            const match = sorted.find(c => num.startsWith(c.code));
             return match
-              ? { country_code: match.code, phone_number: cleaned.slice(match.code.length) }
-              : { country_code: '+256', phone_number: cleaned };
+              ? { country_code: match.code, phone_number: num.slice(match.code.length) }
+              : { country_code: '+256', phone_number: num.replace(/^\+/, '') };
           })
         : [BLANK_CONTACT()];
       setForm((p) => ({ ...p, ...data, contacts }));
@@ -142,8 +143,8 @@ export default function SMSSettings() {
     const phone_numbers = form.contacts
       .filter(c => c.phone_number.trim())
       .map(c => {
-        const num = c.phone_number.trim();
-        return num.startsWith('+') ? num : `${c.country_code}${num.replace(/^0+/, '')}`;
+        const local = c.phone_number.trim().replace(/^0+/, '');
+        return `${c.country_code}${local}`;
       });
     const payload = {
       sms_enabled: form.sms_enabled,

@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <script>
-      var path = window.location.pathname.replace('/frontend', '') + window.location.search;
-      window.location.replace('/frontend/?p=' + encodeURIComponent(path));
+      var path = window.location.pathname + window.location.search;
+      window.location.replace('/?p=' + encodeURIComponent(path));
     </script>
   </head>
   <body></body>

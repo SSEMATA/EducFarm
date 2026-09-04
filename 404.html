@@ -1,10 +1,71 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
-      var path = window.location.pathname + window.location.search;
-      window.location.replace('/?p=' + encodeURIComponent(path));
+      (function () {
+        var path = window.location.pathname;
+
+        var routes = {
+          '/invest/form': {
+            title: 'Investor Application — EducFarm',
+            description: 'Apply to invest in EducFarm — smart solar-powered irrigation technology for African farmers. Share your investment interest, timeline, and goals with our team.',
+            url: 'https://www.educfarm.com/invest/form',
+          },
+          '/partnership': {
+            title: 'Partnership Application — EducFarm',
+            description: 'Become a partner with EducFarm. Whether you are a trader, distributor, buyer, or technology partner — let\'s grow the future of farming together.',
+            url: 'https://www.educfarm.com/partnership',
+          },
+          '/invest/request': {
+            title: 'Business Request — EducFarm',
+            description: 'Submit a business request to EducFarm. Explore strategic partnerships and distribution opportunities for smart irrigation technology across Africa.',
+            url: 'https://www.educfarm.com/invest/request',
+          },
+          '/invest': {
+            title: 'Invest in EducFarm — Smart Irrigation for Africa',
+            description: 'EducFarm is ready to scale. Invest in proven solar-powered smart irrigation technology helping African farmers produce food reliably throughout the year.',
+            url: 'https://www.educfarm.com/invest',
+          },
+        };
+
+        var IMAGE = 'https://res.cloudinary.com/d5qqtsou/image/upload/v1787329124/spr_qtwrcq.png';
+        var DEFAULT = {
+          title: 'EducFarm — Smart Irrigation System for African Farmers',
+          description: 'Smart Irrigation system for Small and Big farmers, working on solar energy. Automate your farm with EducFarm.',
+          url: 'https://www.educfarm.com/',
+        };
+
+        var meta = routes[path] || DEFAULT;
+
+        // Inject OG tags for bots
+        document.title = meta.title;
+        var tags = [
+          ['property', 'og:type',        'website'],
+          ['property', 'og:url',         meta.url],
+          ['property', 'og:title',       meta.title],
+          ['property', 'og:description', meta.description],
+          ['property', 'og:image',       IMAGE],
+          ['property', 'og:image:width',  '1200'],
+          ['property', 'og:image:height', '630'],
+          ['property', 'og:site_name',   'EducFarm'],
+          ['name',     'twitter:card',        'summary_large_image'],
+          ['name',     'twitter:title',       meta.title],
+          ['name',     'twitter:description', meta.description],
+          ['name',     'twitter:image',       IMAGE],
+          ['name',     'description',         meta.description],
+        ];
+        tags.forEach(function (t) {
+          var el = document.createElement('meta');
+          el.setAttribute(t[0], t[1]);
+          el.setAttribute('content', t[2]);
+          document.head.appendChild(el);
+        });
+
+        // Redirect real users to the SPA
+        window.location.replace('/?p=' + encodeURIComponent(path + window.location.search));
+      })();
     </script>
   </head>
   <body></body>

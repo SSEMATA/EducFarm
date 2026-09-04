@@ -108,9 +108,37 @@
       (function(){
         var p = new URLSearchParams(window.location.search).get('p');
         if (p) window.history.replaceState(null, '', p);
+
+        // Per-path meta for crawlers (before React hydrates)
+        var path = (p || window.location.pathname).replace(/\/$/, '') || '/';
+        var OG_IMG = 'https://res.cloudinary.com/d5qqtsou/image/upload/v1787329124/spr_qtwrcq.png';
+        var META = {
+          '/about':       { t: 'About EducFarm \u2014 Smart Irrigation Built for Africa',           d: 'Meet the team behind EducFarm. Solar-powered smart irrigation helping African farmers grow food reliably and conserve water.' },
+          '/contact':     { t: 'Contact EducFarm \u2014 Get in Touch',                              d: 'Reach the EducFarm team by email, WhatsApp, or phone. Based in Fort Portal, Uganda. Replies within 24 hours.' },
+          '/invest':      { t: 'Invest in EducFarm \u2014 Smart Irrigation for Africa',             d: 'EducFarm is ready to scale. Invest in proven solar-powered smart irrigation helping African farmers produce food reliably all year round.' },
+          '/invest/form': { t: 'Investor Application \u2014 EducFarm',                              d: 'Submit your investor enquiry to EducFarm. Share your investment interest, goals, and timeline.' },
+          '/partnership': { t: 'Partnership Application \u2014 EducFarm',                           d: 'Become a trader, buyer, distributor, or technology partner with EducFarm. Let\u2019s grow the future of farming together.' },
+        };
+        var m = META[path];
+        if (m) {
+          document.title = m.t;
+          var setM = function(attr, val, content) {
+            var el = document.querySelector('meta[' + attr + '="' + val + '"]');
+            if (el) el.setAttribute('content', content);
+          };
+          setM('name', 'description', m.d);
+          setM('property', 'og:title', m.t);
+          setM('property', 'og:description', m.d);
+          setM('property', 'og:url', 'https://www.educfarm.com' + path);
+          setM('property', 'og:image', OG_IMG);
+          setM('name', 'twitter:title', m.t);
+          setM('name', 'twitter:description', m.d);
+          var canon = document.querySelector('link[rel="canonical"]');
+          if (canon) canon.setAttribute('href', 'https://www.educfarm.com' + path);
+        }
       })();
     </script>
-    <script type="module" crossorigin src="/assets/index-B_aWoXgb.js"></script>
+    <script type="module" crossorigin src="/assets/index-BSvEBgi6.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-S6szyekf.css">
   <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
   <body>

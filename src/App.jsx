@@ -3,36 +3,37 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { usePushNotifications } from './hooks/usePushNotifications';
 import InstallPrompt  from './components/InstallPrompt';
-import Login          from './pages/Auth/Login';
-import Signup         from './pages/Auth/Signup';
-import SetPassword    from './pages/Auth/SetPassword';
-import Dashboard      from './pages/Dashboard/Dashboard';
-import DeviceList     from './pages/Devices/DeviceList';
-import ConnectDevice  from './pages/Devices/ConnectDevice';
-import IrrigationPlanner from './pages/Weather/Weather';
-import Notifications  from './pages/Notifications/Notifications';
-import Settings       from './pages/Settings/Settings';
-import WifiSettings   from './pages/Settings/WifiSettings';
-import SMSSettings    from './pages/Settings/SMSSettings';
-import DeviceManagement from './pages/Settings/DeviceManagement';
-import FarmSettings   from './pages/Settings/FarmSettings';
-import LiveData       from './pages/LiveData/LiveData';
-import AccountSettings from './pages/Settings/AccountSettings';
 import Landing        from './pages/Landing/Landing';
-import Contact        from './pages/Contact/Contact';
-import About          from './pages/About/About';
-import Invest         from './pages/Invest/Invest';
-import InvestorForm   from './pages/Invest/InvestorForm';
-import RequestForm    from './pages/Invest/RequestForm';
-import PartnershipForm from './pages/Invest/PartnershipForm';
-import Admin          from './pages/Admin/Admin';
-import AdminDashboard from './pages/Admin/AdminDashboard';
-import AdminDevices   from './pages/Admin/AdminDevices';
-import AdminWeather   from './pages/Admin/AdminWeather';
-import AdminSettings  from './pages/Admin/AdminSettings';
-import AdminPlantSettings from './pages/Admin/AdminPlantSettings';
-import AdminOrders from './pages/Admin/AdminOrders';
-import AdminForms  from './pages/Admin/AdminForms';
+
+const Login          = lazy(() => import('./pages/Auth/Login'));
+const Signup         = lazy(() => import('./pages/Auth/Signup'));
+const SetPassword    = lazy(() => import('./pages/Auth/SetPassword'));
+const Dashboard      = lazy(() => import('./pages/Dashboard/Dashboard'));
+const DeviceList     = lazy(() => import('./pages/Devices/DeviceList'));
+const ConnectDevice  = lazy(() => import('./pages/Devices/ConnectDevice'));
+const IrrigationPlanner = lazy(() => import('./pages/Weather/Weather'));
+const Notifications  = lazy(() => import('./pages/Notifications/Notifications'));
+const Settings       = lazy(() => import('./pages/Settings/Settings'));
+const WifiSettings   = lazy(() => import('./pages/Settings/WifiSettings'));
+const SMSSettings    = lazy(() => import('./pages/Settings/SMSSettings'));
+const DeviceManagement = lazy(() => import('./pages/Settings/DeviceManagement'));
+const FarmSettings   = lazy(() => import('./pages/Settings/FarmSettings'));
+const LiveData       = lazy(() => import('./pages/LiveData/LiveData'));
+const AccountSettings = lazy(() => import('./pages/Settings/AccountSettings'));
+const Contact        = lazy(() => import('./pages/Contact/Contact'));
+const About          = lazy(() => import('./pages/About/About'));
+const Invest         = lazy(() => import('./pages/Invest/Invest'));
+const InvestorForm   = lazy(() => import('./pages/Invest/InvestorForm'));
+const RequestForm    = lazy(() => import('./pages/Invest/RequestForm'));
+const PartnershipForm = lazy(() => import('./pages/Invest/PartnershipForm'));
+const Admin          = lazy(() => import('./pages/Admin/Admin'));
+const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'));
+const AdminDevices   = lazy(() => import('./pages/Admin/AdminDevices'));
+const AdminWeather   = lazy(() => import('./pages/Admin/AdminWeather'));
+const AdminSettings  = lazy(() => import('./pages/Admin/AdminSettings'));
+const AdminPlantSettings = lazy(() => import('./pages/Admin/AdminPlantSettings'));
+const AdminOrders = lazy(() => import('./pages/Admin/AdminOrders'));
+const AdminForms  = lazy(() => import('./pages/Admin/AdminForms'));
 
 function useCountdown(target) {
   const [remaining, setRemaining] = useState(null);
@@ -236,8 +237,8 @@ function App() {
     <SystemGuard>
       <SpaRedirectHandler />
       <PushNotificationInit />
-      {/* InstallPrompt only for authenticated users — rendered conditionally to avoid redirect side-effects outside Routes */}
       <SafeInstallPrompt />
+      <Suspense fallback={null}>
       <Routes>
         <Route path="/"                element={window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone ? <Landing /> : <Landing />} />
         <Route path="/contact"          element={<Contact />} />
@@ -275,6 +276,7 @@ function App() {
           <Route path="/simulate" element={<P><Suspense fallback={null}><Simulate /></Suspense></P>} />
         )}
       </Routes>
+      </Suspense>
     </SystemGuard>
     </BrowserRouter>
     </AuthProvider>

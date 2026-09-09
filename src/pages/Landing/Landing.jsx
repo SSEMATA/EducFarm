@@ -5,7 +5,6 @@ import ShopModal from '../../components/ShopModal';
 import PublicHeader from '../../components/PublicHeader';
 import PublicFooter from '../../components/PublicFooter';
 import { useAuth } from '../../context/AuthContext';
-import { Cpu, Wrench, Leaf, Trophy, Globe, Mic } from 'lucide-react';
 import styles from './Landing.module.css';
 
 // ── Live dashboard metrics ───────────────────────────────
@@ -185,6 +184,7 @@ export default function Landing() {
           muted
           loop
           playsInline
+          preload="none"
         />
         <div className={styles.heroOverlay} />
       <section className={styles.hero}>
@@ -250,6 +250,7 @@ export default function Landing() {
               src="https://res.cloudinary.com/d5qqtsou/image/upload/v1788426936/sm_smo9sk.jpg"
               alt="Students and Stanbic Bank team inspecting EducFarm system at Yonder Farm"
               loading="lazy"
+              fetchpriority="high"
             />
             <span className={styles.exploreBadge}>Yonder Farm, Fort Portal City</span>
           </div>

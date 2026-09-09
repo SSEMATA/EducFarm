@@ -234,8 +234,8 @@ function App() {
     <ErrorBoundary>
     <AuthProvider>
     <BrowserRouter basename="/">
-    <SystemGuard>
       <SpaRedirectHandler />
+      <SystemGuard>
       <PushNotificationInit />
       <SafeInstallPrompt />
       <Suspense fallback={null}>

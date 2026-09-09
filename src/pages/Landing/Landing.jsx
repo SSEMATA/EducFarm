@@ -180,7 +180,7 @@ export default function Landing() {
         <video
           className={styles.heroBgVideo}
           src="https://res.cloudinary.com/d5qqtsou/video/upload/v1788421243/irrigation_1_mz9qzu.mp4"
-          poster="https://res.cloudinary.com/d5qqtsou/video/upload/so_0/v1788421243/irrigation_1_mz9qzu.jpg"
+          poster="https://res.cloudinary.com/d5qqtsou/video/upload/so_0,f_auto,q_auto/v1788421243/irrigation_1_mz9qzu.jpg"
           autoPlay
           muted
           loop
@@ -248,10 +248,12 @@ export default function Landing() {
           <div className={styles.exploreVisual}>
             <img
               className={styles.exploreImage}
-              src="https://res.cloudinary.com/d5qqtsou/image/upload/v1788426936/sm_smo9sk.jpg"
+              src="https://res.cloudinary.com/d5qqtsou/image/upload/f_auto,q_auto,w_640/v1788426936/sm_smo9sk.jpg"
               alt="Students and Stanbic Bank team inspecting EducFarm system at Yonder Farm"
               loading="lazy"
               fetchpriority="high"
+              width="640"
+              height="460"
             />
             <span className={styles.exploreBadge}>Yonder Farm, Fort Portal City</span>
           </div>
@@ -290,10 +292,12 @@ export default function Landing() {
             <div className={styles.stemRing3} />
             <div className={styles.stemCircle}>
               <img
-                src="https://res.cloudinary.com/d5qqtsou/image/upload/v1788603321/wiring_gdlj4e.jpg"
+                src="https://res.cloudinary.com/d5qqtsou/image/upload/f_auto,q_auto,w_360/v1788603321/wiring_gdlj4e.jpg"
                 alt="Students wiring an EducFarm irrigation system"
                 className={styles.stemCircleImg}
                 loading="lazy"
+                width="360"
+                height="360"
               />
             </div>
             <span className={styles.stemFloatBadge}>Hands-on Wiring</span>
@@ -325,9 +329,11 @@ export default function Landing() {
         {/* full-bleed image */}
         <img
           className={styles.certBgImg}
-          src="https://res.cloudinary.com/d5qqtsou/image/upload/v1788603321/honoring_gjmrrr.jpg"
+          src="https://res.cloudinary.com/d5qqtsou/image/upload/f_auto,q_auto,w_1100/v1788603321/honoring_gjmrrr.jpg"
           alt="Students honoured at AYuTe Africa competition"
           loading="lazy"
+          width="1100"
+          height="560"
         />
         {/* diagonal fade: right=image visible, left=dark for text */}
         <div className={styles.certDiagOverlay} />
@@ -374,9 +380,11 @@ export default function Landing() {
         <div className={styles.processVisual}>
           <img
             className={styles.processImage}
-            src="https://res.cloudinary.com/d5qqtsou/image/upload/v1788421593/irrigation_ntubcn.jpg"
+            src="https://res.cloudinary.com/d5qqtsou/image/upload/f_auto,q_auto,w_640/v1788421593/irrigation_ntubcn.jpg"
             alt="EducFarm smart irrigation system"
             loading="lazy"
+            width="640"
+            height="440"
           />
           <div className={styles.processCaption}>Smart irrigation, made practical</div>
         </div>

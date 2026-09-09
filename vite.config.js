@@ -13,27 +13,43 @@ const BASE_URL = 'https://www.educfarm.com';
 const OG_ROUTES = [
   {
     path: 'invest/form',
-    title: 'Invest in EducFarm — Apply Now',
-    description: 'Join us in building the future of African farming. Submit your investor application and help scale solar-powered smart irrigation to farms across Africa.',
+    title: 'Investor Application — EducFarm',
+    description: 'Submit your investor enquiry to EducFarm. Share your investment interest, goals, and timeline. Help scale smart irrigation technology across Africa.',
+    image: 'https://res.cloudinary.com/d5qqtsou/image/upload/w_1200,h_630,c_fill,q_80,f_jpg/v1788947769/rt_tzoxtn.jpg',
   },
   {
     path: 'partnership',
-    title: 'Partner with EducFarm — Grow Together',
-    description: 'Become a distribution, trade, or technology partner with EducFarm. Let\'s grow the future of sustainable farming together across Africa.',
+    title: 'Partnership Application — EducFarm',
+    description: 'Become an EducFarm partner. Whether you are a trader, buyer, distributor, institution, or technology partner — let\'s grow the future of farming together.',
+    image: 'https://res.cloudinary.com/d5qqtsou/image/upload/w_1200,h_630,c_fill,q_80,f_jpg/v1788426936/sm_smo9sk.jpg',
   },
   {
     path: 'invest/request',
     title: 'Business Request — EducFarm',
     description: 'Explore strategic partnerships and distribution opportunities with EducFarm. Submit your business request and let\'s build something meaningful.',
+    image: 'https://res.cloudinary.com/d5qqtsou/image/upload/w_1200,h_630,c_fill,q_80,f_jpg/v1788947769/rt_tzoxtn.jpg',
   },
   {
     path: 'invest',
-    title: 'Invest in EducFarm — Smart Irrigation for Africa',
-    description: 'EducFarm is ready to scale. Invest in proven solar-powered smart irrigation helping African farmers produce food reliably all year round.',
+    title: 'EducFarm | Invest in Smart Irrigation for Africa',
+    description: 'Invest in EducFarm and help scale proven smart irrigation technology across Africa. Support solar-powered agriculture, water conservation, food security, and climate-resilient farming.',
+    image: 'https://res.cloudinary.com/d5qqtsou/image/upload/w_1200,h_630,c_fill,q_80,f_jpg/v1788947769/rt_tzoxtn.jpg',
+  },
+  {
+    path: 'about',
+    title: 'About EducFarm — Smart Irrigation Built for Africa',
+    description: 'Meet the team behind EducFarm. We build solar-powered smart irrigation systems to help African farmers grow food reliably, conserve water, and fight food insecurity.',
+    image: 'https://res.cloudinary.com/d5qqtsou/image/upload/w_1200,h_630,c_fill,q_80,f_jpg/v1788426936/sm_smo9sk.jpg',
+  },
+  {
+    path: 'contact',
+    title: 'Contact EducFarm — Get in Touch',
+    description: 'Have a question, want to order a kit, or need support? Contact the EducFarm team by email, WhatsApp, or phone. Based in Fort Portal, Uganda.',
+    image: 'https://res.cloudinary.com/d5qqtsou/image/upload/w_1200,h_630,c_fill,q_80,f_jpg/v1788426936/sm_smo9sk.jpg',
   },
 ];
 
-function ogHtml({ path, title, description }) {
+function ogHtml({ path, title, description, image }) {
   const url = `${BASE_URL}/${path}`;
   return `<!doctype html>
 <html lang="en">
@@ -45,17 +61,16 @@ function ogHtml({ path, title, description }) {
 <meta property="og:url" content="${url}" />
 <meta property="og:title" content="${title}" />
 <meta property="og:description" content="${description}" />
-<meta property="og:image" content="${OG_IMAGE}" />
+<meta property="og:image" content="${image}" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:site_name" content="EducFarm" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${title}" />
 <meta name="twitter:description" content="${description}" />
-<meta name="twitter:image" content="${OG_IMAGE}" />
+<meta name="twitter:image" content="${image}" />
 <link rel="canonical" href="${url}" />
 <script>
-// Only redirect real browsers — bots that read OG tags don't run JS
 (function(){
   var ua = navigator.userAgent || '';
   var isBot = /bot|crawl|slurp|spider|facebookexternalhit|whatsapp|telegrambot|linkedinbot|twitterbot/i.test(ua);

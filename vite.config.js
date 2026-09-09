@@ -37,9 +37,9 @@ const OG_ROUTES = [
   },
   {
     path: 'about',
-    title: 'About EducFarm — Smart Irrigation Built for Africa',
-    description: 'Meet the team behind EducFarm. We build solar-powered smart irrigation systems to help African farmers grow food reliably, conserve water, and fight food insecurity.',
-    image: 'https://res.cloudinary.com/d5qqtsou/image/upload/w_1200,h_630,c_fill,q_80,f_jpg/v1788426936/sm_smo9sk.jpg',
+    title: 'EducFarm | About Us',
+    description: 'Learn how EducFarm is transforming African agriculture with affordable solar-powered smart irrigation, real-time farm data, weather intelligence, and automated water management.',
+    image: 'https://res.cloudinary.com/d5qqtsou/image/upload/w_1200,h_630,c_fill,q_80,f_jpg/v1788603321/wiring_gdlj4e.jpg',
   },
   {
     path: 'contact',

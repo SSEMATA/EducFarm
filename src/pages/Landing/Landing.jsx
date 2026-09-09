@@ -180,6 +180,7 @@ export default function Landing() {
         <video
           className={styles.heroBgVideo}
           src="https://res.cloudinary.com/d5qqtsou/video/upload/v1788421243/irrigation_1_mz9qzu.mp4"
+          poster="https://res.cloudinary.com/d5qqtsou/video/upload/so_0/v1788421243/irrigation_1_mz9qzu.jpg"
           autoPlay
           muted
           loop

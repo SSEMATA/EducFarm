@@ -94,6 +94,7 @@
 .heroWrapper {
   position: relative;
   overflow: hidden;
+  background: #0f2e1a;
 }
 
 .heroBgVideo {

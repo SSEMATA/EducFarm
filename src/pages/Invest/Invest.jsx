@@ -29,7 +29,7 @@ export default function Invest() {
     title: 'EducFarm | Invest in Smart Irrigation for Africa',
     description: 'Invest in EducFarm and help scale proven smart irrigation technology across Africa. Support solar-powered agriculture, water conservation, food security, and climate-resilient farming.',
     url: 'https://www.educfarm.com/invest',
-    ogImage: 'https://res.cloudinary.com/d5qqtsou/image/upload/v1788947769/rt_tzoxtn.jpg',
+    ogImage: 'https://res.cloudinary.com/d5qqtsou/image/upload/w_1200,h_630,c_fill,q_80,f_jpg/v1788947769/rt_tzoxtn.jpg',
     keywords: 'EducFarm, invest in EducFarm, invest in smart irrigation, smart irrigation investment, smart irrigation Africa, agricultural investment Africa, agtech investment Africa, agricultural technology investment, smart agriculture investment, sustainable agriculture investment, climate smart agriculture investment, irrigation investment Africa, solar irrigation investment, agriculture investment Uganda, agtech Uganda, African agriculture investment, food security investment Africa, climate resilient agriculture, sustainable agriculture Africa, smart farming investment, agricultural technology Africa, irrigation technology Africa, solar powered irrigation, smart irrigation systems Africa, agricultural innovation Africa, farm technology investment, agricultural solutions Africa, water saving agriculture, water efficient farming, food security Africa, sustainable farming technology, agriculture innovation Africa',
   });
   return (

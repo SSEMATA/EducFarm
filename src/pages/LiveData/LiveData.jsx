@@ -68,6 +68,7 @@ export default function LiveData() {
   const [loading, setLoading]       = useState(true);
   const [error, setError]           = useState(null);
   const [pumpLoading, setPumpLoading] = useState(false);
+  const [commandedPump, setCommandedPump] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
   const intervalRef  = useRef(null);
   const latestRef    = useRef(null); // always holds current latest for stale-closure-free comparison
@@ -127,15 +128,15 @@ export default function LiveData() {
     setLoading(true);
   };
 
-  const togglePump = async () => {
+  const sendPumpCommand = async (mode, pumpOn = false) => {
     if (!latest || pumpLoading) return;
     const deviceId = latest.device_id;
     if (!deviceId) return;
-    const pumpOn = latest.pump_status !== 'On' && latest.pump_status !== 'Running';
     setPumpLoading(true);
     try {
-      await api.post('/pump/control/', { device_id: deviceId, pump_on: pumpOn });
-      addLog(`Pump manually ${pumpOn ? 'started' : 'stopped'}`, pumpOn ? 'success' : 'info');
+      await api.post('/pump/control/', { device_id: deviceId, mode, pump_on: pumpOn });
+      setCommandedPump(mode === 'auto' ? null : pumpOn ? 'On' : 'Off');
+      addLog(mode === 'auto' ? 'Automatic irrigation enabled' : `Pump manually ${pumpOn ? 'started' : 'stopped'}`, mode === 'manual' && pumpOn ? 'success' : 'info');
       await fetchData(selectedId);
     } catch {
       addLog('Pump control failed', 'critical');
@@ -144,9 +145,12 @@ export default function LiveData() {
     }
   };
 
+  const wakeSystem = () => sendPumpCommand('wake');
+
   const alerts = evalAlerts(latest);
   const deviceOnline = latest != null;
-  const pumpRunning  = latest?.pump_status === 'On' || latest?.pump_status === 'Running';
+  const pumpStatus   = commandedPump ?? latest?.pump_status;
+  const pumpRunning  = pumpStatus === 'On' || pumpStatus === 'Running';
 
   return (
     <DashboardLayout>
@@ -228,12 +232,17 @@ export default function LiveData() {
                 <p className={styles.panelTitle}><Gauge size={13} /> Pump Control</p>
 
                 <div className={styles.toggleRow}>
-                  <button
-                    className={`${styles.toggleBtn} ${pumpRunning ? styles.tOn : ''}`}
-                    onClick={togglePump}
-                    disabled={!deviceOnline || pumpLoading}
-                  >
-                    <Zap size={13} /> {pumpLoading ? 'Updating…' : pumpRunning ? 'Stop Pump' : 'Start Pump'}
+                  <button className={styles.toggleBtn} onClick={() => sendPumpCommand('manual', true)} disabled={!deviceOnline || pumpLoading}>
+                    <Zap size={13} /> Start Pump
+                  </button>
+                  <button className={`${styles.toggleBtn} ${styles.tOn}`} onClick={() => sendPumpCommand('auto')} disabled={!deviceOnline || pumpLoading}>
+                    <Activity size={13} /> Start Irrigation
+                  </button>
+                  <button className={styles.toggleBtn} onClick={() => sendPumpCommand('manual', false)} disabled={!deviceOnline || pumpLoading}>
+                    <Zap size={13} /> Stop Pump
+                  </button>
+                  <button className={styles.toggleBtn} onClick={wakeSystem} disabled={!deviceOnline || pumpLoading}>
+                    <RefreshCw size={13} /> Wake System
                   </button>
                 </div>
 

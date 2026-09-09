@@ -1,144 +1,84 @@
-// Service Worker with Push Notifications and Badge Support
-const CACHE_NAME = 'educfarm-v2';
+// Service Worker — push notifications + badge support
+// Caching is handled by the VitePWA-generated workbox SW (sw.js injected at build time).
+// This file is the *public* fallback used only in dev; in production VitePWA replaces it.
 
-// Install event - cache assets
-self.addEventListener('install', (event) => {
-  console.log('[SW] Installing service worker');
-  self.skipWaiting();
-});
+const CACHE_NAME = 'educfarm-v3';
 
-// Activate event - clean up old caches
+self.addEventListener('install', () => self.skipWaiting());
+
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating service worker');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    caches.keys().then((names) =>
+      Promise.all(names.filter(n => n !== CACHE_NAME).map(n => caches.delete(n)))
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Push notification event
+// ── Push notifications ────────────────────────────────────────────────────────
 self.addEventListener('push', (event) => {
-  console.log('[SW] Push notification received', event);
-  
-  let notificationData = {
-    title: 'EducFarm Notification',
+  let data = {
+    title: 'EducFarm',
     body: 'You have a new notification',
-    icon: '/EducFarm/icons/pwa-192.png',
-    badge: '/EducFarm/icons/pwa-192.png',
+    icon: '/icons/pwa-192.png',
+    badge: '/icons/pwa-192.png',
     tag: 'educfarm-notification',
-    requireInteraction: false,
   };
 
   try {
-    if (event.data) {
-      const data = event.data.json();
-      notificationData = {
-        ...notificationData,
-        ...data,
-      };
-    }
-  } catch (e) {
-    notificationData.body = event.data ? event.data.text() : 'You have a new notification';
+    if (event.data) Object.assign(data, event.data.json());
+  } catch {
+    if (event.data) data.body = event.data.text();
   }
 
-  // Update badge count if provided
-  if (notificationData.badge_count !== undefined && 'setAppBadge' in self.registration) {
-    event.waitUntil(
-      self.registration.setAppBadge(notificationData.badge_count).catch(() => {})
-    );
+  if (data.badge_count !== undefined && 'setAppBadge' in self.registration) {
+    self.registration.setAppBadge(data.badge_count).catch(() => {});
   }
 
   event.waitUntil(
-    self.registration.showNotification(notificationData.title, {
-      body: notificationData.body,
-      icon: notificationData.icon,
-      badge: notificationData.badge,
-      tag: notificationData.tag,
-      requireInteraction: notificationData.requireInteraction,
-      data: notificationData.data || {},
-      actions: notificationData.actions || [],
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: data.icon,
+      badge: data.badge,
+      tag: data.tag,
+      requireInteraction: data.requireInteraction || false,
+      data: data.data || {},
+      actions: data.actions || [],
     })
   );
 });
 
-// Notification click event
+// ── Notification click ────────────────────────────────────────────────────────
 self.addEventListener('notificationclick', (event) => {
-  console.log('[SW] Notification clicked', event);
   event.notification.close();
-
-  const urlToOpen = event.notification.data.url || '/EducFarm/';
-
+  const url = event.notification.data?.url || '/';
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      // Check if window already open
-      for (let i = 0; i < clientList.length; i++) {
-        const client = clientList[i];
-        if (client.url === urlToOpen && 'focus' in client) {
-          return client.focus();
-        }
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      for (const client of list) {
+        if (client.url === url && 'focus' in client) return client.focus();
       }
-      // If not open, open new window
-      if (clients.openWindow) {
-        return clients.openWindow(urlToOpen);
-      }
+      return clients.openWindow(url);
     })
   );
 });
 
-// Notification close event
-self.addEventListener('notificationclose', (event) => {
-  console.log('[SW] Notification closed', event);
-  
-  if (event.notification.data && event.notification.data.dismissUrl) {
-    fetch(event.notification.data.dismissUrl);
-  }
-});
-
-// Background sync for badge updates
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-badge') {
-    event.waitUntil(
-      (async () => {
-        try {
-          // Token is passed via the SET_TOKEN message and stored in SW scope
-          const headers = self._authToken ? { Authorization: `Bearer ${self._authToken}` } : {};
-          const response = await fetch(`${self.location.origin}/api/notifications/badge/`, { headers });
-          if (response.ok) {
-            const data = await response.json();
-            if ('setAppBadge' in self.registration) {
-              await self.registration.setAppBadge(data.unread_count || 0);
-            }
-          }
-        } catch {}
-      })()
-    );
-  }
-});
-
-// Store auth token passed from client for use in background sync
+// ── Badge / token messages from app ──────────────────────────────────────────
 self.addEventListener('message', (event) => {
-  if (event.data?.type === 'SET_TOKEN') {
-    self._authToken = event.data.token;
-  }
+  if (event.data?.type === 'SET_TOKEN')  self._authToken = event.data.token;
+  if (event.data?.type === 'SET_BADGE')  self.registration.setAppBadge?.(event.data.count).catch(() => {});
+  if (event.data?.type === 'CLEAR_BADGE') self.registration.clearAppBadge?.().catch(() => {});
+});
 
-  if (event.data && event.data.type === 'SET_BADGE') {
-    const count = event.data.count;
-    if ('setAppBadge' in self.registration && count !== undefined) {
-      self.registration.setAppBadge(count).catch(() => {});
-    }
-  }
-
-  if (event.data && event.data.type === 'CLEAR_BADGE') {
-    if ('clearAppBadge' in self.registration) {
-      self.registration.clearAppBadge().catch(() => {});
-    }
-  }
+// ── Background sync for badge count ──────────────────────────────────────────
+self.addEventListener('sync', (event) => {
+  if (event.tag !== 'sync-badge') return;
+  event.waitUntil((async () => {
+    try {
+      const headers = self._authToken ? { Authorization: `Bearer ${self._authToken}` } : {};
+      const res = await fetch(`${self.location.origin}/api/notifications/badge/`, { headers });
+      if (res.ok) {
+        const { unread_count } = await res.json();
+        await self.registration.setAppBadge?.(unread_count || 0);
+      }
+    } catch {}
+  })());
 });

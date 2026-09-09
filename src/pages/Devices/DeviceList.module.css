@@ -71,8 +71,9 @@
   color: #374151;
 }
 
-.chipGreen { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
-.chipRed   { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
+.chipGreen  { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+.chipYellow { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+.chipRed    { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
 
 /* ── Error banner ──────────────────────────────────────── */
 .errorBanner {
@@ -235,6 +236,14 @@
   white-space: nowrap;
 }
 
+.noDataHint {
+  display: block;
+  font-size: 0.72rem;
+  color: #f59e0b;
+  font-weight: 600;
+  margin-top: 0.15rem;
+}
+
 /* ── Status badge ──────────────────────────────────────── */
 .badge {
   display: inline-flex;
@@ -248,6 +257,7 @@
 }
 
 .badgeOnline  { background: #f0fdf4; color: #16a34a; }
+.badgeSilent  { background: #fffbeb; color: #92400e; }
 .badgeOffline { background: #f9fafb; color: #6b7280; }
 
 .dot {
@@ -258,7 +268,13 @@
 }
 
 .badgeOnline  .dot { background: #16a34a; box-shadow: 0 0 0 2px #bbf7d0; }
+.badgeSilent  .dot { background: #f59e0b; box-shadow: 0 0 0 2px #fde68a; animation: pulse 1.5s ease-in-out infinite; }
 .badgeOffline .dot { background: #9ca3af; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
 
 /* ── Action buttons ────────────────────────────────────── */
 .actions {

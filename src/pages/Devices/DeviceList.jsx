@@ -38,8 +38,9 @@ export default function DeviceList() {
       d.soil_type?.toLowerCase().includes(search.toLowerCase());
     const matchFilter =
       filter === 'all' ||
-      (filter === 'online'  && d.status === 'Online') ||
-      (filter === 'offline' && d.status !== 'Online');
+      (filter === 'online'  && d.computed_status === 'Online') ||
+      (filter === 'silent'  && d.computed_status === 'Silent') ||
+      (filter === 'offline' && d.computed_status === 'Offline');
     return matchSearch && matchFilter;
   });
 
@@ -82,8 +83,9 @@ export default function DeviceList() {
     }
   };
 
-  const onlineCount  = devices.filter((d) => d.status === 'Online').length;
-  const offlineCount = devices.length - onlineCount;
+  const onlineCount  = devices.filter((d) => d.computed_status === 'Online').length;
+  const silentCount  = devices.filter((d) => d.computed_status === 'Silent').length;
+  const offlineCount = devices.filter((d) => d.computed_status === 'Offline').length;
 
   return (
     <DashboardLayout>
@@ -103,6 +105,7 @@ export default function DeviceList() {
         <div className={styles.chips}>
           <span className={styles.chip}><Radio size={13} /> Total: <strong>{devices.length}</strong></span>
           <span className={`${styles.chip} ${styles.chipGreen}`}><CircleDot size={13} /> Online: <strong>{onlineCount}</strong></span>
+          <span className={`${styles.chip} ${styles.chipYellow}`}><CircleDot size={13} /> Silent: <strong>{silentCount}</strong></span>
           <span className={`${styles.chip} ${styles.chipRed}`}><CircleOff size={13} /> Offline: <strong>{offlineCount}</strong></span>
         </div>
 
@@ -124,7 +127,7 @@ export default function DeviceList() {
             )}
           </div>
           <div className={styles.filterBtns}>
-            {['all', 'online', 'offline'].map((f) => (
+            {['all', 'online', 'silent', 'offline'].map((f) => (
               <button
                 key={f}
                 className={`${styles.filterBtn} ${filter === f ? styles.filterActive : ''}`}
@@ -163,25 +166,34 @@ export default function DeviceList() {
                 </tr>
               </thead>
               <tbody>
-                {visible.map((device, i) => (
-                  <tr key={device.id ?? device.device_id} className={styles.row}>
+                {visible.map((d, i) => (
+                  <tr key={d.id ?? d.device_id} className={styles.row}>
                     <td className={styles.rowNum}>{i + 1}</td>
-                    <td><code className={styles.deviceId}>{device.device_id}</code></td>
-                    <td className={styles.deviceName}>{device.device_name}</td>
+                    <td><code className={styles.deviceId}>{d.device_id}</code></td>
+                    <td className={styles.deviceName}>{d.device_name}</td>
                     <td>
-                      <span className={`${styles.badge} ${device.status === 'Online' ? styles.badgeOnline : styles.badgeOffline}`}>
+                      <span className={`${styles.badge} ${
+                        d.computed_status === 'Online'  ? styles.badgeOnline  :
+                        d.computed_status === 'Silent'  ? styles.badgeSilent  :
+                        styles.badgeOffline
+                      }`}>
                         <span className={styles.dot} />
-                        {device.status ?? 'Unknown'}
+                        {d.computed_status === 'Silent' ? 'Silent — no data' : (d.computed_status ?? 'Unknown')}
                       </span>
                     </td>
-                    <td>{device.soil_type ?? '—'}</td>
-                    <td>{device.crop_type ?? '—'}</td>
-                    <td className={styles.lastSeen}>{device.last_seen ? new Date(device.last_seen).toLocaleString() : '—'}</td>
+                    <td>{d.soil_type ?? '—'}</td>
+                    <td>{d.crop_type ?? '—'}</td>
+                    <td className={styles.lastSeen}>
+                      {d.last_seen ? new Date(d.last_seen).toLocaleString() : '—'}
+                      {d.computed_status === 'Silent' && (
+                        <span className={styles.noDataHint}>no data for {Math.floor(d.seconds_since_seen / 60)}m</span>
+                      )}
+                    </td>
                     <td>
                       <div className={styles.actions}>
-                        <button className={`${styles.actionBtn} ${styles.viewBtn}`}   onClick={() => openView(device)}><Eye size={13} /> <span className={styles.btnLabel}>View</span></button>
-                        <button className={`${styles.actionBtn} ${styles.editBtn}`}   onClick={() => openEdit(device)}><Pencil size={13} /> <span className={styles.btnLabel}>Edit</span></button>
-                        <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => openDelete(device)}><Trash2 size={13} /> <span className={styles.btnLabel}>Delete</span></button>
+                        <button className={`${styles.actionBtn} ${styles.viewBtn}`}   onClick={() => openView(d)}><Eye size={13} /> <span className={styles.btnLabel}>View</span></button>
+                        <button className={`${styles.actionBtn} ${styles.editBtn}`}   onClick={() => openEdit(d)}><Pencil size={13} /> <span className={styles.btnLabel}>Edit</span></button>
+                        <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => openDelete(d)}><Trash2 size={13} /> <span className={styles.btnLabel}>Delete</span></button>
                       </div>
                     </td>
                   </tr>

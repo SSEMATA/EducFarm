@@ -1,4 +1,12 @@
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /devices
+Disallow: /settings
+Disallow: /live-data
+Disallow: /irrigation-planner
+Disallow: /notifications
+Disallow: /admin
+Disallow: /simulate
 
 Sitemap: https://www.educfarm.com/sitemap.xml

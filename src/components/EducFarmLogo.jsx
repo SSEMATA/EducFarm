@@ -23,6 +23,8 @@ export default function EducFarmLogo({ size = 36, variant = 'dark', showText = t
       borderRadius: '14px',
       padding: '5px 12px 5px 6px',
       boxShadow: '0 1px 8px rgba(0,0,0,0.18)',
+      outline: '2px solid #111827',
+      outlineOffset: '2px',
       cursor: 'pointer',
     }}>
       {/* Icon mark */}

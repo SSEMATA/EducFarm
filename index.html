@@ -1,16 +1,25 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NZ1M5C3CPP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-NZ1M5C3CPP');
+    </script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
     <!-- ── Primary SEO ─────────────────────────────────────────────── -->
     <title>EducFarm — Smart Irrigation System for African Farmers</title>
-    <meta name="description" content="Smart Irrigation system for Small and Big farmers, working on solar energy. Automate your garden with an Advanced Agriculture irrigation system — stop wasting water, stop losing crops. EducFarm's smart sensors water your farm automatically, skip irrigation when rain is coming, and send you SMS alerts. From a small garden to a large farm, EducFarm works for every farmer. Built by Kyebambe Girls' School, Uganda." />
+    <meta name="description" content="Smart Irrigation system for Small and Big farmers, working on solar energy. Automate your garden with an Advanced Agriculture irrigation system — stop wasting water, stop losing crops. EducFarm's smart sensors water your farm automatically, skip irrigation when rain is coming, and send you SMS alerts. From a small garden to a large farm, EducFarm works for every farmer. Fort Portal, Uganda." />
     <meta name="keywords" content="smart irrigation, farm automation, soil moisture sensor, ESP32 irrigation, Uganda farming, precision agriculture, IoT farming, automatic pump, weather-based irrigation, EducFarm" />
     <meta name="author" content="Kyebambe EducFarm Innovators Limited" />
     <meta name="robots" content="index, follow" />
-    <meta name="google-site-verification" content="wO5EHxAMSY6hcFEi_W8tl5CTO2pRNivvokzDyBMmZDA" />
+    <meta name="google-site-verification" content="hufG42z2WpIGyEJIWrH-DBZZB59hZGi1dCkdSYrzikY" />
     <link rel="canonical" href="https://www.educfarm.com/" />
 
     <!-- ── Open Graph (Facebook, WhatsApp, LinkedIn) ───────────────── -->
@@ -18,7 +27,7 @@
     <meta property="og:url"         content="https://www.educfarm.com/" />
     <meta property="og:title"       content="EducFarm — Smart Irrigation System for African Farmers" />
     <meta property="og:description" content="Smart Irrigation system for Small and Big farmers, working on solar energy. Automate your garden with an Advanced Agriculture irrigation system — no electricity bills, no wasted water, no lost crops. Your crops get water exactly when they need it, rain forecasts skip unnecessary watering, and SMS alerts keep you in control even when you're miles away. Join farmers growing smarter with EducFarm." />
-    <meta property="og:image"       content="https://www.educfarm.com/icons/og-image.png" />
+    <meta property="og:image"       content="https://res.cloudinary.com/d5qqtsou/image/upload/v1787329124/spr_qtwrcq.png" />
     <meta property="og:image:width"  content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:site_name"   content="EducFarm" />
@@ -29,7 +38,7 @@
     <meta name="twitter:site"        content="@EducFarm" />
     <meta name="twitter:title"       content="EducFarm — Smart Irrigation System for African Farmers" />
     <meta name="twitter:description" content="Smart Irrigation system for Small and Big farmers, working on solar energy. Automate your garden with an Advanced Agriculture irrigation system — solar-powered, fully automatic, and always on. Your farm runs itself while you focus on what matters." />
-    <meta name="twitter:image"       content="https://www.educfarm.com/icons/og-image.png" />
+    <meta name="twitter:image"       content="https://res.cloudinary.com/d5qqtsou/image/upload/v1787329124/spr_qtwrcq.png" />
 
     <!-- ── PWA ────────────────────────────────────────────────────── -->
     <meta name="theme-color" content="#0f2e1a" />
@@ -43,7 +52,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/pwa-192.png" />
     <link rel="apple-touch-icon" sizes="512x512" href="/icons/pwa-512.png" />
-    <!-- manifest injected by VitePWA at build time -->
+    <link rel="manifest" href="/manifest.webmanifest" />
 
     <!-- ── Structured Data (JSON-LD) ──────────────────────────────── -->
     <script type="application/ld+json">
@@ -84,7 +93,7 @@
       "name": "Kyebambe EducFarm Innovators Limited",
       "url": "https://www.educfarm.com",
       "logo": "https://www.educfarm.com/icons/og-image.png",
-      "description": "Smart Irrigation system for Small and Big farmers, working on solar energy. Automate your garden with an Advanced Agriculture irrigation system — student-built precision agriculture technology from Kyebambe Girls' Secondary School, Uganda, proving that solar-powered smart farming is possible for every farmer, big or small.",
+      "description": "Smart Irrigation system for Small and Big farmers, working on solar energy. Automate your garden with an Advanced Agriculture irrigation system — precision agriculture technology from Fort Portal, Uganda, proving that solar-powered smart farming is possible for every farmer, big or small.",
       "foundingLocation": {
         "@type": "Place",
         "name": "Fort Portal, Uganda"
@@ -95,11 +104,38 @@
     }
     </script>
 
-    <title>EducFarm — Smart Irrigation System for African Farmers</title>
     <script>
       (function(){
         var p = new URLSearchParams(window.location.search).get('p');
         if (p) window.history.replaceState(null, '', p);
+
+        // Per-path meta for crawlers (before React hydrates)
+        var path = (p || window.location.pathname).replace(/\/$/, '') || '/';
+        var OG_IMG = 'https://res.cloudinary.com/d5qqtsou/image/upload/v1787329124/spr_qtwrcq.png';
+        var META = {
+          '/about':       { t: 'About EducFarm \u2014 Smart Irrigation Built for Africa',           d: 'Meet the team behind EducFarm. Solar-powered smart irrigation helping African farmers grow food reliably and conserve water.' },
+          '/contact':     { t: 'Contact EducFarm \u2014 Get in Touch',                              d: 'Reach the EducFarm team by email, WhatsApp, or phone. Based in Fort Portal, Uganda. Replies within 24 hours.' },
+          '/invest':      { t: 'Invest in EducFarm \u2014 Smart Irrigation for Africa',             d: 'EducFarm is ready to scale. Invest in proven solar-powered smart irrigation helping African farmers produce food reliably all year round.' },
+          '/invest/form': { t: 'Investor Application \u2014 EducFarm',                              d: 'Submit your investor enquiry to EducFarm. Share your investment interest, goals, and timeline.' },
+          '/partnership': { t: 'Partnership Application \u2014 EducFarm',                           d: 'Become a trader, buyer, distributor, or technology partner with EducFarm. Let\u2019s grow the future of farming together.' },
+        };
+        var m = META[path];
+        if (m) {
+          document.title = m.t;
+          var setM = function(attr, val, content) {
+            var el = document.querySelector('meta[' + attr + '="' + val + '"]');
+            if (el) el.setAttribute('content', content);
+          };
+          setM('name', 'description', m.d);
+          setM('property', 'og:title', m.t);
+          setM('property', 'og:description', m.d);
+          setM('property', 'og:url', 'https://www.educfarm.com' + path);
+          setM('property', 'og:image', OG_IMG);
+          setM('name', 'twitter:title', m.t);
+          setM('name', 'twitter:description', m.d);
+          var canon = document.querySelector('link[rel="canonical"]');
+          if (canon) canon.setAttribute('href', 'https://www.educfarm.com' + path);
+        }
       })();
     </script>
   </head>

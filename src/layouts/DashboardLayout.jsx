@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate, Link } from 'react-router-dom';
 import {
   LayoutDashboard, CircuitBoard, CloudSun, Bell, Settings,
-  LogOut, ChevronLeft, ChevronRight, Menu, Download, X, User, FlaskConical, Activity, Server, Users, ShoppingCart, Home,
+  LogOut, ChevronLeft, ChevronRight, Menu, Download, X, User, FlaskConical, Activity, Server, Users, ShoppingCart, Home, FileText,
 } from 'lucide-react';
 import EducFarmLogo from '../components/EducFarmLogo';
 import OfflineBanner from '../components/OfflineBanner';
@@ -36,9 +36,12 @@ const ADMIN_NAV = [
   { to: '/admin/users',     Icon: Users,           label: 'Users',        perm: 'can_manage_users'  },
   { to: '/admin/devices',   Icon: Server,          label: 'Devices',      perm: 'can_manage_devices'},
   { to: '/admin/orders',    Icon: ShoppingCart,    label: 'Orders',       perm: null                },
+  { to: '/admin/forms',     Icon: FileText,        label: 'Forms',        perm: null                },
   { to: '/admin/weather',   Icon: CloudSun,        label: 'Weather API',  perm: 'can_manage_weather'},
   { to: '/admin/settings',  Icon: Settings,        label: 'Settings',     perm: 'can_manage_system' },
 ];
+
+const WEBSITE_HOME_URL = 'https://www.educfarm.com';
 
 export default function DashboardLayout({ children }) {
   const navigate = useNavigate();
@@ -55,6 +58,19 @@ export default function DashboardLayout({ children }) {
   const NAV_ITEMS = user?.is_staff
     ? ADMIN_NAV.filter(({ perm }) => perm === null || isSuperAdmin || user[perm])
     : USER_NAV;
+
+  const shouldOpenWebsiteHome = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches && (
+    window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
+  );
+
+  const handleHomeNavigation = (event) => {
+    if (shouldOpenWebsiteHome) {
+      event.preventDefault();
+      window.location.assign(WEBSITE_HOME_URL);
+      return;
+    }
+    navigate('/');
+  };
 
   useEffect(() => {
     const fetchUnread = async () => {
@@ -157,6 +173,11 @@ export default function DashboardLayout({ children }) {
               key={to}
               to={to}
               end
+              onClick={(event) => {
+                if (to === '/' && shouldOpenWebsiteHome) {
+                  handleHomeNavigation(event);
+                }
+              }}
               className={({ isActive }) =>
                 `${styles.navItem} ${isActive ? styles.active : ''}`
               }
@@ -237,7 +258,16 @@ export default function DashboardLayout({ children }) {
                     </div>
                   </div>
                   <div className={styles.profileDivider} />
-                  <Link to="/" className={styles.profileItem} onClick={() => setProfileOpen(false)}>
+                  <Link
+                    to="/"
+                    className={styles.profileItem}
+                    onClick={(event) => {
+                      setProfileOpen(false);
+                      if (shouldOpenWebsiteHome) {
+                        handleHomeNavigation(event);
+                      }
+                    }}
+                  >
                     <Home size={15} /> Home
                   </Link>
                   <Link to="/settings/account" className={styles.profileItem} onClick={() => setProfileOpen(false)}>
@@ -269,6 +299,11 @@ export default function DashboardLayout({ children }) {
               key={to}
               to={to}
               end
+              onClick={(event) => {
+                if (to === '/' && shouldOpenWebsiteHome) {
+                  handleHomeNavigation(event);
+                }
+              }}
               className={({ isActive }) =>
                 `${styles.bottomNavItem} ${isActive ? styles.bottomNavActive : ''}`
               }

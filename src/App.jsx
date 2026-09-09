@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState, useRef, Component } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { usePushNotifications } from './hooks/usePushNotifications';
 import InstallPrompt  from './components/InstallPrompt';
@@ -19,6 +19,12 @@ import FarmSettings   from './pages/Settings/FarmSettings';
 import LiveData       from './pages/LiveData/LiveData';
 import AccountSettings from './pages/Settings/AccountSettings';
 import Landing        from './pages/Landing/Landing';
+import Contact        from './pages/Contact/Contact';
+import About          from './pages/About/About';
+import Invest         from './pages/Invest/Invest';
+import InvestorForm   from './pages/Invest/InvestorForm';
+import RequestForm    from './pages/Invest/RequestForm';
+import PartnershipForm from './pages/Invest/PartnershipForm';
 import Admin          from './pages/Admin/Admin';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminDevices   from './pages/Admin/AdminDevices';
@@ -26,6 +32,7 @@ import AdminWeather   from './pages/Admin/AdminWeather';
 import AdminSettings  from './pages/Admin/AdminSettings';
 import AdminPlantSettings from './pages/Admin/AdminPlantSettings';
 import AdminOrders from './pages/Admin/AdminOrders';
+import AdminForms  from './pages/Admin/AdminForms';
 
 function useCountdown(target) {
   const [remaining, setRemaining] = useState(null);
@@ -193,11 +200,32 @@ const Auth = ({ children }) => {
   return children;
 };
 
+// Handle ?p= redirect from 404.html and OG pages
+function SpaRedirectHandler() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const redirect = params.get('p');
+    if (redirect) {
+      navigate(redirect, { replace: true });
+    }
+  }, []);
+  return null;
+}
+
 // Initialize push notifications for authenticated users
 const PushNotificationInit = () => {
   const { user } = useAuth();
   usePushNotifications(); // Initializes automatically
   return null;
+};
+
+// Safe install prompt — only renders for logged-in non-staff users, no redirect side-effects
+const SafeInstallPrompt = () => {
+  const { user } = useAuth();
+  if (!user || user.is_staff) return null;
+  return <InstallPrompt />;
 };
 
 function App() {
@@ -206,10 +234,18 @@ function App() {
     <AuthProvider>
     <BrowserRouter basename="/">
     <SystemGuard>
+      <SpaRedirectHandler />
       <PushNotificationInit />
-      <InstallPrompt />
+      {/* InstallPrompt only for authenticated users — rendered conditionally to avoid redirect side-effects outside Routes */}
+      <SafeInstallPrompt />
       <Routes>
-        <Route path="/"                element={window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone ? <Navigate to="/login" replace /> : <Landing />} />
+        <Route path="/"                element={window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone ? <Landing /> : <Landing />} />
+        <Route path="/contact"          element={<Contact />} />
+        <Route path="/about"            element={<About />} />
+        <Route path="/invest"           element={<Invest />} />
+        <Route path="/invest/form"       element={<InvestorForm />} />
+        <Route path="/invest/request"    element={<RequestForm />} />
+        <Route path="/partnership"        element={<PartnershipForm />} />
         <Route path="/login"           element={<Login />} />
         <Route path="/signup"          element={<Signup />} />
         <Route path="/set-password"    element={<SetPassword />} />
@@ -234,6 +270,7 @@ function App() {
         <Route path="/admin/settings"        element={<AdminRoute perm="can_manage_system"><AdminSettings /></AdminRoute>} />
         <Route path="/admin/plant-settings"   element={<AdminRoute perm="can_manage_system"><AdminPlantSettings /></AdminRoute>} />
         <Route path="/admin/orders"            element={<AdminRoute><AdminOrders /></AdminRoute>} />
+        <Route path="/admin/forms"             element={<AdminRoute><AdminForms /></AdminRoute>} />
         {isDev && Simulate && (
           <Route path="/simulate" element={<P><Suspense fallback={null}><Simulate /></Suspense></P>} />
         )}

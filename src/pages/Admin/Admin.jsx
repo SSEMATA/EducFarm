@@ -3,7 +3,7 @@ import DashboardLayout from '../../layouts/DashboardLayout';
 import api from '../../services/api';
 import {
   Users, Trash2, ShieldCheck, ShieldOff,
-  RefreshCw, Search, CheckCircle2, X, Cpu, Bell, CloudSun,
+  RefreshCw, Search, CheckCircle2, X, Cpu, Bell, CloudSun, Shield,
 } from 'lucide-react';
 import styles from './Admin.module.css';
 
@@ -171,6 +171,76 @@ function ConfirmModal({ message, onConfirm, onCancel }) {
   );
 }
 
+function UserTable({ rows, loading, showAll, setShowAll, PAGE, onRowClick, onToggleActive, onDelete, styles, emptyMsg = 'No users found.' }) {
+  return (
+    <div className={styles.tableWrap}>
+      {loading ? (
+        <div className={styles.empty}>Loading…</div>
+      ) : rows.length === 0 ? (
+        <div className={styles.empty}>{emptyMsg}</div>
+      ) : (
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Name</th><th>Contact</th><th>Devices</th>
+              <th>Role</th><th>Status</th><th>Joined</th><th>Last Seen</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(showAll ? rows : rows.slice(0, PAGE)).map((u) => (
+              <tr key={u.id} className={styles.clickableRow} onClick={() => onRowClick(u.id)}>
+                <td className={styles.nameCell}>
+                  {u.avatar_url
+                    ? <img src={u.avatar_url} alt={u.full_name} className={styles.avatarImg} />
+                    : <div className={styles.avatar}>{u.full_name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() || 'U'}</div>
+                  }
+                  <span>{u.full_name}</span>
+                </td>
+                <td className={styles.contactCell}>
+                  {u.email && <span>{u.email}</span>}
+                  {u.phone_number && <span className={styles.phone}>{u.phone_number}</span>}
+                </td>
+                <td><span className={styles.countBadge}>{u.device_count}</span></td>
+                <td>
+                  {u.is_staff
+                    ? <span className={styles.badgeAdmin}>{u.admin_level || 'Admin'}</span>
+                    : <span className={styles.badgeUser}>User</span>}
+                </td>
+                <td>
+                  {u.is_active
+                    ? <span className={styles.badgeOnline}>Active</span>
+                    : <span className={styles.badgeOffline}>Inactive</span>}
+                </td>
+                <td className={styles.dateCell}>{new Date(u.created_at).toLocaleDateString()}</td>
+                <td className={styles.dateCell}><LastSeenCell last_seen={u.last_seen} /></td>
+                <td>
+                  <div className={styles.actions}>
+                    <button className={styles.iconBtn} title={u.is_active ? 'Deactivate' : 'Activate'}
+                      onClick={(e) => { e.stopPropagation(); onToggleActive(u); }}>
+                      {u.is_active ? <ShieldOff size={15} color="#f59e0b" /> : <ShieldCheck size={15} color="#10b981" />}
+                    </button>
+                    {onDelete && (
+                      <button className={styles.iconBtn} title="Delete"
+                        onClick={(e) => { e.stopPropagation(); onDelete(u); }}>
+                        <Trash2 size={15} color="#ef4444" />
+                      </button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {rows.length > PAGE && (
+        <button className={styles.viewMoreBtn} onClick={() => setShowAll(v => !v)}>
+          {showAll ? 'Show less' : `View more (${rows.length - PAGE} more)`}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function Admin() {
   const [users, setUsers]       = useState([]);
   const [loading, setLoading]   = useState(false);
@@ -178,7 +248,9 @@ export default function Admin() {
   const [confirm, setConfirm]   = useState(null);
   const [toast, setToast]       = useState('');
   const [showAll, setShowAll]   = useState(false);
+  const [showAllAdmins, setShowAllAdmins] = useState(false);
   const [profileId, setProfileId] = useState(null);
+  const [activeTab, setActiveTab] = useState('users');
   const PAGE = 5;
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
@@ -214,14 +286,17 @@ export default function Admin() {
     } catch { showToast('Delete failed.'); }
   };
 
-  const filtered = users.filter((u) => {
+  const matchesSearch = (u) => {
     const q = search.toLowerCase();
     return (
       u.full_name?.toLowerCase().includes(q) ||
       u.email?.toLowerCase().includes(q) ||
       u.phone_number?.toLowerCase().includes(q)
     );
-  });
+  };
+
+  const filteredUsers  = users.filter((u) => !u.is_staff && matchesSearch(u));
+  const filteredAdmins = users.filter((u) => u.is_staff  && matchesSearch(u));
 
   return (
     <DashboardLayout>
@@ -239,15 +314,15 @@ export default function Admin() {
         <div className={styles.statsRow}>
           <div className={styles.statCard}>
             <Users size={20} color="#2d7a4f" />
-            <div><span className={styles.statVal}>{users.length}</span><span className={styles.statLabel}>Total Users</span></div>
+            <div><span className={styles.statVal}>{users.filter(u => !u.is_staff).length}</span><span className={styles.statLabel}>Total Users</span></div>
           </div>
           <div className={styles.statCard}>
             <CheckCircle2 size={20} color="#10b981" />
-            <div><span className={styles.statVal}>{users.filter((u) => u.is_active).length}</span><span className={styles.statLabel}>Active Users</span></div>
+            <div><span className={styles.statVal}>{users.filter((u) => u.is_active && !u.is_staff).length}</span><span className={styles.statLabel}>Active Users</span></div>
           </div>
           <div className={styles.statCard}>
             <ShieldOff size={20} color="#f59e0b" />
-            <div><span className={styles.statVal}>{users.filter((u) => !u.is_active).length}</span><span className={styles.statLabel}>Inactive Users</span></div>
+            <div><span className={styles.statVal}>{users.filter((u) => !u.is_active).length}</span><span className={styles.statLabel}>Inactive</span></div>
           </div>
           <div className={styles.statCard}>
             <ShieldCheck size={20} color="#6366f1" />
@@ -256,82 +331,61 @@ export default function Admin() {
         </div>
 
         <div className={styles.toolbar}>
+          <div className={styles.tabs}>
+            <button
+              className={`${styles.tab} ${activeTab === 'users' ? styles.tabActive : ''}`}
+              onClick={() => { setActiveTab('users'); setSearch(''); setShowAll(false); }}
+            >
+              <Users size={14} /> Users
+              <span className={styles.countBadge} style={{marginLeft:'0.25rem'}}>{users.filter(u => !u.is_staff).length}</span>
+            </button>
+            <button
+              className={`${styles.tab} ${activeTab === 'admins' ? styles.tabActive : ''}`}
+              onClick={() => { setActiveTab('admins'); setSearch(''); setShowAllAdmins(false); }}
+            >
+              <Shield size={14} /> Admins
+              <span className={styles.countBadge} style={{marginLeft:'0.25rem'}}>{users.filter(u => u.is_staff).length}</span>
+            </button>
+          </div>
           <div className={styles.searchWrap}>
             <Search size={14} className={styles.searchIcon} />
             <input
               className={styles.searchInput}
-              placeholder="Search users…"
+              placeholder={activeTab === 'users' ? 'Search users…' : 'Search admins…'}
               value={search}
-              onChange={(e) => { setSearch(e.target.value); setShowAll(false); }}
+              onChange={(e) => { setSearch(e.target.value); setShowAll(false); setShowAllAdmins(false); }}
             />
           </div>
         </div>
 
-        <div className={styles.tableWrap}>
-          {loading ? (
-            <div className={styles.empty}>Loading…</div>
-          ) : filtered.length === 0 ? (
-            <div className={styles.empty}>No users found.</div>
-          ) : (
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Name</th><th>Contact</th><th>Devices</th>
-                  <th>Role</th><th>Status</th><th>Joined</th><th>Last Seen</th><th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(showAll ? filtered : filtered.slice(0, PAGE)).map((u) => (
-                  <tr key={u.id} className={styles.clickableRow} onClick={() => setProfileId(u.id)}>
-                    <td className={styles.nameCell}>
-                      {u.avatar_url
-                        ? <img src={u.avatar_url} alt={u.full_name} className={styles.avatarImg} />
-                        : <div className={styles.avatar}>{u.full_name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() || 'U'}</div>
-                      }
-                      <span>{u.full_name}</span>
-                    </td>
-                    <td className={styles.contactCell}>
-                      {u.email && <span>{u.email}</span>}
-                      {u.phone_number && <span className={styles.phone}>{u.phone_number}</span>}
-                    </td>
-                    <td><span className={styles.countBadge}>{u.device_count}</span></td>
-                    <td>
-                      {u.is_staff
-                        ? <span className={styles.badgeAdmin}>Admin</span>
-                        : <span className={styles.badgeUser}>User</span>}
-                    </td>
-                    <td>
-                      {u.is_active
-                        ? <span className={styles.badgeOnline}>Active</span>
-                        : <span className={styles.badgeOffline}>Inactive</span>}
-                    </td>
-                    <td className={styles.dateCell}>{new Date(u.created_at).toLocaleDateString()}</td>
-                    <td className={styles.dateCell}>
-                      <LastSeenCell last_seen={u.last_seen} />
-                    </td>
-                    <td>
-                      <div className={styles.actions}>
-                        <button className={styles.iconBtn} title={u.is_active ? 'Deactivate' : 'Activate'} onClick={(e) => { e.stopPropagation(); handleToggleActive(u); }}>
-                          {u.is_active ? <ShieldOff size={15} color="#f59e0b" /> : <ShieldCheck size={15} color="#10b981" />}
-                        </button>
-                        {!u.is_staff && (
-                          <button className={styles.iconBtn} title="Delete user" onClick={(e) => { e.stopPropagation(); setConfirm({ id: u.id, name: u.full_name }); }}>
-                            <Trash2 size={15} color="#ef4444" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-          {filtered.length > PAGE && (
-            <button className={styles.viewMoreBtn} onClick={() => setShowAll(v => !v)}>
-              {showAll ? 'Show less' : `View more (${filtered.length - PAGE} more)`}
-            </button>
-          )}
-        </div>
+        {activeTab === 'users' && (
+          <UserTable
+            rows={filteredUsers}
+            loading={loading}
+            showAll={showAll}
+            setShowAll={setShowAll}
+            PAGE={PAGE}
+            onRowClick={setProfileId}
+            onToggleActive={handleToggleActive}
+            onDelete={(u) => setConfirm({ id: u.id, name: u.full_name })}
+            styles={styles}
+          />
+        )}
+
+        {activeTab === 'admins' && (
+          <UserTable
+            rows={filteredAdmins}
+            loading={loading}
+            showAll={showAllAdmins}
+            setShowAll={setShowAllAdmins}
+            PAGE={PAGE}
+            onRowClick={setProfileId}
+            onToggleActive={handleToggleActive}
+            onDelete={null}
+            styles={styles}
+            emptyMsg="No admins found."
+          />
+        )}
       </div>
 
       {profileId && <UserProfileModal userId={profileId} onClose={() => setProfileId(null)}

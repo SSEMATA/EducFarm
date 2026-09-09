@@ -8,7 +8,7 @@ const KITS = [
   {
     id: 'basic',
     name: 'Basic Kit',
-    price: 500000,
+    price: 700000,
     color: '#22c55e',
     bg: 'rgba(34,197,94,0.07)',
     border: 'rgba(34,197,94,0.25)',
@@ -31,7 +31,7 @@ const KITS = [
 
 const fmt = (n) => `UGX ${n.toLocaleString()}`;
 
-export default function ShopModal({ onClose }) {
+export default function ShopModal({ onClose, showIcons = true }) {
   const [cart, setCart]     = useState({ basic: 0, advanced: 0 });
   const [step, setStep]     = useState('shop');
   const [form, setForm]     = useState({ name: '', phone: '', email: '', location: '', notes: '' });
@@ -40,7 +40,7 @@ export default function ShopModal({ onClose }) {
   const [result, setResult] = useState(null);
 
   const totalItems = cart.basic + cart.advanced;
-  const totalPrice = cart.basic * 500000 + cart.advanced * 2000000;
+  const totalPrice = cart.basic * 700000 + cart.advanced * 2000000;
   const adjust = (id, d) => setCart(c => ({ ...c, [id]: Math.max(0, Math.min(10, c[id] + d)) }));
 
   const handleCheckout = async (e) => {
@@ -88,7 +88,7 @@ export default function ShopModal({ onClose }) {
           position: 'absolute', top: 10, right: 10, zIndex: 2,
           background: 'rgba(255,255,255,0.07)', border: 'none', borderRadius: 7,
           color: '#9ca3af', cursor: 'pointer', padding: '4px 6px', display: 'flex',
-        }}><X size={14} /></button>
+        }}>{showIcons && <X size={14} />}</button>
 
         {/* only scroll if truly needed on tiny screens */}
         <div style={{ overflowY: 'auto', padding: '1.1rem 1.25rem 1.25rem' }}>
@@ -96,8 +96,8 @@ export default function ShopModal({ onClose }) {
           {/* ── SHOP ── */}
           {step === 'shop' && (<>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
-              <ShoppingCart size={15} color="#4ade80" />
-              <span style={{ color: '#fff', fontWeight: 700, fontSize: '0.95rem' }}>Order Hardware Kit</span>
+              {showIcons && <ShoppingCart size={15} color="#4ade80" />}
+              <span style={{ color: '#fff', fontWeight: 700, fontSize: '0.95rem' }}>Buy system</span>
             </div>
             <p style={{ margin: '0 0 0.9rem', color: '#6b7280', fontSize: '0.7rem' }}>
               Ships across Uganda · We confirm by phone
@@ -152,9 +152,9 @@ export default function ShopModal({ onClose }) {
                   }}>
                     <span style={{ color: '#6b7280', fontSize: '0.65rem' }}>Qty</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                      <button onClick={() => adjust(id, -1)} style={qBtn}><Minus size={10} /></button>
+                      <button onClick={() => adjust(id, -1)} style={qBtn}>{showIcons ? <Minus size={10} /> : '−'}</button>
                       <span style={{ color: '#fff', fontWeight: 700, minWidth: 16, textAlign: 'center', fontSize: '0.82rem' }}>{cart[id]}</span>
-                      <button onClick={() => adjust(id, +1)} style={qBtn}><Plus size={10} /></button>
+                      <button onClick={() => adjust(id, +1)} style={qBtn}>{showIcons ? <Plus size={10} /> : '+'}</button>
                     </div>
                   </div>
                 </div>
@@ -239,7 +239,7 @@ export default function ShopModal({ onClose }) {
           {/* ── SUCCESS ── */}
           {step === 'success' && result && (
             <div style={{ textAlign: 'center', padding: '1.25rem 0' }}>
-              <CheckCircle2 size={44} color="#4ade80" style={{ marginBottom: '0.7rem' }} />
+              {showIcons && <CheckCircle2 size={44} color="#4ade80" style={{ marginBottom: '0.7rem' }} />}
               <p style={{ color: '#fff', margin: '0 0 0.25rem', fontWeight: 700, fontSize: '1.05rem' }}>Order Placed!</p>
               <p style={{ color: '#9ca3af', margin: '0 0 0.15rem', fontSize: '0.8rem' }}>Order #{result.order_id} · {fmt(result.total_ugx)}</p>
               <p style={{ color: '#6b7280', fontSize: '0.72rem', margin: '0 0 1.25rem' }}>

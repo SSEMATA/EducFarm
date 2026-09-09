@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Send, MessageSquare } from 'lucide-react';
+import { useMeta } from '../../hooks/useMeta';
 import PublicHeader from '../../components/PublicHeader';
 import PublicFooter from '../../components/PublicFooter';
 import api from '../../services/api';
@@ -9,6 +10,12 @@ import styles from './RequestForm.module.css';
 const INITIAL_FORM = { name: '', organisation: '', email: '', phone: '', location: '', village_parish: '', country: '', request_type: '', message: '', consent: false };
 
 export default function RequestForm() {
+  useMeta({
+    title: 'Business Request — EducFarm',
+    description: 'Explore strategic partnerships and distribution opportunities with EducFarm. Submit a business request and our team will get back to you.',
+    url: 'https://www.educfarm.com/request',
+    keywords: 'EducFarm business request, strategic partnership EducFarm, distribution opportunity Uganda, agritech business request Africa, EducFarm collaboration',
+  });
   const [searchParams] = useSearchParams();
   const [form, setForm] = useState(() => ({ ...INITIAL_FORM, request_type: searchParams.get('type') || '' }));
   const [sent, setSent] = useState(false);

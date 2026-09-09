@@ -18,6 +18,7 @@ export default function PartnershipForm() {
     title: 'Partnership Application — EducFarm',
     description: 'Become an EducFarm partner. Whether you are a trader, buyer, distributor, institution, or technology partner — let’s grow the future of farming together.',
     url: 'https://www.educfarm.com/partnership',
+    keywords: 'EducFarm partnership, agritech partner Uganda, irrigation distribution partner, farming technology partnership Africa, EducFarm distributor, agricultural partnership Uganda',
   });
   const [form, setForm] = useState(INITIAL_FORM);
   const [sent, setSent] = useState(false);

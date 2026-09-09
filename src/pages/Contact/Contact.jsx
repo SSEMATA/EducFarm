@@ -12,6 +12,7 @@ export default function Contact() {
     title: 'Contact EducFarm — Get in Touch',
     description: 'Have a question, want to order a kit, or need support? Contact the EducFarm team by email, WhatsApp, or phone. Based in Fort Portal, Uganda.',
     url: 'https://www.educfarm.com/contact',
+    keywords: 'contact EducFarm, EducFarm support, order irrigation kit Uganda, EducFarm WhatsApp, EducFarm phone, Fort Portal Uganda agritech',
   });
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [sent, setSent] = useState(false);

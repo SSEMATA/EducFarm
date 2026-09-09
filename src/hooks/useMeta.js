@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const OG_IMAGE = 'https://res.cloudinary.com/d5qqtsou/image/upload/v1787329124/spr_qtwrcq.png';
+const OG_IMAGE = 'https://res.cloudinary.com/d5qqtsou/image/upload/v1788426936/sm_smo9sk.jpg';
 
 function setMeta(property, content, isName = false) {
   const attr = isName ? 'name' : 'property';
@@ -21,20 +21,25 @@ function setCanonical(url) {
   el.setAttribute('href', url);
 }
 
-export function useMeta({ title, description, url, googleVerification }) {
+export function useMeta({ title, description, url, keywords, ogImage, googleVerification }) {
   useEffect(() => {
     const prev = { title: document.title };
     document.title = title;
     if (googleVerification) setGoogleVerification(googleVerification);
     setMeta('description', description, true);
+    setMeta('robots', 'index, follow', true);
+    if (keywords) setMeta('keywords', keywords, true);
+    setMeta('og:type', 'website');
+    setMeta('og:site_name', 'EducFarm');
     setMeta('og:title', title);
     setMeta('og:description', description);
     setMeta('og:url', url);
-    setMeta('og:image', OG_IMAGE);
+    setMeta('og:image', ogImage || OG_IMAGE);
+    setMeta('twitter:card', 'summary_large_image', true);
     setMeta('twitter:title', title, true);
     setMeta('twitter:description', description, true);
-    setMeta('twitter:image', OG_IMAGE, true);
+    setMeta('twitter:image', ogImage || OG_IMAGE, true);
     setCanonical(url);
     return () => { document.title = prev.title; };
-  }, [title, description, url]);
+  }, [title, description, url, keywords, ogImage]);
 }

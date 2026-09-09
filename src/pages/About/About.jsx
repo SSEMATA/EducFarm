@@ -33,6 +33,7 @@ export default function About() {
     title: 'About EducFarm — Smart Irrigation Built for Africa',
     description: 'Meet the team behind EducFarm. We build solar-powered smart irrigation systems to help African farmers grow food reliably, conserve water, and fight food insecurity.',
     url: 'https://www.educfarm.com/about',
+    keywords: 'about EducFarm, EducFarm team, smart irrigation Africa, solar irrigation Uganda, agritech startup Uganda, food security Africa, EducFarm story, irrigation technology Africa',
   });
   return (
     <div className={styles.page}>

@@ -29,6 +29,7 @@ export default function Invest() {
     title: 'Invest in EducFarm — Smart Irrigation for African Farmers',
     description: 'Join us in scaling solar-powered smart irrigation across Africa. Invest in EducFarm and help build a food-secure future. $2.7B market, 60% water savings, proven technology.',
     url: 'https://www.educfarm.com/invest',
+    keywords: 'invest in EducFarm, agritech investment Uganda, smart irrigation investment Africa, agricultural investment Uganda, food security investment, irrigation technology investment, EducFarm investor',
   });
   return (
     <div className={styles.page}>

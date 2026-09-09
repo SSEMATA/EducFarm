@@ -29,6 +29,7 @@ export default function InvestorForm() {
     title: 'Investor Application — EducFarm',
     description: 'Submit your investor enquiry to EducFarm. Share your investment interest, goals, and timeline. Help scale smart irrigation technology across Africa.',
     url: 'https://www.educfarm.com/invest/form',
+    keywords: 'EducFarm investor application, invest in smart irrigation, agritech investment form Uganda, EducFarm funding, agricultural investment application Africa',
   });
   const [form, setForm] = useState(INITIAL_FORM);
   const [sent, setSent] = useState(false);

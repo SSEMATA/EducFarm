@@ -2,27 +2,50 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>EducFarm — Smart Irrigation System for African Farmers</title>
-    <meta name="description" content="EducFarm produces solar-powered smart irrigation systems for African farmers. Automate watering, conserve water by 60%, and grow more reliably." />
+    <title>EducFarm | Smart Irrigation Systems for African Farms</title>
+    <meta name="description" content="EducFarm builds smart irrigation systems for farms across Africa, combining solar-powered hardware, real-time soil and weather data, and automated irrigation to save water and improve crop productivity." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.educfarm.com/" />
-    <meta property="og:title" content="EducFarm — Smart Irrigation System for African Farmers" />
-    <meta property="og:description" content="EducFarm produces solar-powered smart irrigation systems for African farmers. Automate watering, conserve water by 60%, and grow more reliably." />
-    <meta property="og:image" content="https://res.cloudinary.com/d5qqtsou/image/upload/v1787329124/spr_qtwrcq.png" />
+    <meta property="og:title" content="EducFarm | Smart Irrigation Systems for African Farms" />
+    <meta property="og:description" content="EducFarm builds smart irrigation systems for farms across Africa, combining solar-powered hardware, real-time soil and weather data, and automated irrigation to save water and improve crop productivity." />
+    <meta property="og:image" content="https://res.cloudinary.com/d5qqtsou/image/upload/v1788426936/sm_smo9sk.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content="EducFarm" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="EducFarm — Smart Irrigation System for African Farmers" />
-    <meta name="twitter:description" content="EducFarm produces solar-powered smart irrigation systems for African farmers." />
-    <meta name="twitter:image" content="https://res.cloudinary.com/d5qqtsou/image/upload/v1787329124/spr_qtwrcq.png" />
+    <meta name="twitter:title" content="EducFarm | Smart Irrigation Systems for African Farms" />
+    <meta name="twitter:description" content="EducFarm builds smart irrigation systems for farms across Africa, combining solar-powered hardware, real-time soil and weather data, and automated irrigation to save water and improve crop productivity." />
+    <meta name="twitter:image" content="https://res.cloudinary.com/d5qqtsou/image/upload/v1788426936/sm_smo9sk.jpg" />
     <script>
-      // Only redirect real browsers — bots read the OG tags above and stop
+      var path = window.location.pathname.replace(/\/$/, '') || '/';
+      var META = {
+        '/about':       { t: 'About EducFarm — Smart Irrigation Built for Africa',        d: 'Meet the team behind EducFarm. We build solar-powered smart irrigation systems to help African farmers grow food reliably, conserve water, and fight food insecurity.',                                                                                                                                                                                                                                              i: 'https://res.cloudinary.com/d5qqtsou/image/upload/v1788426936/sm_smo9sk.jpg' },
+        '/contact':     { t: 'Contact EducFarm — Get in Touch',                           d: 'Have a question, want to order a kit, or need support? Contact the EducFarm team by email, WhatsApp, or phone. Based in Fort Portal, Uganda.',                                                                                                                                                                                                                                                                          i: 'https://res.cloudinary.com/d5qqtsou/image/upload/v1788426936/sm_smo9sk.jpg' },
+        '/invest':      { t: 'EducFarm | Smart Irrigation Investment in Africa',          d: 'Invest in EducFarm and be part of the future of African agriculture. Our smart irrigation systems combine solar-powered technology, real-time farm data, and automation to help farmers conserve water, reduce operating costs, and grow more reliably.',                                                                                                                                                                   i: 'https://address-restaurant2.odoo.com/web/image/2152-993be8ba/Smart-Irrigation-Valve-System.webp' },
+        '/invest/form': { t: 'Investor Application — EducFarm',                           d: 'Submit your investor enquiry to EducFarm. Share your investment interest, goals, and timeline. Help scale smart irrigation technology across Africa.',                                                                                                                                                                                                                                                                   i: 'https://address-restaurant2.odoo.com/web/image/2152-993be8ba/Smart-Irrigation-Valve-System.webp' },
+        '/partnership': { t: 'Partnership Application — EducFarm',                        d: 'Become an EducFarm partner. Whether you are a trader, buyer, distributor, institution, or technology partner — let\'s grow the future of farming together.',                                                                                                                                                                                                                                                           i: 'https://res.cloudinary.com/d5qqtsou/image/upload/v1788426936/sm_smo9sk.jpg' },
+      };
+      var m = META[path];
+      if (m) {
+        document.title = m.t;
+        var setM = function(attr, val, content) {
+          var el = document.querySelector('meta[' + attr + '="' + val + '"]');
+          if (el) el.setAttribute('content', content);
+        };
+        setM('name', 'description', m.d);
+        setM('property', 'og:title', m.t);
+        setM('property', 'og:description', m.d);
+        setM('property', 'og:url', 'https://www.educfarm.com' + path);
+        setM('property', 'og:image', m.i);
+        setM('name', 'twitter:title', m.t);
+        setM('name', 'twitter:description', m.d);
+        setM('name', 'twitter:image', m.i);
+      }
+      // Redirect real browsers, let bots read OG tags above
       var ua = navigator.userAgent || '';
       var isBot = /bot|crawl|slurp|spider|facebookexternalhit|whatsapp|telegrambot|linkedinbot|twitterbot/i.test(ua);
       if (!isBot) {
-        var path = window.location.pathname + window.location.search;
-        window.location.replace('/?p=' + encodeURIComponent(path));
+        window.location.replace('/?p=' + encodeURIComponent(window.location.pathname + window.location.search));
       }
     </script>
   </head>

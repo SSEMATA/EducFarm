@@ -209,7 +209,8 @@ function SpaRedirectHandler() {
     const params = new URLSearchParams(location.search);
     const redirect = params.get('p');
     if (redirect) {
-      navigate(redirect, { replace: true });
+      // Strip trailing slash for React Router
+      navigate(redirect.replace(/\/$/, '') || '/', { replace: true });
     }
   }, []);
   return null;

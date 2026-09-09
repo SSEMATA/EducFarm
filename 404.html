@@ -45,7 +45,13 @@
       var ua = navigator.userAgent || '';
       var isBot = /bot|crawl|slurp|spider|facebookexternalhit|whatsapp|telegrambot|linkedinbot|twitterbot/i.test(ua);
       if (!isBot) {
-        window.location.replace('/?p=' + encodeURIComponent(window.location.pathname + window.location.search));
+        var p = window.location.pathname;
+        // Add trailing slash so GitHub Pages serves the correct index.html
+        if (p !== '/' && p.slice(-1) !== '/') {
+          window.location.replace(p + '/' + window.location.search);
+        } else {
+          window.location.replace('/?p=' + encodeURIComponent(p + window.location.search));
+        }
       }
     </script>
   </head>
